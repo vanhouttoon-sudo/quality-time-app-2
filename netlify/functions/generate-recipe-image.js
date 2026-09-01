@@ -19,8 +19,9 @@
 
 const GEMINI_MODEL = 'gemini-2.5-flash-image';
 const STYLE_SUFFIX = 'Stijl: dagelijkse kost, warm, huiselijk, lekker, vlaams, antwerps, stimulerend. '
-  + 'Professionele foodfotografie, bovenaanzicht op een bord, natuurlijk licht. '
-  + 'Toon uitsluitend het gerecht zelf — geen mensen, geen gezichten, geen personen in beeld.';
+  + 'Professionele foodfotografie, bovenaanzicht op een bord of in een kom, natuurlijk licht, gewone Belgische thuiskeuken-presentatie — geen sushi, geen Aziatische rolletjes, geen fine-dining plating, geen decoratieve kunstjes. '
+  + 'Toon uitsluitend het gerecht zelf — geen mensen, geen gezichten, geen personen in beeld. '
+  + 'Voeg helemaal onderaan de afbeelding, klein en subtiel (bv. rechtsonder, lichte tekst met een licht schaduwtje zodat het leesbaar blijft op de foto), de tekst "Tony\'s recipe book" toe als een fotograaf-signatuur — laat deze tekst exact zo, correct gespeld en leesbaar in de afbeelding verschijnen.';
 
 function timeoutFetch(url, options, ms) {
   const controller = new AbortController();
@@ -50,9 +51,9 @@ exports.handler = async (event) => {
       return { statusCode: 200, headers, body: JSON.stringify({ image: null, reason: 'Geen GEMINI_API_KEY ingesteld in Netlify' }) };
     }
 
-    const prompt = `Professionele foodfotografie van het gerecht "${name}"`
-      + (ingredients ? ` met ${ingredients}` : '')
-      + `. ${STYLE_SUFFIX}`;
+    const prompt = `Fotografeer nauwkeurig het Belgische thuisgerecht dat letterlijk "${name}" heet — dit exacte gerecht, zoals het écht bereid en opgediend wordt, niet een andere keuken of interpretatie.`
+      + (ingredients ? ` Ter info, enkele hoofdingrediënten: ${ingredients}.` : '')
+      + ` ${STYLE_SUFFIX}`;
 
     let res;
     try {
