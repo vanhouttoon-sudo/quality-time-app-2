@@ -7346,10 +7346,16 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
     var loadingEl = document.getElementById('dsMealPhotoLoading');
 
     var cached = localStorage.getItem(cacheKey);
-    // Eerder gecachete AI-gegenereerde foto's (Pollinations) worden genegeerd en
-    // gewist — die konden onbedoeld ongepaste/verontrustende beelden bevatten.
-    if(cached && cached.indexOf('pollinations') !== -1) {
+    // Eerder gecachete niet-AI-foto's (Pollinations, Unsplash, Foodish, og:image
+    // van vroeger) worden genegeerd en gewist — enkel nog AI-gegenereerde
+    // (Gemini) foto's blijven geldig als cache.
+    if(cached && cached.indexOf('data:image') !== 0) {
       try { localStorage.removeItem(cacheKey); } catch(e){}
+      cached = null;
+    }
+    if(cached && cached === RECIPE_ULTIMATE_FALLBACK_IMG) {
+      // De koelkast-foto wordt bewust nooit gecachet gehouden — elk bezoek
+      // probeert opnieuw een échte AI-foto te genereren.
       cached = null;
     }
     if(cached) {
@@ -7361,52 +7367,17 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
     }
 
     function showUltimateFallback() {
-      // Bewust niet gecachet — een volgend bezoek probeert opnieuw een échte foto
+      // Bewust niet gecachet — een volgend bezoek probeert opnieuw een AI-foto
       imgEl.src = RECIPE_ULTIMATE_FALLBACK_IMG;
       imgEl.style.display = 'block';
       if(patternEl) patternEl.style.display = 'none';
       if(loadingEl) loadingEl.style.display = 'none';
     }
 
-    function useFoodishFallback() {
-      var category = getDinnerCategory(name);
-      fetch('https://foodish-api.com/api/images/' + category)
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-          if(data && data.image) {
-            try { localStorage.setItem(cacheKey, data.image); } catch(e){}
-            imgEl.src = data.image;
-            imgEl.style.display = 'block';
-            if(patternEl) patternEl.style.display = 'none';
-            if(loadingEl) loadingEl.style.display = 'none';
-          } else {
-            showUltimateFallback();
-          }
-        })
-        .catch(function(){ showUltimateFallback(); });
-    }
-
-    function useRealPhotoChain() {
-      // Enkel de bron-link meesturen als die meer is dan louter een homepage
-      var linkLooksSpecific = link && /^https?:\/\/[^\/]+\/.+/.test(link);
-      fetchDagelijksekostPhoto(linkLooksSpecific ? link : null, name, function(foundImage){
-        if(foundImage) {
-          try { localStorage.setItem(cacheKey, foundImage); } catch(e){}
-          imgEl.src = foundImage;
-          imgEl.style.display = 'block';
-          if(patternEl) patternEl.style.display = 'none';
-          if(loadingEl) loadingEl.style.display = 'none';
-        } else {
-          useFoodishFallback();
-        }
-      });
-    }
-
-    // Stap 1: probeer een AI-gegenereerde foto op maat via Gemini (gratis,
-    // gemodereerd — zie generate-recipe-image.js). Lukt dit niet (geen
-    // sleutel ingesteld, tijdelijk onbereikbaar, of door Gemini's eigen
-    // veiligheidsfilters geblokkeerd), dan valt de app terug op de
-    // bestaande, veilige keten van échte foto's.
+    // Enkel nog: AI-gegenereerde foto via Gemini (zie generate-recipe-image.js).
+    // Lukt dit niet (geen sleutel, quotum bereikt, geblokkeerd door Gemini's
+    // eigen veiligheidsfilters, ...), dan meteen de koelkast-noodfoto — geen
+    // stockfoto-tussenstappen (bronfoto/Unsplash/Foodish) meer.
     var ingQs = (ingredients || []).slice(0, 5).join(', ');
     fetch('/.netlify/functions/generate-recipe-image?name=' + encodeURIComponent(name) + '&ingredients=' + encodeURIComponent(ingQs))
       .then(function(r){ return r.json(); })
@@ -7418,10 +7389,10 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
           if(patternEl) patternEl.style.display = 'none';
           if(loadingEl) loadingEl.style.display = 'none';
         } else {
-          useRealPhotoChain();
+          showUltimateFallback();
         }
       })
-      .catch(function(){ useRealPhotoChain(); });
+      .catch(function(){ showUltimateFallback(); });
   } catch(e){}
 }
 
