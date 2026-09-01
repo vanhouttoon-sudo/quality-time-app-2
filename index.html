@@ -7325,21 +7325,6 @@ function addAiWatermark(imgEl) {
   } catch(e){}
 }
 
-function hashSeed(str) {
-  var h = 0;
-  for (var i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
-  return Math.abs(h) % 999999;
-}
-function buildAiRecipePhotoUrl(name, ingredients) {
-  var mainIngredients = (ingredients || []).slice(0, 4).join(', ');
-  var prompt = name
-    + (mainIngredients ? ' met ' + mainIngredients : '')
-    + ' — dagelijkse kost, warm, huiselijk, lekker, vlaams, antwerps, stimulerend, professionele foodfotografie, bovenaanzicht, op een bord';
-  var seed = hashSeed(name);
-  return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt)
-    + '?width=800&height=600&model=flux&nologo=true&seed=' + seed;
-}
-
 function fetchDagelijksekostPhoto(url, name, callback) {
   try {
     var qs = 'query=' + encodeURIComponent(name || '');
@@ -7361,12 +7346,18 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
     var loadingEl = document.getElementById('dsMealPhotoLoading');
 
     var cached = localStorage.getItem(cacheKey);
+    // Eerder gecachete AI-gegenereerde foto's (Pollinations) worden genegeerd en
+    // gewist — die konden onbedoeld ongepaste/verontrustende beelden bevatten.
+    if(cached && cached.indexOf('pollinations') !== -1) {
+      try { localStorage.removeItem(cacheKey); } catch(e){}
+      cached = null;
+    }
     if(cached) {
       imgEl.src = cached;
       imgEl.style.display = 'block';
       if(patternEl) patternEl.style.display = 'none';
       if(loadingEl) loadingEl.style.display = 'none';
-      if(cached.indexOf('pollinations') !== -1) addAiWatermark(imgEl);
+      if(cached.indexOf('data:image') === 0 && cached !== RECIPE_ULTIMATE_FALLBACK_IMG) addAiWatermark(imgEl);
       return;
     }
 
@@ -7375,9 +7366,28 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
       imgEl.src = RECIPE_ULTIMATE_FALLBACK_IMG;
       imgEl.style.display = 'block';
       if(patternEl) patternEl.style.display = 'none';
+      if(loadingEl) loadingEl.style.display = 'none';
     }
 
-    function useOldFallbackChain() {
+    function useFoodishFallback() {
+      var category = getDinnerCategory(name);
+      fetch('https://foodish-api.com/api/images/' + category)
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if(data && data.image) {
+            try { localStorage.setItem(cacheKey, data.image); } catch(e){}
+            imgEl.src = data.image;
+            imgEl.style.display = 'block';
+            if(patternEl) patternEl.style.display = 'none';
+            if(loadingEl) loadingEl.style.display = 'none';
+          } else {
+            showUltimateFallback();
+          }
+        })
+        .catch(function(){ showUltimateFallback(); });
+    }
+
+    function useRealPhotoChain() {
       // Enkel de bron-link meesturen als die meer is dan louter een homepage
       var linkLooksSpecific = link && /^https?:\/\/[^\/]+\/.+/.test(link);
       fetchDagelijksekostPhoto(linkLooksSpecific ? link : null, name, function(foundImage){
@@ -7393,52 +7403,27 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
       });
     }
 
-    function useFoodishFallback() {
-      var category = getDinnerCategory(name);
-      fetch('https://foodish-api.com/api/images/' + category)
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-          if(data && data.image) {
-            try { localStorage.setItem(cacheKey, data.image); } catch(e){}
-            imgEl.src = data.image;
-            imgEl.style.display = 'block';
-            if(patternEl) patternEl.style.display = 'none';
-          } else {
-            showUltimateFallback();
-          }
+    // Stap 1: probeer een AI-gegenereerde foto op maat via Gemini (gratis,
+    // gemodereerd — zie generate-recipe-image.js). Lukt dit niet (geen
+    // sleutel ingesteld, tijdelijk onbereikbaar, of door Gemini's eigen
+    // veiligheidsfilters geblokkeerd), dan valt de app terug op de
+    // bestaande, veilige keten van échte foto's.
+    var ingQs = (ingredients || []).slice(0, 5).join(', ');
+    fetch('/.netlify/functions/generate-recipe-image?name=' + encodeURIComponent(name) + '&ingredients=' + encodeURIComponent(ingQs))
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(data && data.image) {
+          try { localStorage.setItem(cacheKey, data.image); } catch(e){}
+          imgEl.src = data.image;
+          imgEl.style.display = 'block';
+          if(patternEl) patternEl.style.display = 'none';
           if(loadingEl) loadingEl.style.display = 'none';
-        })
-        .catch(function(){ showUltimateFallback(); if(loadingEl) loadingEl.style.display = 'none'; });
-    }
-
-    // Stap 1: probeer een AI-gegenereerde foto op maat van dit recept (Pollinations)
-    var aiUrl = buildAiRecipePhotoUrl(name, ingredients);
-    var testImg = new Image();
-    var settled = false;
-    var timeoutId = setTimeout(function(){
-      if(settled) return;
-      settled = true;
-      useOldFallbackChain();
-    }, 12000); // Pollinations kan een aantal seconden duren bij een "koude" aanvraag
-
-    testImg.onload = function(){
-      if(settled) return;
-      settled = true;
-      clearTimeout(timeoutId);
-      try { localStorage.setItem(cacheKey, aiUrl); } catch(e){}
-      imgEl.src = aiUrl;
-      imgEl.style.display = 'block';
-      if(patternEl) patternEl.style.display = 'none';
-      if(loadingEl) loadingEl.style.display = 'none';
-      addAiWatermark(imgEl);
-    };
-    testImg.onerror = function(){
-      if(settled) return;
-      settled = true;
-      clearTimeout(timeoutId);
-      useOldFallbackChain();
-    };
-    testImg.src = aiUrl;
+          addAiWatermark(imgEl);
+        } else {
+          useRealPhotoChain();
+        }
+      })
+      .catch(function(){ useRealPhotoChain(); });
   } catch(e){}
 }
 
