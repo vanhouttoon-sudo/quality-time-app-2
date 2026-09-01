@@ -12378,7 +12378,7 @@ function openDetailSheet(kind, overrideDate) {
       body.innerHTML = `
         <div class="ds-meal-photo" id="dsMealPhotoWrap">
           <div id="dsMealPhotoLoading" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px;font-family:var(--grotesk);font-size:11px;color:var(--stone2)">📷 Foto zoeken…</div>
-          <img id="dsMealPhotoImg" src="" alt="${dinner.name}" class="ds-meal-img" style="display:none" onerror="this.parentElement.style.display='none'">
+          <img id="dsMealPhotoImg" src="" alt="${dinner.name}" class="ds-meal-img" style="display:none" onerror="if(this.src!==RECIPE_ULTIMATE_FALLBACK_IMG){this.onerror=null;this.src=RECIPE_ULTIMATE_FALLBACK_IMG;}else{this.parentElement.style.display='none';}">
         </div>
         <div class="ds-meal-meta">${dinner.bron||''} · ${dinner.kcal} kcal${(dinner.recipe&&dinner.recipe.tijd)?' · ⏱ '+dinner.recipe.tijd:''}</div>
         <div style="margin:6px 0 4px">${starsHtml(dinner.name)}</div>
@@ -16052,7 +16052,7 @@ function renderShop() {
         const tijdB = (dinnerB && dinnerB.recipe ? dinnerB.recipe.tijd : '') || '';
         list.innerHTML += `<div class="shop-recipe-card">
           <div class="shop-recipe-card-photo">
-            <img data-meal="${grp.meal}" data-link="${(dinnerB && dinnerB.link) ? dinnerB.link.replace(/"/g,'&quot;') : ''}" class="shop-recipe-card-img shop-photo-lazy" src="" style="display:none" onerror="this.parentElement.style.display='none'">
+            <img data-meal="${grp.meal}" data-link="${(dinnerB && dinnerB.link) ? dinnerB.link.replace(/"/g,'&quot;') : ''}" class="shop-recipe-card-img shop-photo-lazy" src="" style="display:none" onerror="if(this.src!==RECIPE_ULTIMATE_FALLBACK_IMG){this.onerror=null;this.src=RECIPE_ULTIMATE_FALLBACK_IMG;this.style.display='block';}else{this.parentElement.style.display='none';}">
           </div>
           <div class="shop-recipe-card-info">
           <div class="shop-recipe-card-top">
