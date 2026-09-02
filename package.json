@@ -2,8 +2,9 @@
   "name": "quality-time-app",
   "version": "1.0.0",
   "private": true,
-  "description": "Quality Time app — Netlify functions (real-estate scraper: ERA + Immoscoop, recipe-image met Unsplash-fallback, ics-proxy)",
+  "description": "Quality Time app — Netlify functions (real-estate scraper: ERA + Immoscoop, recipe-image met Unsplash-fallback, generate-recipe-image via Gemini, ics-proxy)",
   "dependencies": {
-    "cheerio": "^1.0.0"
+    "cheerio": "^1.0.0",
+    "@netlify/blobs": "^11.0.2"
   }
 }
