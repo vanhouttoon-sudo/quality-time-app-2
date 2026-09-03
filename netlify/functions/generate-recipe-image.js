@@ -22,7 +22,7 @@
 // Zonder deze sleutel geeft deze functie gewoon { image: null } terug — de
 // app valt dan automatisch terug op de vaste noodfoto.
 
-const GEMINI_MODEL = 'gemini-3.1-flash-image'; // "Nano Banana 2" — actueel aanbevolen model
+const GEMINI_MODEL = 'gemini-2.5-flash-image'; // Enige model dat authenticeert met een gratis AI Studio-sleutel
 const STYLE_SUFFIX = 'Stijl: dagelijkse kost, warm, huiselijk, lekker, vlaams, antwerps, stimulerend. '
   + 'Professionele foodfotografie, bovenaanzicht op een bord of in een kom, natuurlijk licht, gewone Belgische thuiskeuken-presentatie — geen sushi, geen Aziatische rolletjes, geen fine-dining plating, geen decoratieve kunstjes. '
   + 'Toon uitsluitend het gerecht zelf — geen mensen, geen gezichten, geen personen in beeld. '
