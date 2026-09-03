@@ -44,6 +44,23 @@ exports.handler = async (event) => {
 
   try {
     const qs = event.queryStringParameters || {};
+
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    // ── DIAGNOSEMODUS — voegt ?debug=1 toe aan de URL om te zien wat de
+    // functie werkelijk ontvangt, zonder Gemini zelf aan te roepen ──
+    if (qs.debug) {
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({
+          heeftSleutel: !!apiKey,
+          sleutelLengte: apiKey ? apiKey.length : 0,
+          sleutelPreview: apiKey ? (apiKey.slice(0, 8) + '...' + apiKey.slice(-6)) : null,
+        }),
+      };
+    }
+
     const name = qs.name;
     const ingredients = qs.ingredients || '';
 
@@ -51,7 +68,6 @@ exports.handler = async (event) => {
       return { statusCode: 400, headers, body: JSON.stringify({ error: 'Naam van het recept ontbreekt', image: null }) };
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
       return { statusCode: 200, headers, body: JSON.stringify({ image: null, reason: 'Geen GEMINI_API_KEY ingesteld in Netlify' }) };
     }
