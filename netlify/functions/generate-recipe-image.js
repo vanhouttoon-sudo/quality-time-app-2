@@ -3,12 +3,14 @@
 // Genereert een receptfoto via Google's Gemini "Nano Banana 2"
 // (gemini-3.1-flash-image) — gratis en met ingebouwde contentfilters.
 //
-// BELANGRIJKE UPDATE: dit gebruikt nu Google's actuele "Interactions API"
-// (/v1beta/interactions), niet meer het oudere /generateContent-eindpunt.
-// Het vorige model (gemini-2.5-flash-image) is intussen door Google zelf
-// als "legacy" bestempeld — dat verklaarde de aanhoudende 429-foutmeldingen,
-// zelfs met een vers account: een verouderd model via een verouderd
-// eindpunt loopt via een zwaar afgeknepen pad.
+// TECHNISCHE NOOT: Google heeft recent een nieuwe "Interactions API"
+// (/v1beta/interactions) geïntroduceerd, maar die bleek een ander soort
+// authenticatie te verwachten dan een gewone AI Studio-sleutel (gaf een
+// 401-fout). Deze functie gebruikt daarom het oudere, beproefde
+// /generateContent-eindpunt (waarvan we al bevestigden dat de authenticatie
+// er wél mee werkt), maar met het NIEUWE, actuele model-ID in plaats van
+// het door Google zelf als "legacy" bestempelde gemini-2.5-flash-image —
+// dat laatste veroorzaakte de aanhoudende 429-quotumfouten.
 //
 // ── Gratis API-sleutel instellen ──
 // 1. Ga naar https://aistudio.google.com/apikey (gratis Google-account volstaat)
@@ -61,17 +63,13 @@ exports.handler = async (event) => {
     let res;
     try {
       res = await timeoutFetch(
-        'https://generativelanguage.googleapis.com/v1beta/interactions',
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-goog-api-key': apiKey,
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: GEMINI_MODEL,
-            input: prompt,
-            response_format: { type: 'image', aspect_ratio: '4:3' },
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { responseModalities: ['IMAGE'] },
           }),
         },
         20000
@@ -86,35 +84,20 @@ exports.handler = async (event) => {
     }
 
     const data = await res.json();
+    const candidate = data && data.candidates && data.candidates[0];
+    const parts = (candidate && candidate.content && candidate.content.parts) || [];
+    const imgPart = parts.find(p => p.inlineData && p.inlineData.data);
 
-    // Voorkeur: de convenience-property output_image (nieuwe Interactions API)
-    let imgData = data && data.output_image && data.output_image.data;
-    let mime = (data && data.output_image && data.output_image.mime_type) || 'image/png';
-
-    // Terugval: handmatig door de steps lopen als output_image leeg is
-    // (bv. bij interleaved tekst+beeld-antwoorden)
-    if (!imgData && data && Array.isArray(data.steps)) {
-      for (const step of data.steps) {
-        if (step.type === 'model_output' && Array.isArray(step.content)) {
-          const imgBlock = step.content.find(b => b.type === 'image' && b.data);
-          if (imgBlock) {
-            imgData = imgBlock.data;
-            mime = imgBlock.mime_type || mime;
-            break;
-          }
-        }
-      }
-    }
-
-    if (!imgData) {
+    if (!imgPart) {
       return {
         statusCode: 200,
         headers,
-        body: JSON.stringify({ image: null, reason: 'Geen afbeelding in Gemini-antwoord', raw: JSON.stringify(data).slice(0, 300) }),
+        body: JSON.stringify({ image: null, reason: 'Geen afbeelding in Gemini-antwoord', finishReason: candidate && candidate.finishReason, raw: JSON.stringify(data).slice(0, 300) }),
       };
     }
 
-    const dataUri = `data:${mime};base64,${imgData}`;
+    const mime = imgPart.inlineData.mimeType || 'image/png';
+    const dataUri = `data:${mime};base64,${imgPart.inlineData.data}`;
 
     return { statusCode: 200, headers, body: JSON.stringify({ image: dataUri }) };
   } catch (err) {
