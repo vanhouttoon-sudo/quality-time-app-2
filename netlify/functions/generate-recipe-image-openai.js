@@ -24,16 +24,19 @@
 // app valt dan automatisch terug op de vaste noodfoto.
 
 const OPENAI_MODEL = 'gpt-image-1';
-const STYLE_PROMPT = 'Shot at a 45 degree three-quarter angle, slightly above the dish, shallow depth of field with a soft blurred background. '
-  + 'Soft warm natural window light, diffused side light with gentle shadows, golden hour warmth, cozy inviting mood. '
-  + 'Warm amber and honey color grading, muted terracotta and cream tones, slightly desaturated background with warm-boosted midtones on the food. '
-  + 'Rustic wooden table surface with visible grain, a soft crumpled cloth napkin nearby (checkered red-and-white or simple stripes). '
-  + 'Matte earthy stoneware or ceramic dish in cream, grey or soft terracotta tones, never glossy white porcelain. '
-  + 'Generous homely portion, simple fresh herb garnish, optional wisp of steam if the dish is hot. '
-  + 'A few scattered raw ingredients loosely placed nearby (fresh herb sprig, halved cherry tomato, garlic clove). '
-  + 'Style: dagelijkse kost, warm, huiselijk, lekker, vlaams, antwerps, stimulerend, gezellig, eerlijk, onbewerkt. '
-  + 'No people, no faces, no hands, no body parts. No sushi or Asian plating unless the dish itself is Asian. '
-  + 'No fine-dining or molecular gastronomy plating. No neon or cold color grading. No glossy studio-perfect commercial look. '
+const STYLE_PROMPT = 'STYLE — THE SINGLE MOST IMPORTANT INSTRUCTION: this must look exactly like a hero still frame from a beloved Flemish Belgian daily television cooking show, in the unmistakable style of "Dagelijkse Kost" — push this identity as far as possible, make it unmissable and iconic, not a subtle hint. '
+  + 'MOUTHWATERING FOOD STYLING, taken to the extreme: glistening, fresh-off-the-stove sheen on the food — visible glossy butter or oil sheen, perfectly caramelized and seared edges, vibrant fresh herbs that pop with color, every ingredient looking irresistibly appetizing, magazine-cover-worthy appetite appeal, but still completely homely and unpretentious. '
+  + 'Bright, clean, high-key studio kitchen lighting — crisp, even, gorgeous daylight-balanced light exactly like a live television cooking broadcast, NOT moody, NOT dark, NOT dramatic restaurant lighting. '
+  + 'Shot on a professional camera with a fast prime lens: tack-sharp, richly detailed focus on the food, creamy soft bokeh in the background, real editorial food-photography polish. '
+  + 'Shot at a 45 degree three-quarter angle or true top-down flat lay, as if filmed for television, slightly above the dish. '
+  + 'Setting: a real, lived-in Flemish home kitchen counter — a rustic wooden chopping board or a light granite/marble kitchen worktop, NOT a restaurant table, NOT a styled dining table. '
+  + 'Simple, everyday white or cream ceramic plates and bowls exactly like a Belgian home kitchen, plain and unpretentious — absolutely not fine-dining porcelain, not designer tableware. '
+  + 'Rich, layered signs of an active home kitchen just used: a wooden spoon or knife casually placed nearby, a light dusting of flour or herb confetti on the counter, a cutting board with fresh herbs just chopped, maybe a steaming pot slightly out of focus in the background. '
+  + 'Warm, rich, honest color grading — warm ambers and creams pushed to full saturation on the food itself, natural and utterly appetizing, never neon, never cold, never washed out. '
+  + 'Generous, hearty, unpretentious Flemish home-cooking portion — comfort food, not a small fine-dining serving. Simple fresh herb garnish only, never architectural or tweezer-plated. A visible wisp of steam rising if the dish is hot — make it look irresistibly fresh out of the pan. '
+  + 'A few raw ingredients relevant to the dish scattered loosely and beautifully nearby, exactly as a home cook would leave them while plating (garlic clove, herb sprig, halved tomato). '
+  + 'Mood: dagelijkse kost, warm, huiselijk, lekker, vlaams, antwerps, stimulerend, gezellig, eerlijk, onbewerkt, herkenbaar, uitnodigend, mondwaterend — this should feel completely familiar and utterly craveable to any Belgian who watches daily cooking shows on television. This should be a true visual gem — the kind of shot that makes people want to cook this exact dish tonight. '
+  + 'STRICTLY AVOID: no people, no faces, no hands, no body parts, no chefs. No sushi or Asian plating unless the dish itself is genuinely Asian. No fine-dining or molecular gastronomy plating. No neon or cold color grading. No glossy magazine-perfect COMMERCIAL STUDIO look (this must feel like a real home kitchen, not an ad). No dark or moody restaurant lighting. '
   + 'Small, subtle text in the bottom right corner reading exactly "Tony\'s recipe book", like a photographer signature.';
 
 function timeoutFetch(url, options, ms) {
@@ -80,7 +83,7 @@ exports.handler = async (event) => {
       return { statusCode: 200, headers, body: JSON.stringify({ image: null, reason: 'Geen OPENAI_API_KEY ingesteld in Netlify' }) };
     }
 
-    const prompt = `Professional food photography of the Belgian home-cooked dish "${name}"`
+    const prompt = `A still frame from a Flemish home-cooking television show, showing the finished dish "${name}"`
       + (ingredients ? ` with ${ingredients}` : '')
       + `. ${STYLE_PROMPT}`;
 
