@@ -16,7 +16,7 @@
 // 1. Ga naar https://aistudio.google.com/apikey (gratis Google-account volstaat)
 // 2. Klik "Create API key" — geen kredietkaart nodig
 // 3. Zet die sleutel in Netlify: Site settings → Environment variables →
-//    voeg toe: GEMINI_API_KEY = <jouw sleutel>
+//    voeg toe: GEMINI_KEY_V2 = <jouw sleutel>
 // 4. Herdeploy zodat de nieuwe omgevingsvariabele meegenomen wordt
 //
 // Zonder deze sleutel geeft deze functie gewoon { image: null } terug — de
@@ -45,7 +45,7 @@ exports.handler = async (event) => {
   try {
     const qs = event.queryStringParameters || {};
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GEMINI_KEY_V2;
 
     // ── DIAGNOSEMODUS — voegt ?debug=1 toe aan de URL om te zien wat de
     // functie werkelijk ontvangt, zonder Gemini zelf aan te roepen ──
@@ -69,7 +69,7 @@ exports.handler = async (event) => {
     }
 
     if (!apiKey) {
-      return { statusCode: 200, headers, body: JSON.stringify({ image: null, reason: 'Geen GEMINI_API_KEY ingesteld in Netlify' }) };
+      return { statusCode: 200, headers, body: JSON.stringify({ image: null, reason: 'Geen GEMINI_KEY_V2 ingesteld in Netlify' }) };
     }
 
     const prompt = `Fotografeer nauwkeurig het Belgische thuisgerecht dat letterlijk "${name}" heet — dit exacte gerecht, zoals het écht bereid en opgediend wordt, niet een andere keuken of interpretatie.`
