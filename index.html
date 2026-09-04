@@ -7409,7 +7409,7 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
       imgEl.style.display = 'block';
       if(patternEl) patternEl.style.display = 'none';
       if(loadingEl) loadingEl.style.display = 'none';
-      if(cached.indexOf('pollinations') !== -1) addAiWatermark(imgEl);
+      if(cached.indexOf('pollinations') !== -1 || cached.indexOf('data:image') === 0) addAiWatermark(imgEl);
       return;
     }
 
@@ -7426,35 +7426,53 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
       } catch(e){}
     }
 
-    // AI-gegenereerde foto via Pollinations (gratis, geen sleutel/quotum).
-    // Lukt dit niet (netwerkfout, timeout), dan de koelkast-noodfoto.
-    var aiUrl = buildPollinationsRecipeUrl(name, ingredients);
-    var testImg = new Image();
-    var settled = false;
-    var timeoutId = setTimeout(function(){
-      if(settled) return;
-      settled = true;
-      showUltimateFallback();
-    }, 15000);
+    function usePollinationsFallback() {
+      var aiUrl = buildPollinationsRecipeUrl(name, ingredients);
+      var testImg = new Image();
+      var settled = false;
+      var timeoutId = setTimeout(function(){
+        if(settled) return;
+        settled = true;
+        showUltimateFallback();
+      }, 15000);
 
-    testImg.onload = function(){
-      if(settled) return;
-      settled = true;
-      clearTimeout(timeoutId);
-      try { localStorage.setItem(cacheKey, aiUrl); } catch(e){}
-      imgEl.src = aiUrl;
-      imgEl.style.display = 'block';
-      if(patternEl) patternEl.style.display = 'none';
-      if(loadingEl) loadingEl.style.display = 'none';
-      addAiWatermark(imgEl);
-    };
-    testImg.onerror = function(){
-      if(settled) return;
-      settled = true;
-      clearTimeout(timeoutId);
-      showUltimateFallback();
-    };
-    testImg.src = aiUrl;
+      testImg.onload = function(){
+        if(settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
+        try { localStorage.setItem(cacheKey, aiUrl); } catch(e){}
+        imgEl.src = aiUrl;
+        imgEl.style.display = 'block';
+        if(patternEl) patternEl.style.display = 'none';
+        if(loadingEl) loadingEl.style.display = 'none';
+        addAiWatermark(imgEl);
+      };
+      testImg.onerror = function(){
+        if(settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
+        showUltimateFallback();
+      };
+      testImg.src = aiUrl;
+    }
+
+    // Stap 1: hoge-kwaliteit AI-foto via OpenAI (zelfde soort model als ChatGPT).
+    // Lukt dit niet (geen sleutel, netwerkfout, ...), dan Pollinations (gratis).
+    var ingQs = (ingredients || []).slice(0, 5).join(', ');
+    fetch('/.netlify/functions/generate-recipe-image-openai?name=' + encodeURIComponent(name) + '&ingredients=' + encodeURIComponent(ingQs))
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if(data && data.image) {
+          try { localStorage.setItem(cacheKey, data.image); } catch(e){}
+          imgEl.src = data.image;
+          imgEl.style.display = 'block';
+          if(patternEl) patternEl.style.display = 'none';
+          if(loadingEl) loadingEl.style.display = 'none';
+        } else {
+          usePollinationsFallback();
+        }
+      })
+      .catch(function(){ usePollinationsFallback(); });
   } catch(e){}
 }
 
