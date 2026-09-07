@@ -141,11 +141,15 @@ export default async (req) => {
   const currentTime = roundToQuarterHour(time);
   const results = [];
 
+  // Let op: elk meldingstype gebruikt hier ÉÉN tag waarvan de waarde ofwel
+  // 'off' is (uitgeschakeld) ofwel het effectieve tijdstip zelf (bv. '07:30').
+  // Dit matcht het schema in oneSignalSyncTags() in de app — nodig om
+  // binnen OneSignal's gratis-plan limiet van 6 Data Tags te blijven.
+
   // ── 1. Training ──
   {
     const filters = [
-      { field: 'tag', key: 'notifTrainingEnabled', relation: '=', value: '1' },
-      { field: 'tag', key: 'notifTrainingTime', relation: '=', value: currentTime }
+      { field: 'tag', key: 'notifTraining', relation: '=', value: currentTime }
     ];
     const type = getDayType(dateStr);
     const body = type === 'train'
@@ -159,8 +163,7 @@ export default async (req) => {
   // ── 2. Avondmaaltijd ──
   {
     const filters = [
-      { field: 'tag', key: 'notifMaaltijdEnabled', relation: '=', value: '1' },
-      { field: 'tag', key: 'notifMaaltijdTime', relation: '=', value: currentTime }
+      { field: 'tag', key: 'notifMaaltijd', relation: '=', value: currentTime }
     ];
     results.push(await sendPush(
       filters,
@@ -173,8 +176,7 @@ export default async (req) => {
   // ── 3. Weekoverzicht (enkel zondag) ──
   if (dow === 0) {
     const filters = [
-      { field: 'tag', key: 'notifWeekEnabled', relation: '=', value: '1' },
-      { field: 'tag', key: 'notifWeekTime', relation: '=', value: currentTime }
+      { field: 'tag', key: 'notifWeek', relation: '=', value: currentTime }
     ];
     const wk = getWeekNum(dateStr);
     results.push(await sendPush(
@@ -191,8 +193,7 @@ export default async (req) => {
     const tomorrowWaste = getWasteForDate(tomorrow);
     if (tomorrowWaste.length > 0) {
       const filters = [
-        { field: 'tag', key: 'notifAfvalEnabled', relation: '=', value: '1' },
-        { field: 'tag', key: 'wasteEveningTime', relation: '=', value: currentTime }
+        { field: 'tag', key: 'notifAfvalEvening', relation: '=', value: currentTime }
       ];
       const fracs = tomorrowWaste.map(t => `${WASTE_ICONS[t].icon} ${WASTE_ICONS[t].label}`).join(', ');
       results.push(await sendPush(
@@ -209,8 +210,7 @@ export default async (req) => {
     const todayWaste = getWasteForDate(dateStr);
     if (todayWaste.length > 0) {
       const filters = [
-        { field: 'tag', key: 'notifAfvalEnabled', relation: '=', value: '1' },
-        { field: 'tag', key: 'wasteMorningTime', relation: '=', value: currentTime }
+        { field: 'tag', key: 'notifAfvalMorning', relation: '=', value: currentTime }
       ];
       const fracs = todayWaste.map(t => `${WASTE_ICONS[t].icon} ${WASTE_ICONS[t].label}`).join(', ');
       results.push(await sendPush(
@@ -227,8 +227,7 @@ export default async (req) => {
     const session = ZANG_SCHEDULE.find(p => p.date === dateStr);
     if (session) {
       const filters = [
-        { field: 'tag', key: 'notifZanglesEnabled', relation: '=', value: '1' },
-        { field: 'tag', key: 'notifZangTime', relation: '=', value: currentTime }
+        { field: 'tag', key: 'notifZangles', relation: '=', value: currentTime }
       ];
       results.push(await sendPush(
         filters,
