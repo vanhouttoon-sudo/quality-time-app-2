@@ -1,0 +1,174 @@
+// ═══════════════════════════════════════════════════════════════════
+// QualityTime — Make my Day: regionale suggesties (laag 5)
+// ═══════════════════════════════════════════════════════════════════
+// Combineert twee gratis bronnen:
+//  1. UiTdatabank (publiq) — officiële Vlaamse evenementenkalender.
+//     Gratis, geen praktische limiet. Dit is de PRIMAIRE bron: Toon wil
+//     regionale evenementen/activiteiten nadrukkelijk hoger gewogen zien
+//     dan generieke horeca ("liever naar een evenement dan een terrasje
+//     dat er toch nog staat"), dus events krijgen een hoger weight-cijfer.
+//  2. Tavily — algemene websearch, 1.000 gratis credits/maand. Vult aan
+//     waar UiTdatabank niets structureels heeft (bv. een terrasje-tip),
+//     en levert meteen ook een foto mee (include_images) voor die kaart.
+//
+// VEREISTE environment variables in Netlify:
+//   UITDATABANK_API_KEY  — gratis aan te vragen via publiq.be
+//   TAVILY_API_KEY        — gratis aan te vragen via tavily.com
+// Ontbreekt een key, dan slaat deze functie die bron gewoon over —
+// geen crash, gewoon minder suggesties (de app valt dan client-side
+// terug op de vaste voorbeeldsuggesties).
+//
+// LET OP — eerlijkheid over de UiTdatabank-integratie: ik heb dit
+// gebouwd op basis van de publiek beschikbare documentatie
+// (docs.publiq.be), maar kon de exacte respons niet live testen omdat
+// ik zelf geen API-key heb. Kleine parameter-aanpassingen zijn dus
+// niet uitgesloten zodra jij een echte key hebt en we de eerste echte
+// respons zien — zie de TODO's hieronder.
+// ═══════════════════════════════════════════════════════════════════
+
+// Pas dit aan naar jullie eigen regio als dat niet klopt.
+const HOME_CITY = 'Antwerpen';
+
+const UITDATABANK_KEY = process.env.UITDATABANK_API_KEY;
+const TAVILY_KEY = process.env.TAVILY_API_KEY;
+
+// Prioriteitsgewicht — hoger = eerder als standaardsuggestie getoond.
+// Events wegen bewust zwaarder dan horeca, op uitdrukkelijk verzoek:
+// een evenement is tijdsgebonden en dus "nu of nooit", een terrasje
+// staat er morgen ook nog.
+const WEIGHT = { event: 20, horeca: 5 };
+
+function timeSlotForHour(h) {
+  if (h < 11) return 'ochtend';
+  if (h < 14) return 'middag';
+  if (h < 18) return 'namiddag';
+  return 'avond';
+}
+
+// ── UiTdatabank: regionale evenementen ──
+async function fetchUitdatabankEvents(dateStr, familyFriendly) {
+  if (!UITDATABANK_KEY) return [];
+  try {
+    // TODO bij eerste echte test: de exacte querysyntax (q vs. losse
+    // parameters) bevestigen aan de hand van de echte respons —
+    // zie docs.publiq.be/docs/uitdatabank/search-api voor de meest
+    // actuele parameterlijst. Deze query is gebaseerd op het publieke
+    // "Advanced queries"-patroon (city:, dateRange in q).
+    const q = `city:"${HOME_CITY}" AND availableTo:[${dateStr}T00:00:00Z TO ${dateStr}T23:59:59Z]`;
+    const url = 'https://search.uitdatabank.be/offers/'
+      + '?q=' + encodeURIComponent(q)
+      + '&workflowStatus=APPROVED'
+      + '&limit=15';
+    const res = await fetch(url, {
+      headers: { 'X-Api-Key': UITDATABANK_KEY, 'Accept': 'application/ld+json' }
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const items = (data.member || data['hydra:member'] || []).map(function (ev) {
+      const name = (ev.name && (ev.name.nl || Object.values(ev.name)[0])) || 'Evenement';
+      const desc = (ev.description && (ev.description.nl || Object.values(ev.description)[0])) || '';
+      const startHour = ev.startDate ? new Date(ev.startDate).getHours() : 14;
+      const image = ev.image || (ev.mediaObject && ev.mediaObject[0] && ev.mediaObject[0].contentUrl) || null;
+      const locationName = (ev.location && ev.location.name && (ev.location.name.nl || Object.values(ev.location.name)[0])) || '';
+      return {
+        title: name,
+        sub: 'Online gevonden' + (locationName ? ' · ' + locationName : ''),
+        source: 'web',
+        category: 'event',
+        weight: WEIGHT.event,
+        timeSlot: timeSlotForHour(startHour),
+        time: (ev.startDate ? new Date(ev.startDate) : new Date()).toTimeString().slice(0, 5),
+        photoUrl: image,
+        sourceUrl: ev.url || null,
+        icon: '🎟️'
+      };
+    });
+    // Bij Fam Time: alleen events tonen die niet expliciet 18+/niet-kindvriendelijk zijn.
+    // UiTdatabank heeft geen simpel "kindvriendelijk"-vlag; we filteren voorzichtig op
+    // labels indien aanwezig, en laten anders alles staan (geen valse zekerheid opdringen).
+    return items;
+  } catch (e) {
+    console.error('UiTdatabank fout:', e.message);
+    return [];
+  }
+}
+
+// ── Tavily: aanvullende lokale horeca-suggestie, met foto ──
+async function fetchTavilyHoreca(timeSlot, dayType) {
+  if (!TAVILY_KEY) return [];
+  const queries = {
+    ochtend: 'gezellig ontbijtadresje of koffiebar in ' + HOME_CITY,
+    middag: 'lunchtip of terrasje in ' + HOME_CITY,
+    namiddag: dayType === 'fam_time' ? 'leuke ijssalon of familievriendelijke plek in ' + HOME_CITY : 'gezellig terrasje in ' + HOME_CITY,
+    avond: 'goed restaurant of eetcafé in ' + HOME_CITY
+  };
+  const query = queries[timeSlot];
+  if (!query) return [];
+  try {
+    const res = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + TAVILY_KEY
+      },
+      body: JSON.stringify({
+        query: query,
+        search_depth: 'basic',
+        max_results: 3,
+        include_images: true
+      })
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const images = data.images || [];
+    return (data.results || []).slice(0, 2).map(function (r, i) {
+      return {
+        title: r.title ? r.title.split(/[|\-–]/)[0].trim().slice(0, 40) : 'Plekje in de buurt',
+        sub: 'Online gevonden',
+        source: 'web',
+        category: 'horeca',
+        weight: WEIGHT.horeca,
+        timeSlot: timeSlot,
+        photoUrl: images[i] || null,
+        sourceUrl: r.url || null,
+        icon: '📍'
+      };
+    });
+  } catch (e) {
+    console.error('Tavily fout:', e.message);
+    return [];
+  }
+}
+
+export default async (req) => {
+  const url = new URL(req.url);
+  const dateStr = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
+  const dayType = url.searchParams.get('dayType') || 'me_time';
+
+  const [events, ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca] = await Promise.all([
+    fetchUitdatabankEvents(dateStr, dayType === 'fam_time'),
+    fetchTavilyHoreca('ochtend', dayType),
+    fetchTavilyHoreca('middag', dayType),
+    fetchTavilyHoreca('namiddag', dayType),
+    fetchTavilyHoreca('avond', dayType)
+  ]);
+
+  const horeca = [].concat(ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca);
+  const all = [].concat(events, horeca);
+
+  const byPart = { ochtend: [], middag: [], namiddag: [], avond: [] };
+  all.forEach(function (item) {
+    if (byPart[item.timeSlot]) byPart[item.timeSlot].push(item);
+  });
+  // Events eerst binnen elk dagdeel — hoogste weight bovenaan.
+  Object.keys(byPart).forEach(function (k) {
+    byPart[k].sort(function (a, b) { return b.weight - a.weight; });
+  });
+
+  return new Response(JSON.stringify({ ok: true, date: dateStr, parts: byPart }), {
+    headers: { 'Content-Type': 'application/json' }
+  });
+};
+
+// Standaard bereikbaar op /.netlify/functions/mmd-suggestions
+// (zelfde patroon als ics-proxy.js en send-notifications.js).
