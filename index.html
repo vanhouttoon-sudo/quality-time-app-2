@@ -3416,6 +3416,99 @@ input, select, textarea{
 .re-toggle{display:flex;align-items:center;gap:8px;font-family:var(--cond);font-size:11px;color:var(--ink);cursor:pointer;}
 .re-toggle input{accent-color:var(--terra);width:16px;height:16px;}
 .re-sources{font-family:var(--cond);font-size:8.5px;color:var(--stone2);letter-spacing:.3px;padding:10px 16px 16px;border-top:1px solid var(--sand2);}
+
+/* ═══════════════════════════════════════════════════════════
+   MAKE MY DAY — tegel + flow + resultaat-tijdlijn
+   ═══════════════════════════════════════════════════════════ */
+.mmd-page{background:var(--cream);min-height:100%;position:relative;}
+.mmd-close{position:absolute;top:14px;right:14px;z-index:20;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--brut-ink,#0a0a0a);background:#fff;color:var(--brut-ink,#0a0a0a);font-size:14px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);}
+
+.mmd-step{padding:28px 20px 24px;}
+.mmd-step-eyebrow{font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--terra);margin-bottom:8px;}
+.mmd-step-title{font-family:var(--serif,Georgia,serif);font-weight:900;font-size:24px;color:var(--ocean);line-height:1.15;margin:0 0 22px;}
+.mmd-opt{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:12px;box-shadow:2.5px 2.5px 0 var(--brut-ink,#0a0a0a);padding:16px;margin-bottom:12px;cursor:pointer;transition:transform .1s;}
+.mmd-opt:active{transform:translate(1px,1px);box-shadow:1.5px 1.5px 0 var(--brut-ink,#0a0a0a);}
+.mmd-opt-icon{font-size:26px;flex-shrink:0;}
+.mmd-opt-title{font-family:var(--cond);font-size:15px;font-weight:700;color:var(--ocean);}
+.mmd-opt-sub{font-family:var(--body,var(--cond));font-size:11.5px;color:var(--stone,#a08060);margin-top:2px;}
+
+.mmd-hero{background:var(--ocean);color:var(--sand);padding:20px 20px 24px;position:relative;overflow:hidden;}
+.mmd-hero-badge{display:inline-block;font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--gold,#d4a030);color:var(--ocean);padding:4px 10px;border-radius:20px;margin-bottom:10px;}
+.mmd-hero-title{font-family:var(--serif,Georgia,serif);font-weight:900;font-size:28px;margin:0 0 4px;letter-spacing:.5px;text-transform:uppercase;text-shadow:2px 2px 0 rgba(192,88,24,.55),-1px -1px 0 rgba(255,255,255,.06);}
+.mmd-hero-date{font-family:var(--cond);font-size:12px;color:rgba(245,237,224,.75);text-transform:capitalize;}
+.mmd-hero-quote{font-family:var(--serif,Georgia,serif);font-style:italic;font-size:13px;color:rgba(245,237,224,.85);margin-top:12px;line-height:1.4;}
+
+.mmd-part{margin:16px 16px 0;}
+.mmd-part-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:6px 10px;border-radius:8px;border:1.5px solid var(--brut-ink,#0a0a0a);}
+.mmd-part-head .ic{font-size:16px;}
+.mmd-part-head .lbl{font-family:var(--cond);font-size:12px;font-weight:700;letter-spacing:.5px;}
+.mmd-part-head .sub{font-family:var(--body,var(--cond));font-size:9.5px;color:var(--stone,#a08060);margin-left:auto;}
+.mmd-part-ochtend .mmd-part-head{background:var(--yellow,#fff7cf);}
+.mmd-part-middag  .mmd-part-head{background:var(--cyan,#e2fbfb);}
+.mmd-part-namiddag .mmd-part-head{background:var(--pink,#ffe8f5);}
+.mmd-part-avond   .mmd-part-head{background:#dfe4f2;}
+
+.mmd-tl{position:relative;padding-left:18px;border-left:2px solid var(--sand3,#d8c8b0);margin-left:8px;}
+.mmd-item{position:relative;margin-bottom:12px;}
+.mmd-item::before{content:'';position:absolute;left:-24px;top:6px;width:10px;height:10px;border-radius:50%;background:#fff;border:2px solid var(--brut-ink,#0a0a0a);}
+.mmd-item-card{background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:10px;box-shadow:2.5px 2.5px 0 var(--brut-ink,#0a0a0a);padding:10px;display:flex;gap:10px;}
+.mmd-item-time{font-family:var(--cond);font-size:11px;font-weight:700;color:var(--ocean);flex-shrink:0;width:38px;padding-top:2px;}
+.mmd-item-body{flex:1;min-width:0;}
+.mmd-item-top{display:flex;align-items:flex-start;gap:6px;}
+.mmd-item-ic{font-size:15px;flex-shrink:0;}
+.mmd-item-title{font-family:var(--cond);font-size:12.5px;font-weight:700;color:var(--ocean);line-height:1.3;}
+.mmd-item-sub{font-family:var(--body,var(--cond));font-size:10.5px;color:var(--stone,#a08060);margin-top:2px;line-height:1.4;}
+.mmd-item-photo{width:44px;height:44px;border-radius:10px;border:2px solid var(--brut-ink,#0a0a0a);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--sand2,#ece0d0);}
+.mmd-badge{display:inline-block;font-family:var(--cond);font-size:7.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:6px;margin-top:5px;}
+.mmd-badge-qt{background:#e9f1e4;color:#3d1a0a;}
+.mmd-badge-act{background:#f0e0f5;color:#5a2a5a;}
+.mmd-badge-web{background:#e2fbfb;color:#0a5a5a;}
+.mmd-badge-fixed{background:var(--sand2,#ece0d0);color:var(--stone,#a08060);}
+.mmd-badge-event{background:var(--gold,#d4a030);color:#3d1a0a;}
+.mmd-item-actions{display:flex;gap:6px;margin-top:8px;}
+.mmd-act-btn{font-family:var(--cond);font-size:8.5px;font-weight:700;letter-spacing:.5px;padding:5px 8px;border-radius:7px;border:1.5px solid var(--brut-ink,#0a0a0a);background:#fff;cursor:pointer;}
+.mmd-act-btn.keep{background:var(--ocean);color:var(--sand);}
+.mmd-item-fixed-tag{font-family:var(--cond);font-size:8.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--stone,#a08060);margin-top:6px;}
+
+.mmd-free{background:var(--sand,#f5ede0);border:1.5px dashed var(--sand3,#d8c8b0);border-radius:10px;padding:12px;text-align:center;}
+.mmd-free .fi{font-size:18px;}
+.mmd-free .ft{font-family:var(--cond);font-size:11.5px;font-weight:700;color:var(--ocean);margin-top:4px;}
+.mmd-free .fs{font-family:var(--body,var(--cond));font-size:10px;color:var(--stone,#a08060);margin-top:2px;}
+
+.mmd-footer{padding:20px 20px 28px;}
+.mmd-btn-primary{width:100%;background:var(--ocean);color:var(--sand);border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:12px;padding:15px;font-family:var(--cond);font-size:13px;font-weight:700;letter-spacing:.5px;cursor:pointer;box-shadow:3px 3px 0 var(--brut-ink,#0a0a0a);margin-bottom:10px;}
+.mmd-btn-row{display:flex;gap:10px;}
+.mmd-btn-secondary{flex:1;background:#fff;color:var(--ocean);border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:10px;padding:11px;font-family:var(--cond);font-size:10px;font-weight:700;letter-spacing:.5px;cursor:pointer;}
+.mmd-approved-banner{margin:14px 16px 0;background:#e9f1e4;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:10px;padding:10px 12px;font-family:var(--body,var(--cond));font-size:11px;color:#3d1a0a;display:flex;align-items:center;gap:8px;}
+
+/* home-tegel sparkle-accent */
+.mmd-tile-spark{position:absolute;top:6px;right:8px;font-size:13px;opacity:.7;animation:mmdSparkle 2.4s ease-in-out infinite;}
+@keyframes mmdSparkle{0%,100%{opacity:.35;transform:scale(.9) rotate(0deg);}50%{opacity:.9;transform:scale(1.15) rotate(12deg);}}
+
+/* artwork-sticker i.p.v. kale emoji-foto */
+.mmd-art{
+  width:52px;height:52px;flex-shrink:0;border-radius:12px;border:2px solid var(--brut-ink,#0a0a0a);
+  display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;
+  box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);
+}
+.mmd-art::before{
+  content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%) rotate(-4deg);
+  width:22px;height:9px;background:rgba(255,255,255,.55);border:1px solid rgba(10,10,10,.15);
+  border-radius:1px;
+}
+.mmd-art.tilt-l{transform:rotate(-3deg);}
+.mmd-art.tilt-r{transform:rotate(2.5deg);}
+
+/* rijkere hero-artwork op resultaatscherm */
+.mmd-hero{padding-bottom:40px;background:
+    repeating-linear-gradient(115deg, rgba(255,255,255,.025) 0 2px, transparent 2px 14px),
+    radial-gradient(circle at 85% 8%, rgba(212,160,48,.16) 0%, transparent 45%),
+    radial-gradient(circle at 8% 85%, rgba(255,255,255,.05) 0%, transparent 40%),
+    var(--ocean);
+}
+.mmd-hero-deco{position:absolute;right:14px;top:50px;font-size:34px;opacity:.5;transform:rotate(8deg);}
+.mmd-hero-skyline{position:absolute;left:0;right:0;bottom:10px;height:46px;opacity:.9;}
+.mmd-hero-torn{position:absolute;left:0;right:0;bottom:-1px;height:14px;background:var(--cream);clip-path:polygon(0 100%,3% 30%,6% 100%,9% 40%,12% 100%,15% 25%,18% 100%,21% 45%,24% 100%,27% 30%,30% 100%,33% 40%,36% 100%,39% 25%,42% 100%,45% 45%,48% 100%,51% 30%,54% 100%,57% 40%,60% 100%,63% 25%,66% 100%,69% 45%,72% 100%,75% 30%,78% 100%,81% 40%,84% 100%,87% 25%,90% 100%,93% 45%,96% 100%,100% 35%,100% 100%,0 100%);}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -3582,13 +3675,24 @@ input, select, textarea{
         <img id="ohMealImg" src="" alt="" style="display:none" onerror="this.style.display='none'">
       </div>
 
-      <!-- Zanglessen card (volle breedte, Podcast/Muziek-tegel verwijderd) -->
-      <div class="oh-card" id="ohCardZang" onclick="openZangPage()" style="cursor:pointer">
-        <div class="oh-card-icon" style="background:#f0e0f5;font-size:22px">🎤</div>
-        <div class="oh-card-body">
-          <div class="oh-card-label">Zanglessen</div>
-          <div class="oh-card-title" id="ohZangTitle" style="font-size:12px">Les van de dag</div>
-          <div class="oh-card-sub" id="ohZangSub" style="font-size:10px"></div>
+      <!-- Zanglessen + Make my Day: half-breedte tegels naast elkaar -->
+      <div class="oh-2col">
+        <div class="oh-card oh-card-sm" id="ohCardZang" onclick="openZangPage()" style="cursor:pointer">
+          <div class="oh-card-icon" style="background:#f0e0f5;font-size:20px">🎤</div>
+          <div class="oh-card-body">
+            <div class="oh-card-label">Zanglessen</div>
+            <div class="oh-card-title" id="ohZangTitle" style="font-size:12px">Les van de dag</div>
+            <div class="oh-card-sub" id="ohZangSub" style="font-size:10px"></div>
+          </div>
+        </div>
+        <div class="oh-card oh-card-sm mmd-tile" id="ohCardMMD" onclick="openMakeMyDay()" style="cursor:pointer;background:var(--ocean);border-color:var(--brut-ink,#0a0a0a);position:relative;overflow:hidden">
+          <div class="mmd-tile-spark">✨</div>
+          <div class="oh-card-icon" style="background:var(--gold,#d4a030);font-size:18px">☀️</div>
+          <div class="oh-card-body">
+            <div class="oh-card-label" style="color:rgba(245,237,224,.6)">Vandaag</div>
+            <div class="oh-card-title" id="ohMMDTitle" style="font-size:13px;color:var(--sand,#f5ede0)">Make my day</div>
+            <div class="oh-card-sub" id="ohMMDSub" style="font-size:9.5px;color:rgba(245,237,224,.55)">Tik om te starten</div>
+          </div>
         </div>
       </div>
 
@@ -4503,6 +4607,14 @@ input, select, textarea{
     <button onclick="zangMetingStopExercise();zangReleaseMic();switchTab('today', document.querySelector('.tab[onclick*=\'today\']'))" aria-label="Sluiten" style="width:32px;height:32px;border-radius:8px;border:1.5px solid var(--brut-ink,#0a0a0a);background:#fff;color:var(--brut-ink,#0a0a0a);font-size:16px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
   </div>
   <div id="zangSheetZanglesContent" style="padding:6px 14px 24px"></div>
+</div>
+
+<!-- ══ MAKE MY DAY ══ -->
+<div class="page fade-in" id="page-mmd">
+  <div class="mmd-page">
+    <button class="mmd-close" onclick="switchTab('today', document.querySelector('.tab[onclick*=\'today\']'))" aria-label="Sluiten">✕</button>
+    <div id="mmdContent"></div>
+  </div>
 </div>
 
 <!-- ══ FOTO BIJSNIJDEN ══ -->
@@ -7364,34 +7476,6 @@ function fetchDagelijksekostPhoto(url, name, callback) {
 // relevante zoekfoto (op basis van de receptnaam), en pas als allerlaatste
 // redmiddel de generieke Foodish-foto
 // ─── Pollinations-prompt opgebouwd uit de vastgelegde "Dagelijkse Kost"-
-// stijlspecificatie (sfeer, licht, compositie, rekwisieten) — los van het
-// exacte recept, enkel de algemene look-and-feel wordt hier vastgelegd.
-function hashSeed(str) {
-  var h = 0;
-  for (var i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
-  return Math.abs(h) % 999999;
-}
-var POLLINATIONS_STYLE_PROMPT = 'Shot at a 45 degree three-quarter angle, slightly above the dish, shallow depth of field with a soft blurred background. '
-  + 'Soft warm natural window light, diffused side light with gentle shadows, golden hour warmth, cozy inviting mood. '
-  + 'Warm amber and honey color grading, muted terracotta and cream tones, slightly desaturated background with warm-boosted midtones on the food. '
-  + 'Rustic wooden table surface with visible grain, a soft crumpled cloth napkin nearby (checkered red-and-white or simple stripes). '
-  + 'Matte earthy stoneware or ceramic dish in cream, grey or soft terracotta tones, never glossy white porcelain. '
-  + 'Generous homely portion, simple fresh herb garnish, optional wisp of steam if the dish is hot. '
-  + 'A few scattered raw ingredients loosely placed nearby (fresh herb sprig, halved cherry tomato, garlic clove). '
-  + 'Style: dagelijkse kost, warm, huiselijk, lekker, vlaams, antwerps, stimulerend, gezellig, eerlijk, onbewerkt. '
-  + 'No people, no faces, no hands, no body parts. No sushi or Asian plating unless the dish itself is Asian. '
-  + 'No fine-dining or molecular gastronomy plating. No neon or cold color grading. No glossy studio-perfect commercial look. No text in the image.';
-
-function buildPollinationsRecipeUrl(name, ingredients) {
-  var mainIngredients = (ingredients || []).slice(0, 4).join(', ');
-  var prompt = 'Professional food photography of ' + name
-    + (mainIngredients ? ' with ' + mainIngredients : '')
-    + '. ' + POLLINATIONS_STYLE_PROMPT;
-  var seed = hashSeed(name);
-  return 'https://image.pollinations.ai/prompt/' + encodeURIComponent(prompt)
-    + '?width=800&height=600&model=flux&nologo=true&seed=' + seed;
-}
-
 function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
   try {
     if(!imgEl) return;
@@ -7409,7 +7493,7 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
       imgEl.style.display = 'block';
       if(patternEl) patternEl.style.display = 'none';
       if(loadingEl) loadingEl.style.display = 'none';
-      if(cached.indexOf('pollinations') !== -1 || cached.indexOf('data:image') === 0) addAiWatermark(imgEl);
+      if(cached.indexOf('data:image') === 0) addAiWatermark(imgEl);
       return;
     }
 
@@ -7426,38 +7510,9 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
       } catch(e){}
     }
 
-    function usePollinationsFallback() {
-      var aiUrl = buildPollinationsRecipeUrl(name, ingredients);
-      var testImg = new Image();
-      var settled = false;
-      var timeoutId = setTimeout(function(){
-        if(settled) return;
-        settled = true;
-        showUltimateFallback();
-      }, 15000);
-
-      testImg.onload = function(){
-        if(settled) return;
-        settled = true;
-        clearTimeout(timeoutId);
-        try { localStorage.setItem(cacheKey, aiUrl); } catch(e){}
-        imgEl.src = aiUrl;
-        imgEl.style.display = 'block';
-        if(patternEl) patternEl.style.display = 'none';
-        if(loadingEl) loadingEl.style.display = 'none';
-        addAiWatermark(imgEl);
-      };
-      testImg.onerror = function(){
-        if(settled) return;
-        settled = true;
-        clearTimeout(timeoutId);
-        showUltimateFallback();
-      };
-      testImg.src = aiUrl;
-    }
-
-    // Stap 1: hoge-kwaliteit AI-foto via OpenAI (zelfde soort model als ChatGPT).
-    // Lukt dit niet (geen sleutel, netwerkfout, ...), dan Pollinations (gratis).
+    // Enkel nog OpenAI (dezelfde motor als ChatGPT). Lukt dit niet (geen
+    // tegoed, netwerkfout, ...), dan meteen de koelkast-noodfoto — geen
+    // Pollinations-tussenstap meer.
     var ingQs = (ingredients || []).slice(0, 5).join(', ');
     fetch('/.netlify/functions/generate-recipe-image-openai?name=' + encodeURIComponent(name) + '&ingredients=' + encodeURIComponent(ingQs))
       .then(function(r){ return r.json(); })
@@ -7469,10 +7524,10 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
           if(patternEl) patternEl.style.display = 'none';
           if(loadingEl) loadingEl.style.display = 'none';
         } else {
-          usePollinationsFallback();
+          showUltimateFallback();
         }
       })
-      .catch(function(){ usePollinationsFallback(); });
+      .catch(function(){ showUltimateFallback(); });
   } catch(e){}
 }
 
@@ -12154,6 +12209,7 @@ function renderTodayPage() {
   const isToday = viewDate.getTime() === today.getTime();
   const key = dk(viewDate);
   renderWeatherCard(key, 'todayWeatherCard');
+  mmdUpdateHomeTile();
   const dayType = getDayType(viewDate);
   const ph = getPhIdx(viewDate);
   const wk = getWeekNum(viewDate);
@@ -16209,7 +16265,8 @@ var PAGE_TITLES = {
   progress: 'Progressie',
   shop:     'Varia',
   settings: 'Instellingen',
-  zang:     'Zanglessen'
+  zang:     'Zanglessen',
+  mmd:      'Make my Day'
 };
 
 function updateGlobalHeader(page) {
@@ -16261,6 +16318,518 @@ function switchTab(page,btn) {
   else if(page==='shop') { shopDate=new Date(); variaBack(); }
   else if(page==='settings') renderSettingsPage();
   else if(page==='zang') renderZangPage();
+  else if(page==='mmd') renderMakeMyDay();
+}
+
+function openMakeMyDay() {
+  switchTab('mmd', null);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MAKE MY DAY — flow + resultaat-tijdlijn (fase 1: UI/UX met neplogica)
+// De echte generatie-motor (agenda-koppeling, weer, web search, Excel-
+// bibliotheek) komt in een latere fase; dit bouwt enkel het scherm en
+// de interactie (kiezen, houden/vervangen/overslaan, bevestigen, delen).
+// ═══════════════════════════════════════════════════════════════════
+var mmdState = { step:1, timeScope:null, dayType:null, timeline:null, approved:false };
+
+var MMD_TIME_LABELS = { morning:'Voormiddag', afternoon:'Namiddag', full_day:'Hele dag' };
+var MMD_TYPE_LABELS = { me_time:'Me Time', fam_time:'Fam Time', surprise:'Verras me' };
+var MMD_QUOTES = [
+  'Je hebt vandaag vrij. Ik heb er iets leuks van gemaakt.',
+  'Ik heb bewust wat ruimte gelaten.',
+  'Dit past goed bij wat je de laatste tijd leuk vindt.',
+  'Geen planning nodig voor dit blok. Gewoon genieten.',
+  'De perfecte balans tussen doen en genieten.'
+];
+
+// Neppools per dagdeel — elk item heeft een paar wisselende varianten,
+// zodat "Andere suggestie" iets te doorlopen heeft. Dit blijft de
+// terugval-laag wanneer er geen internet/keys zijn; échte vaste items
+// (agenda/training/zangles) en échte webresultaten (UiTdatabank/Tavily)
+// krijgen voorrang zodra ze beschikbaar zijn — zie mmdBuildFixedItems()
+// en mmdFetchWebSuggestions() verderop.
+function mmdPool(dayType) {
+  var fam = (dayType === 'fam_time') || (dayType === 'surprise' && Math.random() > 0.5);
+  return {
+    ochtend: {
+      label:'OCHTEND', icon:'☀️', sub:'Rustig starten',
+      items: fam ? [
+        [ {time:'08:30',icon:'🥐',title:'Ontbijt samen',sub:'Rustig beginnen, geen haast',photo:'🥐',source:'qt'},
+          {time:'08:30',icon:'🥞',title:'Pannenkoeken bakken',sub:'Samen in de keuken',photo:'🥞',source:'act'},
+          {time:'08:30',icon:'☕',title:'Ontbijt op het terras',sub:'Als het weer het toelaat',photo:'☕',source:'qt'} ],
+        [ {time:'10:00',icon:'🛝',title:'Speeltuin',sub:'Park Den Brandt',photo:'🛝',source:'act'},
+          {time:'10:00',icon:'🚴',title:'Fietstochtje',sub:'Rustig rondje in de buurt',photo:'🚴',source:'act'},
+          {time:'10:00',icon:'🦆',title:'Eendjes voeren',sub:'Stadspark',photo:'🦆',source:'web'} ]
+      ] : [
+        [ {time:'08:30',icon:'☕',title:'Koffie & ontbijt',sub:'Rustig beginnen, geen haast',photo:'☕',source:'qt'},
+          {time:'08:30',icon:'📰',title:'Ontbijt met de krant',sub:'Even niets moeten',photo:'📰',source:'qt'},
+          {time:'08:30',icon:'🥐',title:'Croissant bij de bakker',sub:'Vers gehaald',photo:'🥐',source:'web'} ],
+        [ {time:'10:00',icon:'🚶',title:'Wandeling',sub:'Park Den Brandt',photo:'🌳',source:'act'},
+          {time:'10:00',icon:'🧘',title:'Rustige ochtendyoga',sub:'20 minuten voor jezelf',photo:'🧘',source:'act'},
+          {time:'10:00',icon:'📚',title:'Lezen met koffie',sub:'Geen schema, gewoon lezen',photo:'📚',source:'qt'} ]
+      ]
+    },
+    middag: {
+      label:'MIDDAG', icon:'🍽️', sub:'Ontdekken & genieten',
+      items: fam ? [
+        [ {time:'12:00',icon:'🧺',title:'Picknick in het park',sub:'Online gevonden · als het droog blijft',photo:'🧺',source:'web'},
+          {time:'12:00',icon:'🍕',title:'Pizza in de buurt',sub:'Online gevonden · familievriendelijk',photo:'🍕',source:'web'},
+          {time:'12:00',icon:'🍝',title:'Lunch thuis',sub:'Uit je favoriete recepten',photo:'🍝',source:'qt'} ],
+        [ {time:'13:30',icon:'🛒',title:'Boodschappen samen',sub:'Met de kinderen erbij',photo:'🛒',source:'qt'},
+          {time:'13:30',icon:'🎨',title:'Knutselen',sub:'Regenboog-namiddag',photo:'🎨',source:'act'},
+          {time:'13:30',icon:'🍦',title:'IJsje halen',sub:'Bij de ijssalon om de hoek',photo:'🍦',source:'web'} ]
+      ] : [
+        [ {time:'11:30',icon:'☕',title:'Koffie op een terrasje',sub:'Online gevonden · in de buurt',photo:'☕',source:'web'},
+          {time:'11:30',icon:'☕',title:'Koffie in het park',sub:'Rustig moment onderweg',photo:'☕',source:'qt'},
+          {time:'11:30',icon:'🥐',title:'Brunch onderweg',sub:'Online gevonden',photo:'🥐',source:'web'} ],
+        [ {time:'13:00',icon:'🥗',title:'Lunch',sub:'Gezonde bowl',photo:'🥗',source:'qt'},
+          {time:'13:00',icon:'🍜',title:'Lunch bij een lokale zaak',sub:'Online gevonden',photo:'🍜',source:'web'},
+          {time:'13:00',icon:'🥪',title:'Picknicklunch',sub:'Zelf meegebracht',photo:'🥪',source:'qt'} ]
+      ]
+    },
+    namiddag: {
+      label:'NAMIDDAG', icon:'🌤️', sub:'Jouw moment',
+      items: [
+        [ {time:'14:30',icon:'📖',title:'Vrije tijd',sub:'Geen verplichtingen. Dit blok is van jou.',free:true} ],
+        [ {time:'16:00',icon:'🎤',title:'Zangles (20 min)',sub:'Staat al in je agenda',fixed:true} ]
+      ]
+    },
+    avond: {
+      label:'AVOND', icon:'🌙', sub:'Lekker afsluiten',
+      items: fam ? [
+        [ {time:'18:30',icon:'🍽️',title:'Familie-avondeten',sub:'Uit je favoriete recepten',photo:'🍽️',source:'qt'},
+          {time:'18:30',icon:'🍕',title:'Zelf pizza maken',sub:'Samen met de kinderen',photo:'🍕',source:'act'} ],
+        [ {time:'20:00',icon:'🎬',title:'Samen een film kijken',sub:'Familiefilm-avond',photo:'🎬',source:'act'},
+          {time:'20:00',icon:'🎲',title:'Bordspelavond',sub:'Ontspannen afsluiten',photo:'🎲',source:'qt'} ]
+      ] : [
+        [ {time:'18:30',icon:'🍽️',title:'Avondeten',sub:'Uit je favoriete recepten',photo:'🍝',source:'qt'},
+          {time:'18:30',icon:'🍷',title:'Avondeten met wijntje',sub:'Rustig tafelen',photo:'🍷',source:'qt'} ],
+        [ {time:'20:00',icon:'🎬',title:'Filmavond',sub:'Ontspannen afsluiten',photo:'🎬',source:'act'},
+          {time:'20:00',icon:'🎧',title:'Favoriet album luisteren',sub:'Rustig, met het licht laag',photo:'🎧',source:'qt'} ]
+      ]
+    }
+  };
+}
+
+function mmdPartsForScope(scope) {
+  if(scope === 'morning') return ['ochtend','middag'];
+  if(scope === 'afternoon') return ['namiddag','avond'];
+  return ['ochtend','middag','namiddag','avond'];
+}
+
+function mmdDefaultWeight(source) {
+  return { qt: 10, act: 8, web: 5, fixed: 100 }[source] || 5;
+}
+
+// ── Laag 1: écht vaste items — agenda-afspraken, training, zangles ──
+// Deze staan altijd bovenaan hun dagdeel en zijn nooit vervangbaar,
+// exact zoals gevraagd: vaste afspraken hebben de hoogste prioriteit.
+function mmdBuildFixedItems(dateObj) {
+  var key = dk(dateObj);
+  var fixed = { ochtend: [], middag: [], namiddag: [], avond: [] };
+
+  // Echte agenda-afspraken (ICS-kalender, als die gekoppeld is)
+  try {
+    var agenda = getAgendaForDate(key) || [];
+    agenda.forEach(function(ev){
+      if(ev.allDay) return; // geen uur om in te delen, laten we hier buiten
+      var hh = parseInt((ev.start||'09:00').split(':')[0], 10);
+      var slot = timeSlotForHour(hh);
+      fixed[slot].push({
+        time: ev.start || '', icon: '📌', title: ev.title || 'Afspraak',
+        sub: ev.location || 'Staat al in je agenda', fixed: true, source:'fixed'
+      });
+    });
+  } catch(e) {}
+
+  // Echte zangles (indien er vandaag een les gepland staat)
+  try {
+    var zp = (typeof zangPlanForDate === 'function') ? zangPlanForDate(key) : null;
+    if(zp) {
+      fixed.namiddag.push({
+        time: '16:00', icon: '🎤', title: 'Zangles',
+        sub: (zp.focus || '') + (zp.song ? ' — ' + zp.song : ''),
+        fixed: true, source:'fixed'
+      });
+    }
+  } catch(e) {}
+
+  // Training (indien vandaag geen rustdag is)
+  try {
+    var dtype = getDayType(dateObj);
+    if(dtype !== 'rest') {
+      var trainLabel = dtype === 'run-short' ? '🏃 Loopdag — 8km' : dtype === 'run-long' ? '🏃 Lange duurloop — 12km' : '💪 Trainingsdag';
+      fixed.ochtend.push({
+        time: '07:30', icon: dtype.indexOf('run') === 0 ? '🏃' : '💪', title: trainLabel.replace(/^[^\s]+\s/,''),
+        sub: 'Staat al in je trainingsschema', fixed: true, source:'fixed'
+      });
+    }
+  } catch(e) {}
+
+  return fixed;
+}
+
+function timeSlotForHour(h) {
+  if(h < 11) return 'ochtend';
+  if(h < 14) return 'middag';
+  if(h < 18) return 'namiddag';
+  return 'avond';
+}
+
+// ── Laag 5: échte regionale suggesties ophalen (UiTdatabank + Tavily) ──
+// Faalt dit (geen internet, functie nog niet gedeployed, geen API-keys
+// ingesteld), dan geeft dit gewoon null terug en valt de app stil terug
+// op de vaste voorbeeldsuggesties — geen foutmelding, geen kapotte flow.
+async function mmdFetchWebSuggestions(dateStr, dayType) {
+  try {
+    var ctrl = new AbortController();
+    var timeout = setTimeout(function(){ ctrl.abort(); }, 6000);
+    var res = await fetch('/.netlify/functions/mmd-suggestions?date=' + encodeURIComponent(dateStr) + '&dayType=' + encodeURIComponent(dayType), { signal: ctrl.signal });
+    clearTimeout(timeout);
+    if(!res.ok) return null;
+    var data = await res.json();
+    return (data && data.parts) ? data.parts : null;
+  } catch(e) {
+    return null;
+  }
+}
+
+function mmdGenerate(scope, dayType, dateObj, webParts) {
+  var pool = mmdPool(dayType);
+  var partKeys = mmdPartsForScope(scope);
+  var fixedByPart = mmdBuildFixedItems(dateObj || new Date());
+
+  var parts = partKeys.map(function(pk){
+    var def = pool[pk];
+
+    // 1) Nepsuggesties → candidates-lijst per tijdslot, met gewicht.
+    var mockItems = def.items.map(function(candidates){
+      var withWeight = candidates.map(function(c){
+        var copy = Object.assign({}, c);
+        copy.weight = copy.weight || mmdDefaultWeight(copy.source);
+        return copy;
+      });
+      return { candidates: withWeight, time: withWeight[0].time };
+    });
+
+    // 2) Echte webresultaten (UiTdatabank/Tavily) voor dit dagdeel, indien opgehaald —
+    //    krijgen voorrang bóven de nepsuggesties omdat ze een hoger gewicht hebben
+    //    (events: 20, horeca: 5) en als extra candidates vooraan komen te staan.
+    var webItems = (webParts && webParts[pk]) ? webParts[pk] : [];
+    if(webItems.length && mockItems.length) {
+      // Verdeel de gevonden webitems over de bestaande tijdslots van dit dagdeel.
+      webItems.forEach(function(w, i){
+        var slotIdx = i % mockItems.length;
+        var webCandidate = {
+          time: w.time || mockItems[slotIdx].time, icon: w.icon || '📍', title: w.title,
+          sub: w.sub || 'Online gevonden', photo: null, photoUrl: w.photoUrl || null,
+          source: 'web', category: w.category, weight: w.weight || mmdDefaultWeight('web'),
+          sourceUrl: w.sourceUrl || null
+        };
+        mockItems[slotIdx].candidates.unshift(webCandidate);
+      });
+    }
+
+    // 3) Sorteer elke candidates-lijst op gewicht — hoogst gewogen (events!) eerst,
+    //    dat wordt dus automatisch de standaard-suggestie voor dat blok.
+    var items = mockItems.map(function(m){
+      var sorted = m.candidates.slice().sort(function(a,b){ return (b.weight||0) - (a.weight||0); });
+      var base = Object.assign({}, sorted[0]);
+      base.candidates = sorted;
+      base.idx = 0;
+      base.skipped = false;
+      return base;
+    });
+
+    // 4) Echte vaste items (agenda/training/zangles) helemaal vooraan, altijd zichtbaar.
+    var allItems = (fixedByPart[pk] || []).concat(items);
+
+    return { key: pk, label: def.label, icon: def.icon, sub: def.sub, items: allItems };
+  });
+  return { parts: parts };
+}
+
+function mmdTodayKey() {
+  var d = new Date();
+  var y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+  return 'wf_mmd_' + y + '-' + m + '-' + day;
+}
+
+function renderMakeMyDay() {
+  var raw = null;
+  try { raw = localStorage.getItem(mmdTodayKey()); } catch(e) {}
+  if(raw) {
+    try {
+      var saved = JSON.parse(raw);
+      mmdState = { step:3, timeScope:saved.timeScope, dayType:saved.dayType, timeline:saved.timeline, approved:true };
+      mmdRenderResult();
+      return;
+    } catch(e) {}
+  }
+  mmdState = { step:1, timeScope:null, dayType:null, timeline:null, approved:false };
+  mmdRenderStep1();
+}
+
+function mmdRenderStep1() {
+  var html = ''
+    + '<div class="mmd-step">'
+    +   '<div class="mmd-step-eyebrow">Make my Day ✨</div>'
+    +   '<div class="mmd-step-title">Hoeveel tijd heb je?</div>'
+    +   mmdOptRow('mmdSelectTime', 'morning', '🌅', 'Voormiddag', '08:00 – 13:00')
+    +   mmdOptRow('mmdSelectTime', 'afternoon', '🌤️', 'Namiddag', '13:00 – 18:00')
+    +   mmdOptRow('mmdSelectTime', 'full_day', '☀️', 'Hele dag', '08:00 – 22:00')
+    + '</div>';
+  document.getElementById('mmdContent').innerHTML = html;
+}
+
+function mmdOptRow(fn, id, icon, title, sub) {
+  return '<div class="mmd-opt" onclick="'+fn+'(\''+id+'\')">'
+    + '<div class="mmd-opt-icon">'+icon+'</div>'
+    + '<div><div class="mmd-opt-title">'+title+'</div><div class="mmd-opt-sub">'+sub+'</div></div>'
+    + '</div>';
+}
+
+function mmdSelectTime(id) {
+  mmdState.timeScope = id;
+  mmdRenderStep2();
+}
+
+function mmdRenderStep2() {
+  var html = ''
+    + '<div class="mmd-step">'
+    +   '<div class="mmd-step-eyebrow">Make my Day ✨</div>'
+    +   '<div class="mmd-step-title">Wat voor dag wil je?</div>'
+    +   mmdOptRow('mmdSelectType', 'me_time', '🧘', 'Me Time', 'Een dag of dagdeel voor mezelf')
+    +   mmdOptRow('mmdSelectType', 'fam_time', '👨‍👩‍👧‍👦', 'Fam Time', 'Met gezin en kinderen')
+    +   mmdOptRow('mmdSelectType', 'surprise', '🎲', 'Verras me', 'Laat QT zelf een leuke mix maken')
+    + '</div>';
+  document.getElementById('mmdContent').innerHTML = html;
+}
+
+async function mmdSelectType(id) {
+  mmdState.dayType = id;
+  mmdState.approved = false;
+  mmdRenderLoading();
+  var today = new Date();
+  var webParts = await mmdFetchWebSuggestions(dk(today), id);
+  mmdState.timeline = mmdGenerate(mmdState.timeScope, mmdState.dayType, today, webParts);
+  mmdRenderResult();
+}
+
+// Eigen, simpel getekend skyline-silhouet (geen foto, dus geen auteursrecht-risico) —
+// geeft de hero wat stoerdere, urban/graffiti-sfeer i.p.v. een vlak effen vlak.
+function mmdSkylineSvg() {
+  return '<svg class="mmd-hero-skyline" viewBox="0 0 400 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+    + '<g fill="rgba(10,10,10,.55)">'
+    +   '<rect x="0" y="30" width="26" height="30"/>'
+    +   '<rect x="24" y="18" width="16" height="42"/>'
+    +   '<rect x="46" y="34" width="20" height="26"/>'
+    +   '<polygon points="90,10 96,10 96,44 116,44 116,50 78,50 78,44 90,44"/>' /* kraan */
+    +   '<rect x="92" y="6" width="3" height="4"/>'
+    +   '<rect x="130" y="22" width="24" height="38"/>'
+    +   '<polygon points="142,4 148,22 136,22"/>' /* torenspits */
+    +   '<rect x="160" y="36" width="18" height="24"/>'
+    +   '<rect x="182" y="14" width="20" height="46"/>'
+    +   '<rect x="206" y="28" width="26" height="32"/>'
+    +   '<polygon points="250,12 256,12 256,42 272,42 272,48 238,48 238,42 250,42"/>' /* tweede kraan */
+    +   '<rect x="284" y="20" width="22" height="40"/>'
+    +   '<rect x="310" y="32" width="18" height="28"/>'
+    +   '<rect x="332" y="16" width="24" height="44"/>'
+    +   '<rect x="360" y="30" width="30" height="30"/>'
+    + '</g>'
+    + '</svg>';
+}
+
+function mmdArtBg(i) {
+  var palette = ['#fff7cf', '#e2fbfb', '#ffe8f5', '#e9f1e4', '#f0e0f5'];
+  return palette[i % palette.length];
+}
+
+function mmdArtHtml(item, pIdx, iIdx) {
+  var tilt = (iIdx % 2 === 0) ? 'tilt-l' : 'tilt-r';
+  var bg = mmdArtBg(pIdx + iIdx);
+  if(item.photoUrl) {
+    // Echte foto (van het evenement of de gevonden plek via UiTdatabank/Tavily).
+    // onerror: als de afbeelding niet laadt, val terug op de illustratieve sticker.
+    var fallbackIcon = item.icon || '📍';
+    return '<div class="mmd-art ' + tilt + '" style="background:' + bg + ';padding:0;overflow:hidden">'
+      + '<img src="' + item.photoUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:9px" '
+      + 'onerror="this.parentElement.style.padding=\'\';this.parentElement.style.overflow=\'\';this.outerHTML=\'' + fallbackIcon + '\'">'
+      + '</div>';
+  }
+  if(item.photo) {
+    return '<div class="mmd-art ' + tilt + '" style="background:' + bg + '">' + item.photo + '</div>';
+  }
+  return '';
+}
+
+function mmdItemBadge(item) {
+  if(item.source === 'fixed') return '<span class="mmd-badge mmd-badge-fixed">Vast</span>';
+  if(item.category === 'event') return '<span class="mmd-badge mmd-badge-event">🎟️ Evenement</span>';
+  if(item.category === 'horeca') return '<span class="mmd-badge mmd-badge-web">Online gevonden</span>';
+  if(item.source === 'act') return '<span class="mmd-badge mmd-badge-act">Activiteit</span>';
+  if(item.source === 'web') return '<span class="mmd-badge mmd-badge-web">Online gevonden</span>';
+  if(item.source === 'qt') return '<span class="mmd-badge mmd-badge-qt">QT</span>';
+  return '';
+}
+
+function mmdRenderResult() {
+  var tl = mmdState.timeline;
+  if(!tl) { mmdRenderStep1(); return; }
+  var d = new Date();
+  var dateStr = d.toLocaleDateString('nl-NL', { weekday:'long', day:'numeric', month:'long' });
+  var quote = MMD_QUOTES[d.getDate() % MMD_QUOTES.length];
+
+  var html = '<div class="mmd-hero">'
+    + '<div class="mmd-hero-deco">' + (mmdState.dayType === 'fam_time' ? '🎈' : mmdState.dayType === 'surprise' ? '🎲' : '🌤️') + '</div>'
+    + '<div class="mmd-hero-badge">' + (MMD_TYPE_LABELS[mmdState.dayType] || '') + '</div>'
+    + '<div class="mmd-hero-title">Jouw dag</div>'
+    + '<div class="mmd-hero-date">' + dateStr + '</div>'
+    + '<div class="mmd-hero-quote">"' + quote + '"</div>'
+    + mmdSkylineSvg()
+    + '<div class="mmd-hero-torn"></div>'
+    + '</div>';
+
+  if(mmdState.approved) {
+    html += '<div class="mmd-approved-banner">✓ Deze dag is bevestigd — open de tegel later opnieuw en je ziet dezelfde dag terug.</div>';
+  }
+
+  tl.parts.forEach(function(part, pIdx){
+    html += '<div class="mmd-part mmd-part-' + part.key + '">'
+      + '<div class="mmd-part-head"><span class="ic">' + part.icon + '</span><span class="lbl">' + part.label + '</span><span class="sub">' + part.sub + '</span></div>'
+      + '<div class="mmd-tl">';
+    part.items.forEach(function(item, iIdx){
+      if(item.skipped) {
+        html += '<div class="mmd-item"><div class="mmd-free">'
+          + '<div class="fi">💤</div><div class="ft">Overgeslagen</div>'
+          + '<div class="fs" style="cursor:pointer;text-decoration:underline" onclick="mmdUndoSkip(' + pIdx + ',' + iIdx + ')">↺ ongedaan maken</div>'
+          + '</div></div>';
+        return;
+      }
+      if(item.free) {
+        html += '<div class="mmd-item">'
+          + '<div style="display:flex;gap:10px;align-items:stretch">'
+          + '<div class="mmd-item-time">' + item.time + '</div>'
+          + '<div class="mmd-free" style="flex:1"><div class="fi">' + item.icon + '</div><div class="ft">' + item.title + '</div><div class="fs">' + item.sub + '</div></div>'
+          + '</div></div>';
+        return;
+      }
+      html += '<div class="mmd-item">'
+        + '<div class="mmd-item-card">'
+        +   '<div class="mmd-item-time">' + item.time + '</div>'
+        +   '<div class="mmd-item-body">'
+        +     '<div class="mmd-item-top">'
+        +       '<span class="mmd-item-ic">' + item.icon + '</span>'
+        +       '<div><div class="mmd-item-title">' + item.title + '</div><div class="mmd-item-sub">' + item.sub + '</div></div>'
+        +     '</div>'
+        +     mmdItemBadge(item)
+        +     (item.fixed
+              ? '<div class="mmd-item-fixed-tag">Vast in je agenda</div>'
+              : '<div class="mmd-item-actions">'
+                + '<button class="mmd-act-btn keep" onclick="mmdKeepItem(this)">✓ Houden</button>'
+                + '<button class="mmd-act-btn" onclick="mmdReplaceItem(' + pIdx + ',' + iIdx + ')">↻ Andere suggestie</button>'
+                + '<button class="mmd-act-btn" onclick="mmdSkipItem(' + pIdx + ',' + iIdx + ')">× Overslaan</button>'
+                + '</div>')
+        +   '</div>'
+        +   mmdArtHtml(item, pIdx, iIdx)
+        + '</div></div>';
+    });
+    html += '</div></div>';
+  });
+
+  html += '<div class="mmd-footer">'
+    + '<button class="mmd-btn-primary" onclick="mmdApprove()">' + (mmdState.approved ? '✓ Bevestigd' : 'Dit wordt mijn dag ✓') + '</button>'
+    + '<div class="mmd-btn-row">'
+    +   '<button class="mmd-btn-secondary" onclick="mmdRegenerate()">↻ Opnieuw maken</button>'
+    +   '<button class="mmd-btn-secondary" onclick="mmdShare()">⇪ Delen</button>'
+    + '</div></div>';
+
+  document.getElementById('mmdContent').innerHTML = html;
+}
+
+function mmdKeepItem(btn) {
+  if(!btn) return;
+  var old = btn.textContent;
+  btn.textContent = '✓ Gehouden';
+  setTimeout(function(){ btn.textContent = old; }, 1200);
+}
+
+function mmdReplaceItem(pIdx, iIdx) {
+  var item = mmdState.timeline.parts[pIdx].items[iIdx];
+  if(!item.candidates || item.candidates.length < 2) return;
+  item.idx = (item.idx + 1) % item.candidates.length;
+  var next = item.candidates[item.idx];
+  Object.assign(item, next);
+  mmdRenderResult();
+}
+
+function mmdSkipItem(pIdx, iIdx) {
+  mmdState.timeline.parts[pIdx].items[iIdx].skipped = true;
+  mmdRenderResult();
+}
+
+function mmdUndoSkip(pIdx, iIdx) {
+  mmdState.timeline.parts[pIdx].items[iIdx].skipped = false;
+  mmdRenderResult();
+}
+
+async function mmdRegenerate() {
+  mmdRenderLoading();
+  var today = new Date();
+  var webParts = await mmdFetchWebSuggestions(dk(today), mmdState.dayType);
+  mmdState.timeline = mmdGenerate(mmdState.timeScope, mmdState.dayType, today, webParts);
+  mmdState.approved = false;
+  mmdRenderResult();
+}
+
+function mmdRenderLoading() {
+  document.getElementById('mmdContent').innerHTML =
+    '<div class="mmd-step" style="text-align:center;padding-top:80px">'
+    + '<div style="font-size:32px;margin-bottom:10px">✨</div>'
+    + '<div class="mmd-step-title" style="font-size:16px">Jouw dag wordt samengesteld…</div>'
+    + '<div class="mmd-opt-sub">Regionale evenementen en tips worden opgehaald</div>'
+    + '</div>';
+}
+
+function mmdApprove() {
+  mmdState.approved = true;
+  try {
+    localStorage.setItem(mmdTodayKey(), JSON.stringify({
+      timeScope: mmdState.timeScope,
+      dayType: mmdState.dayType,
+      timeline: mmdState.timeline,
+      approvedAt: new Date().toISOString()
+    }));
+  } catch(e) {}
+  mmdRenderResult();
+  mmdUpdateHomeTile();
+}
+
+function mmdShare() {
+  var text = 'Mijn QualityTime-dag: ' + (MMD_TYPE_LABELS[mmdState.dayType] || '') + ' — ' + (MMD_TIME_LABELS[mmdState.timeScope] || '');
+  if(navigator.share) {
+    navigator.share({ title:'Jouw dag · QualityTime', text:text }).catch(function(){});
+  } else {
+    alert('Delen is in deze fase nog niet gekoppeld aan een echte deel-actie. Later kan dit als afbeelding of link gedeeld worden.');
+  }
+}
+
+function mmdUpdateHomeTile() {
+  var titleEl = document.getElementById('ohMMDTitle');
+  var subEl = document.getElementById('ohMMDSub');
+  if(!titleEl || !subEl) return;
+  var raw = null;
+  try { raw = localStorage.getItem(mmdTodayKey()); } catch(e) {}
+  titleEl.textContent = 'Make my day';
+  if(raw) {
+    try {
+      var saved = JSON.parse(raw);
+      subEl.textContent = MMD_TYPE_LABELS[saved.dayType] + ' · bevestigd ✓';
+      return;
+    } catch(e) {}
+  }
+  subEl.textContent = 'Tik om te starten';
 }
 
 // ─── NOTIFICATIONS ───────────────────────────────────────────────
@@ -16324,18 +16893,17 @@ function roundToQuarterHour(hhmm) {
 // de Netlify-achtergrondfunctie weet wanneer ze dit toestel moet aanspreken.
 function oneSignalSyncTags() {
   if(typeof OneSignalDeferred === 'undefined' || ONESIGNAL_APP_ID === ONESIGNAL_PLACEHOLDER) return;
+  // OneSignal's gratis plan staat max. 6 Data Tags per gebruiker toe.
+  // Daarom vouwen we "ingeschakeld?" + "tijdstip" samen tot ÉÉN tag per
+  // meldingstype: de waarde is 'off' (uitgeschakeld) of het effectieve
+  // tijdstip zelf (bv. '07:30'). Dat blijft binnen de limiet van 6 tags.
   var tags = {
-    notifTrainingEnabled: notifPrefs.training ? '1' : '0',
-    notifTrainingTime: roundToQuarterHour(appSettings.notifTrainingTime || '07:30'),
-    notifMaaltijdEnabled: notifPrefs.maaltijd ? '1' : '0',
-    notifMaaltijdTime: roundToQuarterHour(appSettings.notifMaaltijdTime || '17:30'),
-    notifZanglesEnabled: notifPrefs.zangles ? '1' : '0',
-    notifZangTime: roundToQuarterHour(appSettings.notifZangTime || '18:30'),
-    notifWeekEnabled: notifPrefs.week ? '1' : '0',
-    notifWeekTime: roundToQuarterHour(appSettings.notifWeekTime || '20:00'),
-    notifAfvalEnabled: notifPrefs.afval ? '1' : '0',
-    wasteEveningTime: roundToQuarterHour(appSettings.wasteEveningTime || '19:00'),
-    wasteMorningTime: roundToQuarterHour(appSettings.wasteMorningTime || '06:45')
+    notifTraining: notifPrefs.training ? roundToQuarterHour(appSettings.notifTrainingTime || '07:30') : 'off',
+    notifMaaltijd: notifPrefs.maaltijd ? roundToQuarterHour(appSettings.notifMaaltijdTime || '17:30') : 'off',
+    notifZangles: notifPrefs.zangles ? roundToQuarterHour(appSettings.notifZangTime || '18:30') : 'off',
+    notifWeek: notifPrefs.week ? roundToQuarterHour(appSettings.notifWeekTime || '20:00') : 'off',
+    notifAfvalEvening: notifPrefs.afval ? roundToQuarterHour(appSettings.wasteEveningTime || '19:00') : 'off',
+    notifAfvalMorning: notifPrefs.afval ? roundToQuarterHour(appSettings.wasteMorningTime || '06:45') : 'off'
   };
   OneSignalDeferred.push(async function(OneSignal) {
     try { await OneSignal.User.addTags(tags); } catch(e) { console.error('OneSignal tag-sync mislukt', e); }
