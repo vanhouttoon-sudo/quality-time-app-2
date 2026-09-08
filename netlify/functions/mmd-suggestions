@@ -1,33 +1,35 @@
 // ═══════════════════════════════════════════════════════════════════
 // QualityTime — Make my Day: regionale suggesties (laag 5)
 // ═══════════════════════════════════════════════════════════════════
-// Combineert twee gratis bronnen:
-//  1. UiTdatabank (publiq) — officiële Vlaamse evenementenkalender.
-//     Gratis, geen praktische limiet. Dit is de PRIMAIRE bron: Toon wil
-//     regionale evenementen/activiteiten nadrukkelijk hoger gewogen zien
-//     dan generieke horeca ("liever naar een evenement dan een terrasje
-//     dat er toch nog staat"), dus events krijgen een hoger weight-cijfer.
-//  2. Tavily — algemene websearch, 1.000 gratis credits/maand. Vult aan
-//     waar UiTdatabank niets structureels heeft (bv. een terrasje-tip),
-//     en levert meteen ook een foto mee (include_images) voor die kaart.
+// CORRECTIE t.o.v. de eerste versie van dit bestand: de UiTdatabank
+// Search API is NIET gratis — het Basic-plan kost €125/jaar. Dat is
+// voor een gezinsapp niet de moeite voor deze ene functie. Daarom is
+// UiTdatabank hier nu optioneel (blijft werken als je ooit toch een
+// key koopt), en is Tavily de echte, gratis hoofdweg — met een aparte
+// zoekopdracht die zich beperkt tot dezelfde vertrouwde regionale
+// bronnen die al in je Instellingen > Bronnen staan (DEFAULT_BRONNEN
+// in app.html): Uit in Vlaanderen, Uit in Antwerpen, Antwerpen.be,
+// Het Paleis, deSingel, Gezinsbond, enz. Dat geeft dezelfde
+// "evenement vóór terrasje"-prioriteit, zonder kost.
 //
-// VEREISTE environment variables in Netlify:
-//   UITDATABANK_API_KEY  — gratis aan te vragen via publiq.be
+// VEREISTE environment variable in Netlify:
 //   TAVILY_API_KEY        — gratis aan te vragen via tavily.com
-// Ontbreekt een key, dan slaat deze functie die bron gewoon over —
-// geen crash, gewoon minder suggesties (de app valt dan client-side
-// terug op de vaste voorbeeldsuggesties).
-//
-// LET OP — eerlijkheid over de UiTdatabank-integratie: ik heb dit
-// gebouwd op basis van de publiek beschikbare documentatie
-// (docs.publiq.be), maar kon de exacte respons niet live testen omdat
-// ik zelf geen API-key heb. Kleine parameter-aanpassingen zijn dus
-// niet uitgesloten zodra jij een echte key hebt en we de eerste echte
-// respons zien — zie de TODO's hieronder.
+// Optioneel (enkel als je ooit toch voor UiTdatabank betaalt):
+//   UITDATABANK_API_KEY
 // ═══════════════════════════════════════════════════════════════════
 
 // Pas dit aan naar jullie eigen regio als dat niet klopt.
 const HOME_CITY = 'Antwerpen';
+
+// Zelfde vertrouwde bronnen als DEFAULT_BRONNEN in app.html (Instellingen
+// > Bronnen). Hou deze lijst in sync als je daar iets wijzigt — dit is
+// een losse kopie omdat de Netlify-functie niet in de browser draait.
+const TRUSTED_EVENT_DOMAINS = [
+  'uitinvlaanderen.be', 'uitinantwerpen.be', 'antwerpen.be',
+  'mortsel.be', 'edegem.be', 'hetpaleis.be', 'desingel.be',
+  'sport.antwerpen.be', 'jogging.be', 'cycling.be',
+  'gezinsbond.be', 'kmska.be', 'rivierenhof.be'
+];
 
 const UITDATABANK_KEY = process.env.UITDATABANK_API_KEY;
 const TAVILY_KEY = process.env.TAVILY_API_KEY;
@@ -45,7 +47,54 @@ function timeSlotForHour(h) {
   return 'avond';
 }
 
-// ── UiTdatabank: regionale evenementen ──
+// ── Tavily: regionale evenementen via de vertrouwde bronnenlijst (GRATIS) ──
+// Dit is nu de primaire manier om aan echte evenementdata te komen —
+// dezelfde rol als UiTdatabank hieronder zou spelen, maar zonder kost.
+async function fetchTavilyEvents(dateStr, dayType) {
+  if (!TAVILY_KEY) return [];
+  const dateLabel = new Date(dateStr + 'T12:00:00').toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' });
+  const query = dayType === 'fam_time'
+    ? 'familieactiviteit of evenement voor kinderen ' + HOME_CITY + ' ' + dateLabel
+    : 'evenement of activiteit ' + HOME_CITY + ' ' + dateLabel;
+  try {
+    const res = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TAVILY_KEY },
+      body: JSON.stringify({
+        query: query,
+        search_depth: 'basic',
+        max_results: 5,
+        include_images: true,
+        include_domains: TRUSTED_EVENT_DOMAINS
+      })
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const images = data.images || [];
+    return (data.results || []).slice(0, 4).map(function (r, i) {
+      // Verdeel resultaten over de dag — geen exact uur bekend uit een
+      // websearch, dus een redelijke standaardverdeling per volgorde.
+      const fallbackHour = [10, 13, 15, 19][i] || 14;
+      return {
+        title: r.title ? r.title.split(/[|\-–]/)[0].trim().slice(0, 45) : 'Evenement in de buurt',
+        sub: 'Online gevonden' + (r.url ? ' · ' + new URL(r.url).hostname.replace('www.', '') : ''),
+        source: 'web',
+        category: 'event',
+        weight: WEIGHT.event,
+        timeSlot: timeSlotForHour(fallbackHour),
+        time: String(fallbackHour).padStart(2, '0') + ':00',
+        photoUrl: images[i] || null,
+        sourceUrl: r.url || null,
+        icon: '🎟️'
+      };
+    });
+  } catch (e) {
+    console.error('Tavily (events) fout:', e.message);
+    return [];
+  }
+}
+
+// ── UiTdatabank: optioneel, enkel actief als je ooit toch een betaalde key neemt ──
 async function fetchUitdatabankEvents(dateStr, familyFriendly) {
   if (!UITDATABANK_KEY) return [];
   try {
@@ -145,7 +194,8 @@ export default async (req) => {
   const dateStr = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
   const dayType = url.searchParams.get('dayType') || 'me_time';
 
-  const [events, ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca] = await Promise.all([
+  const [tavilyEvents, uitdatabankEvents, ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca] = await Promise.all([
+    fetchTavilyEvents(dateStr, dayType),
     fetchUitdatabankEvents(dateStr, dayType === 'fam_time'),
     fetchTavilyHoreca('ochtend', dayType),
     fetchTavilyHoreca('middag', dayType),
@@ -154,7 +204,7 @@ export default async (req) => {
   ]);
 
   const horeca = [].concat(ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca);
-  const all = [].concat(events, horeca);
+  const all = [].concat(tavilyEvents, uitdatabankEvents, horeca);
 
   const byPart = { ochtend: [], middag: [], namiddag: [], avond: [] };
   all.forEach(function (item) {
