@@ -15363,30 +15363,48 @@ var RE_LISTINGS = [];
 // Fictieve/voorbeeld-panden verwijderd — enkel eigen ingevoerde panden en live geschraapte panden blijven over.
 function reAllListings(){ return reDedupliceer(RE_CUSTOM_LISTINGS.concat(RE_SCRAPED_LISTINGS).concat(RE_LISTINGS)); }
 
-// ── Live aanbod ophalen via de Netlify-functie ──
+// ── Live aanbod ophalen: de bestaande scraper (ERA, We Invest...) ÉN
+//    de nieuwe zoekbron (Immoweb, Immoscoop, ...) samen, voor het
+//    maximale aantal panden. Wordt daarna gewoon door reDedupliceer()
+//    samengevoegd — die bestond al en werkt op adres+prijs met een
+//    vaste bronprioriteit (RE_BRONNEN-volgorde), dus dubbels tussen
+//    beide bronnen worden automatisch opgelost.
 function reFetchLiveListings(){
   if(reLiveLoading) return;
   reLiveLoading = true;
-  reUpdateLiveStatusUI('⏳ Live aanbod ophalen…');
+  reUpdateLiveStatusUI('⏳ Live aanbod ophalen (scraper + zoekbron)…');
   var overlay = document.getElementById('reLoadingOverlay');
   if(overlay) overlay.style.display = 'flex';
 
   var regioParam = Array.from(reState.regios).join(',');
-  var url = '/.netlify/functions/scrape-realestate?regios=' + encodeURIComponent(regioParam);
+  var scrapeUrl = '/.netlify/functions/scrape-realestate?regios=' + encodeURIComponent(regioParam);
+  var searchUrl = '/.netlify/functions/search-realestate?regios=' + encodeURIComponent(regioParam);
 
-  fetch(url).then(function(res){
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    return res.json();
-  }).then(function(data){
-    RE_SCRAPED_LISTINGS = (data.listings || []).map(function(l){
-      // Regio's die de scraper teruggeeft moeten ook als filterbare chip bestaan
+  Promise.allSettled([
+    fetch(scrapeUrl).then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); }),
+    fetch(searchUrl).then(function(res){ if(!res.ok) throw new Error('HTTP '+res.status); return res.json(); })
+  ]).then(function(results){
+    var scrapeData = results[0].status === 'fulfilled' ? results[0].value : { listings: [], status: null };
+    var searchData = results[1].status === 'fulfilled' ? results[1].value : { listings: [] };
+
+    var scraped = (scrapeData.listings || []);
+    var searched = (searchData.listings || []).map(function(l){
+      // Kleur/icoon komen uit de bestaande RE_BRONNEN-tabel (client-side),
+      // zodat een via-search gevonden Immoweb-pand er identiek uitziet
+      // als een via-scraper gevonden Immoweb-pand.
+      l.kleur = reBronKleur(l.bron);
+      l.icon = l.icon || '🏠';
+      return l;
+    });
+
+    RE_SCRAPED_LISTINGS = scraped.concat(searched).map(function(l){
       if(l.regio && reAllRegios().indexOf(l.regio) === -1 && RE_CUSTOM_REGIOS.indexOf(l.regio) === -1){
         RE_CUSTOM_REGIOS.push(l.regio);
       }
-      if(l.regio) reState.regios.add(l.regio); // meteen tonen, geen extra klik nodig
+      if(l.regio) reState.regios.add(l.regio);
       return l;
     });
-    RE_SCRAPED_STATUS = data.status || null;
+    RE_SCRAPED_STATUS = Object.assign({}, scrapeData.status || {}, searchData.status || {});
     RE_SCRAPED_AT = new Date().toISOString();
     localStorage.setItem('wf_re_scraped_listings', JSON.stringify(RE_SCRAPED_LISTINGS));
     localStorage.setItem('wf_re_scraped_status', JSON.stringify(RE_SCRAPED_STATUS));
@@ -15408,7 +15426,9 @@ function reLiveStatusSummary(){
   if(!RE_SCRAPED_STATUS) return '';
   return Object.keys(RE_SCRAPED_STATUS).map(function(naam){
     var s = RE_SCRAPED_STATUS[naam];
-    return s.ok ? (naam + ': ' + s.count) : (naam + ': ✕');
+    if(!s.ok) return naam + ': ✕';
+    var datumHint = (typeof s.metDatum === 'number') ? (' (' + s.metDatum + ' met herkende datum)') : '';
+    return naam + ': ' + s.count + datumHint;
   }).join(' · ');
 }
 
@@ -15647,7 +15667,7 @@ function renderRealEstate(){
     + '<div class="re-list" id="reList"></div>'
     + '<div class="re-loading-overlay" id="reLoadingOverlay" style="display:none">'
     +   '<div class="re-loading-spinner"></div>'
-    +   '<div class="re-loading-text">Panden ophalen bij Immoweb, ERA, We Invest…</div>'
+    +   '<div class="re-loading-text">Panden ophalen bij ERA (scraper) en Immoweb, Immoscoop, We Invest, Hebbes (zoekbron)…</div>'
     + '</div>'
     + '</div>'
     + '<div class="re-backdrop" id="reBackdrop"></div>'
@@ -15659,7 +15679,7 @@ function renderRealEstate(){
     +   '<div class="re-drawer-body">'
     +     '<button class="re-tonybtn" id="reTonyBtn">★ Tony\'s filter toepassen</button>'
     +     '<div class="re-fgroup re-livebox">'
-    +       '<span class="re-ftitle">Live aanbod (ERA, We Invest Antwerpen Zuidrand)</span>'
+    +       '<span class="re-ftitle">Live aanbod (ERA via scraper · Immoweb/Immoscoop/We Invest/Hebbes via zoekbron)</span>'
     +       '<button class="re-tonybtn re-livebtn" id="reLiveFetchBtn">🔄 Opnieuw verversen</button>'
     +       '<div class="re-live-status" id="reLiveStatus">Nog geen live aanbod opgehaald.</div>'
     +     '</div>'
