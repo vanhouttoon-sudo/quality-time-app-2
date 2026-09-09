@@ -14178,9 +14178,32 @@ function zangChosenSongBlockHtml() {
     + '<div style="font-family:var(--cond);font-size:14px;font-weight:700;color:var(--ink)">'+song.titel.replace(/</g,'&lt;')+'</div>'
     + (meta ? '<div style="font-family:var(--cond);font-size:10px;color:var(--stone2);margin-bottom:6px">'+meta.replace(/</g,'&lt;')+'</div>' : '')
     + '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2);margin-bottom:4px">'+orderLabel+'</div>'
-    + '<audio id="zangChosenSongAudio" controls preload="none" style="width:100%;margin-top:6px" src="'+firstSrc+'" onended="zangChosenSongOnEnded()"></audio>'
+    + '<audio id="zangChosenSongAudio" controls preload="none" style="width:100%;margin-top:6px" src="'+firstSrc+'" onplay="zangChosenSongOnPlay()" onended="zangChosenSongOnEnded()"></audio>'
     + '<div style="font-family:var(--body);font-size:10px;color:var(--stone2);margin-top:4px">Speelt automatisch nadat je alle oefeningen hierboven hebt afgerond.</div>'
     + '</div>';
+}
+
+// ─── MediaSession: toont de échte titel/artiest op CarPlay/lockscreen ───
+// Zonder dit toont iOS enkel de generieke appnaam ("Quality Time") bij
+// audio die vanuit een webpagina/PWA speelt. Dit vult dat aan met de
+// werkelijke liedjestitel, artiest en een korte albumtekst.
+function setMediaSessionMetadata(title, artist, album) {
+  if(!('mediaSession' in navigator)) return;
+  try {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: title || 'QualityTime',
+      artist: artist || 'QualityTime Zangles',
+      album: album || ''
+    });
+    navigator.mediaSession.playbackState = 'playing';
+  } catch(e) {}
+}
+
+function zangChosenSongOnPlay() {
+  var song = ZANG_SONGS.find(function(s){ return s.id === zangChosenSongId; });
+  if(!song) return;
+  var albumLabel = zangChosenSongStage === 'vocal' ? 'Gezongen versie' : 'Instrumentale versie';
+  setMediaSessionMetadata(song.titel, song.uitvoerder || 'QualityTime Zangles', albumLabel);
 }
 
 // Wanneer de gezongen versie is afgelopen: schakel automatisch over naar de instrumentale versie (indien aanwezig)
@@ -16477,20 +16500,31 @@ function timeSlotForHour(h) {
   return 'avond';
 }
 
-// ── Laag 5: échte regionale suggesties ophalen (UiTdatabank + Tavily) ──
-// Faalt dit (geen internet, functie nog niet gedeployed, geen API-keys
-// ingesteld), dan geeft dit gewoon null terug en valt de app stil terug
-// op de vaste voorbeeldsuggesties — geen foutmelding, geen kapotte flow.
+// ── Laag 5: échte regionale suggesties ophalen (Tavily) ──
+// Faalt dit (geen internet, functie nog niet gedeployed, geen API-key
+// ingesteld, of de zoekopdracht duurt te lang), dan geeft dit null
+// terug en valt de app stil terug op de vaste voorbeeldsuggesties.
+// mmdLastFetchStatus houdt bij wat er precies gebeurde, zodat dit nooit
+// meer een onzichtbaar mysterie is — zie de badge op het resultaatscherm.
+var mmdLastFetchStatus = 'idle'; // idle | ok | empty | timeout | error
 async function mmdFetchWebSuggestions(dateStr, dayType) {
   try {
     var ctrl = new AbortController();
-    var timeout = setTimeout(function(){ ctrl.abort(); }, 6000);
+    // 25s: Netlify staat sinds kort 60s toe voor functies, en meerdere
+    // diepe zoekopdrachten tegelijk kunnen makkelijk 10-20s duren. De
+    // vorige timeout van 6s was zo goed als altijd te kort — daardoor
+    // viel de app stil terug op de generieke voorbeelddata.
+    var timeout = setTimeout(function(){ ctrl.abort(); }, 25000);
     var res = await fetch('/.netlify/functions/mmd-suggestions?date=' + encodeURIComponent(dateStr) + '&dayType=' + encodeURIComponent(dayType), { signal: ctrl.signal });
     clearTimeout(timeout);
-    if(!res.ok) return null;
+    if(!res.ok) { mmdLastFetchStatus = 'error'; return null; }
     var data = await res.json();
-    return (data && data.parts) ? data.parts : null;
+    var parts = (data && data.parts) ? data.parts : null;
+    var total = parts ? Object.keys(parts).reduce(function(n,k){ return n + parts[k].length; }, 0) : 0;
+    mmdLastFetchStatus = total > 0 ? 'ok' : 'empty';
+    return parts;
   } catch(e) {
+    mmdLastFetchStatus = (e && e.name === 'AbortError') ? 'timeout' : 'error';
     return null;
   }
 }
@@ -16664,6 +16698,19 @@ function mmdArtHtml(item, pIdx, iIdx) {
   return '';
 }
 
+function mmdStatusBanner() {
+  var map = {
+    ok: null, // alles goed, geen banner nodig
+    empty: { icon: '🔍', text: 'Geen live suggesties gevonden voor vandaag — dit zijn voorbeeldsuggesties. Probeer "Opnieuw maken".' },
+    timeout: { icon: '⏱️', text: 'Het ophalen van live suggesties duurde te lang — dit zijn voorbeeldsuggesties. Probeer straks opnieuw.' },
+    error: { icon: '⚠️', text: 'Kon geen live suggesties ophalen (functie/key nog niet in orde?) — dit zijn voorbeeldsuggesties.' },
+    idle: null
+  };
+  var info = map[mmdLastFetchStatus];
+  if(!info) return '';
+  return '<div class="mmd-approved-banner" style="background:#fff7cf">' + info.icon + ' ' + info.text + '</div>';
+}
+
 function mmdItemBadge(item) {
   if(item.source === 'fixed') return '<span class="mmd-badge mmd-badge-fixed">Vast</span>';
   if(item.category === 'event') return '<span class="mmd-badge mmd-badge-event">🎟️ Evenement</span>';
@@ -16694,6 +16741,8 @@ function mmdRenderResult() {
   if(mmdState.approved) {
     html += '<div class="mmd-approved-banner">✓ Deze dag is bevestigd — open de tegel later opnieuw en je ziet dezelfde dag terug.</div>';
   }
+
+  html += mmdStatusBanner();
 
   tl.parts.forEach(function(part, pIdx){
     html += '<div class="mmd-part mmd-part-' + part.key + '">'
