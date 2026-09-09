@@ -3432,11 +3432,16 @@ input, select, textarea{
 .mmd-opt-title{font-family:var(--cond);font-size:15px;font-weight:700;color:var(--ocean);}
 .mmd-opt-sub{font-family:var(--body,var(--cond));font-size:11.5px;color:var(--stone,#a08060);margin-top:2px;}
 
-.mmd-hero{background:var(--ocean);color:var(--sand);padding:20px 20px 24px;position:relative;overflow:hidden;}
-.mmd-hero-badge{display:inline-block;font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:var(--gold,#d4a030);color:var(--ocean);padding:4px 10px;border-radius:20px;margin-bottom:10px;}
-.mmd-hero-title{font-family:var(--serif,Georgia,serif);font-weight:900;font-size:28px;margin:0 0 4px;letter-spacing:.5px;text-transform:uppercase;text-shadow:2px 2px 0 rgba(192,88,24,.55),-1px -1px 0 rgba(255,255,255,.06);}
-.mmd-hero-date{font-family:var(--cond);font-size:12px;color:rgba(245,237,224,.75);text-transform:capitalize;}
-.mmd-hero-quote{font-family:var(--serif,Georgia,serif);font-style:italic;font-size:13px;color:rgba(245,237,224,.85);margin-top:12px;line-height:1.4;}
+/* ══ Scrapbook-header: drie losse "papiertjes" i.p.v. één donker blok ══ */
+.mmd-hero{padding:22px 16px 8px;position:relative;}
+.mmd-hero-tape{position:absolute;top:8px;left:34px;width:54px;height:16px;background:rgba(212,160,48,.55);border:1px solid rgba(10,10,10,.15);transform:rotate(-3deg);z-index:2;}
+.mmd-hero-badge{display:inline-block;background:var(--cyan,#e2fbfb);border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:20px;box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);padding:5px 12px;font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;transform:rotate(-2deg);position:relative;z-index:1;}
+.mmd-hero-title-wrap{background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:12px;box-shadow:3px 3px 0 var(--brut-ink,#0a0a0a);padding:14px 16px;margin-top:12px;transform:rotate(0.8deg);position:relative;}
+.mmd-hero-title{font-family:var(--serif,Georgia,serif);font-weight:900;font-size:25px;color:var(--ocean);margin:0;}
+.mmd-hero-date{font-family:var(--cond);font-size:11px;font-weight:700;color:var(--terra,#c05818);margin-top:2px;text-transform:capitalize;}
+.mmd-hero-quote-tag{background:var(--pink,#ffe8f5);border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:10px;box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);padding:10px 14px;margin:12px 16px 0 30px;transform:rotate(-1.2deg);}
+.mmd-hero-quote{font-family:var(--serif,Georgia,serif);font-style:italic;font-size:12px;color:var(--ocean);margin:0;line-height:1.4;}
+.mmd-hero-deco{position:absolute;right:18px;top:20px;font-size:30px;opacity:.55;transform:rotate(10deg);z-index:1;}
 
 .mmd-part{margin:16px 16px 0;}
 .mmd-part-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:6px 10px;border-radius:8px;border:1.5px solid var(--brut-ink,#0a0a0a);}
@@ -3498,17 +3503,6 @@ input, select, textarea{
 }
 .mmd-art.tilt-l{transform:rotate(-3deg);}
 .mmd-art.tilt-r{transform:rotate(2.5deg);}
-
-/* rijkere hero-artwork op resultaatscherm */
-.mmd-hero{padding-bottom:40px;background:
-    repeating-linear-gradient(115deg, rgba(255,255,255,.025) 0 2px, transparent 2px 14px),
-    radial-gradient(circle at 85% 8%, rgba(212,160,48,.16) 0%, transparent 45%),
-    radial-gradient(circle at 8% 85%, rgba(255,255,255,.05) 0%, transparent 40%),
-    var(--ocean);
-}
-.mmd-hero-deco{position:absolute;right:14px;top:50px;font-size:34px;opacity:.5;transform:rotate(8deg);}
-.mmd-hero-skyline{position:absolute;left:0;right:0;bottom:10px;height:46px;opacity:.9;}
-.mmd-hero-torn{position:absolute;left:0;right:0;bottom:-1px;height:14px;background:var(--cream);clip-path:polygon(0 100%,3% 30%,6% 100%,9% 40%,12% 100%,15% 25%,18% 100%,21% 45%,24% 100%,27% 30%,30% 100%,33% 40%,36% 100%,39% 25%,42% 100%,45% 45%,48% 100%,51% 30%,54% 100%,57% 40%,60% 100%,63% 25%,66% 100%,69% 45%,72% 100%,75% 30%,78% 100%,81% 40%,84% 100%,87% 25%,90% 100%,93% 45%,96% 100%,100% 35%,100% 100%,0 100%);}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
@@ -16507,6 +16501,7 @@ function timeSlotForHour(h) {
 // mmdLastFetchStatus houdt bij wat er precies gebeurde, zodat dit nooit
 // meer een onzichtbaar mysterie is — zie de badge op het resultaatscherm.
 var mmdLastFetchStatus = 'idle'; // idle | ok | empty | timeout | error
+var mmdLastFetchError = '';
 async function mmdFetchWebSuggestions(dateStr, dayType) {
   try {
     var ctrl = new AbortController();
@@ -16517,14 +16512,20 @@ async function mmdFetchWebSuggestions(dateStr, dayType) {
     var timeout = setTimeout(function(){ ctrl.abort(); }, 25000);
     var res = await fetch('/.netlify/functions/mmd-suggestions?date=' + encodeURIComponent(dateStr) + '&dayType=' + encodeURIComponent(dayType), { signal: ctrl.signal });
     clearTimeout(timeout);
-    if(!res.ok) { mmdLastFetchStatus = 'error'; return null; }
-    var data = await res.json();
+    var data = null;
+    try { data = await res.json(); } catch(e) {}
+    if(!res.ok || (data && data.ok === false)) {
+      mmdLastFetchStatus = 'error';
+      mmdLastFetchError = (data && data.error) ? data.error : ('HTTP ' + res.status);
+      return null;
+    }
     var parts = (data && data.parts) ? data.parts : null;
     var total = parts ? Object.keys(parts).reduce(function(n,k){ return n + parts[k].length; }, 0) : 0;
     mmdLastFetchStatus = total > 0 ? 'ok' : 'empty';
     return parts;
   } catch(e) {
     mmdLastFetchStatus = (e && e.name === 'AbortError') ? 'timeout' : 'error';
+    mmdLastFetchError = (e && e.message) || '';
     return null;
   }
 }
@@ -16651,8 +16652,9 @@ async function mmdSelectType(id) {
   mmdRenderResult();
 }
 
-// Eigen, simpel getekend skyline-silhouet (geen foto, dus geen auteursrecht-risico) —
-// geeft de hero wat stoerdere, urban/graffiti-sfeer i.p.v. een vlak effen vlak.
+// Eigen, simpel getekend skyline-silhouet — niet meer gebruikt sinds de
+// hero herwerkt is naar de lichte scrapbook-stijl, maar laten staan
+// voor het geval het elders ooit nog van pas komt.
 function mmdSkylineSvg() {
   return '<svg class="mmd-hero-skyline" viewBox="0 0 400 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
     + '<g fill="rgba(10,10,10,.55)">'
@@ -16700,10 +16702,10 @@ function mmdArtHtml(item, pIdx, iIdx) {
 
 function mmdStatusBanner() {
   var map = {
-    ok: null, // alles goed, geen banner nodig
+    ok: null,
     empty: { icon: '🔍', text: 'Geen live suggesties gevonden voor vandaag — dit zijn voorbeeldsuggesties. Probeer "Opnieuw maken".' },
     timeout: { icon: '⏱️', text: 'Het ophalen van live suggesties duurde te lang — dit zijn voorbeeldsuggesties. Probeer straks opnieuw.' },
-    error: { icon: '⚠️', text: 'Kon geen live suggesties ophalen (functie/key nog niet in orde?) — dit zijn voorbeeldsuggesties.' },
+    error: { icon: '⚠️', text: 'Kon geen live suggesties ophalen' + (mmdLastFetchError ? ': ' + mmdLastFetchError : ' (functie/key nog niet in orde?)') + ' — dit zijn voorbeeldsuggesties.' },
     idle: null
   };
   var info = map[mmdLastFetchStatus];
@@ -16729,13 +16731,14 @@ function mmdRenderResult() {
   var quote = MMD_QUOTES[d.getDate() % MMD_QUOTES.length];
 
   var html = '<div class="mmd-hero">'
+    + '<div class="mmd-hero-tape"></div>'
     + '<div class="mmd-hero-deco">' + (mmdState.dayType === 'fam_time' ? '🎈' : mmdState.dayType === 'surprise' ? '🎲' : '🌤️') + '</div>'
     + '<div class="mmd-hero-badge">' + (MMD_TYPE_LABELS[mmdState.dayType] || '') + '</div>'
-    + '<div class="mmd-hero-title">Jouw dag</div>'
-    + '<div class="mmd-hero-date">' + dateStr + '</div>'
-    + '<div class="mmd-hero-quote">"' + quote + '"</div>'
-    + mmdSkylineSvg()
-    + '<div class="mmd-hero-torn"></div>'
+    + '<div class="mmd-hero-title-wrap">'
+    +   '<div class="mmd-hero-title">Jouw dag</div>'
+    +   '<div class="mmd-hero-date">' + dateStr + '</div>'
+    + '</div>'
+    + '<div class="mmd-hero-quote-tag"><p class="mmd-hero-quote">"' + quote + '"</p></div>'
     + '</div>';
 
   if(mmdState.approved) {
