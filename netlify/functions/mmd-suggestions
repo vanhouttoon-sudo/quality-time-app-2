@@ -21,6 +21,18 @@
 // Pas dit aan naar jullie eigen regio als dat niet klopt.
 const HOME_CITY = 'Antwerpen';
 
+// Antwerpen + de Zuidrand — per generatie wordt hier willekeurig uit
+// geput, zodat je niet iedere keer dezelfde buurt/gemeente voorgeschoteld
+// krijgt. Voel je vrij dit uit te breiden met andere buurten die jullie
+// kennen.
+const REGIONS = [
+  'Antwerpen centrum', 'Zurenborg Antwerpen', 'Antwerpen-Zuid', 'Berchem',
+  'Wilrijk', 'Mortsel', 'Edegem', 'Hove', 'Boechout', 'Kontich', 'Deurne'
+];
+function randomRegion() {
+  return REGIONS[Math.floor(Math.random() * REGIONS.length)];
+}
+
 // Zelfde vertrouwde bronnen als DEFAULT_BRONNEN in app.html (Instellingen
 // > Bronnen). Hou deze lijst in sync als je daar iets wijzigt — dit is
 // een losse kopie omdat de Netlify-functie niet in de browser draait.
@@ -31,6 +43,10 @@ const TRUSTED_EVENT_DOMAINS = [
   'gezinsbond.be', 'kmska.be', 'rivierenhof.be'
 ];
 
+// Grote ketens uitsluiten waar mogelijk — het doel is net het tegenovergestelde
+// van "de eerste de beste koffiezaak", dus deze proberen we uit de weg te gaan.
+const CHAIN_DOMAINS = ['starbucks.com', 'exki.be', 'exki.com', 'lepainquotidien.com', 'points-de-vue.com'];
+
 const UITDATABANK_KEY = process.env.UITDATABANK_API_KEY;
 const TAVILY_KEY = process.env.TAVILY_API_KEY;
 
@@ -38,7 +54,37 @@ const TAVILY_KEY = process.env.TAVILY_API_KEY;
 // Events wegen bewust zwaarder dan horeca, op uitdrukkelijk verzoek:
 // een evenement is tijdsgebonden en dus "nu of nooit", een terrasje
 // staat er morgen ook nog.
-const WEIGHT = { event: 20, horeca: 5 };
+const WEIGHT = { event: 20, hiddenEvent: 16, horeca: 5 };
+
+// Variatie in het TYPE horeca-plek — telkens een andere invalshoek i.p.v.
+// altijd "koffiebar" of "terrasje". Eén willekeurige invalshoek per
+// generatie, zodat de suggesties tussen dagen echt verschillen.
+const HORECA_FLAVORS = {
+  ochtend: [
+    'een gespecialiseerde koffiebranderij', 'een verborgen theesalon',
+    'een boekencafé', 'een ambachtelijke bakkerij met zitplaats',
+    'een botanisch ontbijtcafé', 'een klein familiebedrijf-koffiehuis'
+  ],
+  middag: [
+    'een verborgen lunchplekje', 'een foodmarkt of hallen met lokale kramen',
+    'een tuincafé', 'een bijzonder broodjeszaak', 'een wijnbar met lichte lunch',
+    'een authentiek buurtrestaurant'
+  ],
+  namiddag: [
+    'een ambachtelijke ijssalon', 'een curiosaen-koffiehuis vol snuisterijen',
+    'een patisserie met verrassend gebak', 'een rustig theehuis',
+    'een chocolatier met proeverij'
+  ],
+  avond: [
+    'een verborgen bistro', 'een authentiek buurtrestaurant',
+    'een sfeervolle wijnbar met tapas', 'een familiezaak met een verrassende keuken',
+    'een intiem eetcafé'
+  ]
+};
+function randomFlavor(slot) {
+  var list = HORECA_FLAVORS[slot] || ['een leuke plek'];
+  return list[Math.floor(Math.random() * list.length)];
+}
 
 function timeSlotForHour(h) {
   if (h < 11) return 'ochtend';
@@ -47,49 +93,101 @@ function timeSlotForHour(h) {
   return 'avond';
 }
 
-// ── Tavily: regionale evenementen via de vertrouwde bronnenlijst (GRATIS) ──
-// Dit is nu de primaire manier om aan echte evenementdata te komen —
-// dezelfde rol als UiTdatabank hieronder zou spelen, maar zonder kost.
-async function fetchTavilyEvents(dateStr, dayType) {
+// Herkent overzichtsartikels ("Top 10 terrasjes...", "5 leukste cafés...")
+// zodat we die niet als ÉÉN concrete zaak voorstellen.
+const LISTICLE_RE = /\b(top\s*\d+|de\s*\d+\s|beste\s*\d+|\d+\s*(beste|leukste|leuke|toffe|terrassen|terrasjes|caf[ée]s|restaurants|adressen|plekjes|plekken|tips|zaken))\b/i;
+
+function pickConcreteResult(results) {
+  results = results || [];
+  var clean = results.filter(function (r) { return !LISTICLE_RE.test(r.title || ''); });
+  return clean.length ? clean : results;
+}
+
+function cleanVenueTitle(rawTitle, fallback) {
+  if (!rawTitle) return fallback;
+  var t = rawTitle.split(/[|\-–·]/)[0].trim();
+  return t.length > 2 ? t.slice(0, 45) : fallback;
+}
+
+// ── Tavily: officiële regionale evenementen via de vertrouwde bronnenlijst ──
+async function fetchTavilyOfficialEvents(dateStr, dayType) {
   if (!TAVILY_KEY) return [];
   const dateLabel = new Date(dateStr + 'T12:00:00').toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' });
   const query = dayType === 'fam_time'
-    ? 'familieactiviteit of evenement voor kinderen ' + HOME_CITY + ' ' + dateLabel
-    : 'evenement of activiteit ' + HOME_CITY + ' ' + dateLabel;
+    ? 'Welke evenementen, activiteiten of familie-uitjes zijn er specifiek op ' + dateLabel + ' in en rond ' + HOME_CITY + '? Noem concrete namen en locaties, geen algemene tips.'
+    : 'Welke evenementen of activiteiten vinden er specifiek plaats op ' + dateLabel + ' in en rond ' + HOME_CITY + '? Noem concrete namen en locaties, geen algemene tips.';
   try {
     const res = await fetch('https://api.tavily.com/search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TAVILY_KEY },
       body: JSON.stringify({
         query: query,
-        search_depth: 'basic',
-        max_results: 5,
+        search_depth: 'advanced',
+        max_results: 10,
         include_images: true,
+        include_answer: true,
+        time_range: 'month',
         include_domains: TRUSTED_EVENT_DOMAINS
       })
     });
-    if (!res.ok) return [];
+    if (!res.ok) { console.error('Tavily officiële events HTTP', res.status, await res.text()); return []; }
     const data = await res.json();
     const images = data.images || [];
-    return (data.results || []).slice(0, 4).map(function (r, i) {
-      // Verdeel resultaten over de dag — geen exact uur bekend uit een
-      // websearch, dus een redelijke standaardverdeling per volgorde.
-      const fallbackHour = [10, 13, 15, 19][i] || 14;
+    const picked = pickConcreteResult(data.results);
+    return picked.slice(0, 5).map(function (r, i) {
+      const fallbackHour = [10, 11, 14, 16, 19][i] || 14;
       return {
-        title: r.title ? r.title.split(/[|\-–]/)[0].trim().slice(0, 45) : 'Evenement in de buurt',
-        sub: 'Online gevonden' + (r.url ? ' · ' + new URL(r.url).hostname.replace('www.', '') : ''),
-        source: 'web',
-        category: 'event',
-        weight: WEIGHT.event,
-        timeSlot: timeSlotForHour(fallbackHour),
-        time: String(fallbackHour).padStart(2, '0') + ':00',
-        photoUrl: images[i] || null,
-        sourceUrl: r.url || null,
-        icon: '🎟️'
+        title: cleanVenueTitle(r.title, 'Evenement in de buurt'),
+        sub: (i === 0 && data.answer) ? data.answer.slice(0, 100) : ('Online gevonden' + (r.url ? ' · ' + new URL(r.url).hostname.replace('www.', '') : '')),
+        source: 'web', category: 'event', weight: WEIGHT.event,
+        timeSlot: timeSlotForHour(fallbackHour), time: String(fallbackHour).padStart(2, '0') + ':00',
+        photoUrl: images[i] || null, sourceUrl: r.url || null, icon: '🎟️'
       };
     });
   } catch (e) {
-    console.error('Tavily (events) fout:', e.message);
+    console.error('Tavily (officiële events) fout:', e.message);
+    return [];
+  }
+}
+
+// ── Tavily: bredere "verborgen parel"-zoektocht naar evenementen ──
+// Dit is de kern van "een ijzersterke scan": geen beperking tot de
+// officiële agenda's, maar een gerichte vraag naar iets verrassends —
+// pop-ups, rommelmarkten, kleine optredens, tijdelijke exposities — die
+// een mens niet zo snel zelf zou opzoeken. Krijgt een net iets lager
+// gewicht dan de officiële bron (die is betrouwbaarder/actueler), maar
+// nog altijd ruim boven horeca, want dit is precies waar de verrassing
+// vandaan moet komen.
+async function fetchTavilyHiddenGemEvent(dateStr, dayType, region) {
+  if (!TAVILY_KEY) return [];
+  const dateLabel = new Date(dateStr + 'T12:00:00').toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' });
+  const query = 'Wat zijn verrassende, minder bekende evenementen, pop-ups, markten, exposities of optredens rond ' + dateLabel
+    + ' in of rond ' + region + '? Geen grote toeristische klassiekers, wel dingen die een lokale insider zou aanraden en die niet iedereen kent.';
+  try {
+    const res = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TAVILY_KEY },
+      body: JSON.stringify({
+        query: query, search_depth: 'advanced', max_results: 10,
+        include_images: true, include_answer: true, time_range: 'month'
+      })
+    });
+    if (!res.ok) { console.error('Tavily verborgen parel HTTP', res.status, await res.text()); return []; }
+    const data = await res.json();
+    const images = data.images || [];
+    const picked = pickConcreteResult(data.results);
+    return picked.slice(0, 4).map(function (r, i) {
+      const fallbackHour = [11, 15, 17, 20][i] || 14;
+      return {
+        title: cleanVenueTitle(r.title, 'Verrassing in de buurt'),
+        sub: (i === 0 && data.answer) ? data.answer.slice(0, 100) : ('Geheimtip · ' + (r.url ? new URL(r.url).hostname.replace('www.', '') : 'online gevonden')),
+        source: 'web', category: 'event', weight: WEIGHT.hiddenEvent,
+        timeSlot: timeSlotForHour(fallbackHour), time: String(fallbackHour).padStart(2, '0') + ':00',
+        photoUrl: images[i] || null, sourceUrl: r.url || null, icon: '💎'
+      };
+    });
+  } catch (e) {
+    console.error('Tavily (verborgen parel) fout:', e.message);
     return [];
   }
 }
@@ -143,16 +241,16 @@ async function fetchUitdatabankEvents(dateStr, familyFriendly) {
 }
 
 // ── Tavily: aanvullende lokale horeca-suggestie, met foto ──
+// Elke oproep kiest een willekeurige regio (Antwerpen + Zuidrand) én een
+// willekeurige invalshoek (zie HORECA_FLAVORS) — dat is wat de suggesties
+// écht doet variëren tussen generaties, in plaats van steeds dezelfde
+// "koffiebar in Antwerpen"-vraag te herhalen.
 async function fetchTavilyHoreca(timeSlot, dayType) {
   if (!TAVILY_KEY) return [];
-  const queries = {
-    ochtend: 'gezellig ontbijtadresje of koffiebar in ' + HOME_CITY,
-    middag: 'lunchtip of terrasje in ' + HOME_CITY,
-    namiddag: dayType === 'fam_time' ? 'leuke ijssalon of familievriendelijke plek in ' + HOME_CITY : 'gezellig terrasje in ' + HOME_CITY,
-    avond: 'goed restaurant of eetcafé in ' + HOME_CITY
-  };
-  const query = queries[timeSlot];
-  if (!query) return [];
+  const region = randomRegion();
+  const flavor = timeSlot === 'namiddag' && dayType === 'fam_time' ? 'een leuke ijssalon' : randomFlavor(timeSlot);
+  const query = 'Geef enkele concrete, met naam genoemde voorbeelden van ' + flavor + ' in of rond ' + region
+    + '. Ik zoek geen grote keten, maar iets bijzonders en lokaals dat de meeste mensen niet meteen zouden kennen. Noem de effectieve naam van de zaak.';
   try {
     const res = await fetch('https://api.tavily.com/search', {
       method: 'POST',
@@ -162,18 +260,21 @@ async function fetchTavilyHoreca(timeSlot, dayType) {
       },
       body: JSON.stringify({
         query: query,
-        search_depth: 'basic',
-        max_results: 3,
-        include_images: true
+        search_depth: 'advanced',
+        max_results: 10,
+        include_images: true,
+        include_answer: true,
+        exclude_domains: CHAIN_DOMAINS
       })
     });
-    if (!res.ok) return [];
+    if (!res.ok) { console.error('Tavily horeca HTTP', res.status, await res.text()); return []; }
     const data = await res.json();
     const images = data.images || [];
-    return (data.results || []).slice(0, 2).map(function (r, i) {
+    const picked = pickConcreteResult(data.results);
+    return picked.slice(0, 5).map(function (r, i) {
       return {
-        title: r.title ? r.title.split(/[|\-–]/)[0].trim().slice(0, 40) : 'Plekje in de buurt',
-        sub: 'Online gevonden',
+        title: cleanVenueTitle(r.title, 'Verrassend plekje in de buurt'),
+        sub: (i === 0 && data.answer) ? data.answer.slice(0, 100) : ('Online gevonden · ' + region),
         source: 'web',
         category: 'horeca',
         weight: WEIGHT.horeca,
@@ -193,9 +294,11 @@ export default async (req) => {
   const url = new URL(req.url);
   const dateStr = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
   const dayType = url.searchParams.get('dayType') || 'me_time';
+  const hiddenGemRegion = randomRegion();
 
-  const [tavilyEvents, uitdatabankEvents, ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca] = await Promise.all([
-    fetchTavilyEvents(dateStr, dayType),
+  const [officialEvents, hiddenEvents, uitdatabankEvents, ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca] = await Promise.all([
+    fetchTavilyOfficialEvents(dateStr, dayType),
+    fetchTavilyHiddenGemEvent(dateStr, dayType, hiddenGemRegion),
     fetchUitdatabankEvents(dateStr, dayType === 'fam_time'),
     fetchTavilyHoreca('ochtend', dayType),
     fetchTavilyHoreca('middag', dayType),
@@ -204,7 +307,7 @@ export default async (req) => {
   ]);
 
   const horeca = [].concat(ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca);
-  const all = [].concat(tavilyEvents, uitdatabankEvents, horeca);
+  const all = [].concat(officialEvents, hiddenEvents, uitdatabankEvents, horeca);
 
   const byPart = { ochtend: [], middag: [], namiddag: [], avond: [] };
   all.forEach(function (item) {
