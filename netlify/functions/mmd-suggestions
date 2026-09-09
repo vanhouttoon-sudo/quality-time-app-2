@@ -291,36 +291,53 @@ async function fetchTavilyHoreca(timeSlot, dayType) {
 }
 
 export default async (req) => {
-  const url = new URL(req.url);
-  const dateStr = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
-  const dayType = url.searchParams.get('dayType') || 'me_time';
-  const hiddenGemRegion = randomRegion();
+  try {
+    const url = new URL(req.url);
+    const dateStr = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
+    const dayType = url.searchParams.get('dayType') || 'me_time';
+    const hiddenGemRegion = randomRegion();
 
-  const [officialEvents, hiddenEvents, uitdatabankEvents, ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca] = await Promise.all([
-    fetchTavilyOfficialEvents(dateStr, dayType),
-    fetchTavilyHiddenGemEvent(dateStr, dayType, hiddenGemRegion),
-    fetchUitdatabankEvents(dateStr, dayType === 'fam_time'),
-    fetchTavilyHoreca('ochtend', dayType),
-    fetchTavilyHoreca('middag', dayType),
-    fetchTavilyHoreca('namiddag', dayType),
-    fetchTavilyHoreca('avond', dayType)
-  ]);
+    const [officialEvents, hiddenEvents, uitdatabankEvents, ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca] = await Promise.all([
+      fetchTavilyOfficialEvents(dateStr, dayType),
+      fetchTavilyHiddenGemEvent(dateStr, dayType, hiddenGemRegion),
+      fetchUitdatabankEvents(dateStr, dayType === 'fam_time'),
+      fetchTavilyHoreca('ochtend', dayType),
+      fetchTavilyHoreca('middag', dayType),
+      fetchTavilyHoreca('namiddag', dayType),
+      fetchTavilyHoreca('avond', dayType)
+    ]);
 
-  const horeca = [].concat(ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca);
-  const all = [].concat(officialEvents, hiddenEvents, uitdatabankEvents, horeca);
+    const horeca = [].concat(ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca);
+    const all = [].concat(officialEvents, hiddenEvents, uitdatabankEvents, horeca);
 
-  const byPart = { ochtend: [], middag: [], namiddag: [], avond: [] };
-  all.forEach(function (item) {
-    if (byPart[item.timeSlot]) byPart[item.timeSlot].push(item);
-  });
-  // Events eerst binnen elk dagdeel — hoogste weight bovenaan.
-  Object.keys(byPart).forEach(function (k) {
-    byPart[k].sort(function (a, b) { return b.weight - a.weight; });
-  });
+    const byPart = { ochtend: [], middag: [], namiddag: [], avond: [] };
+    all.forEach(function (item) {
+      if (byPart[item.timeSlot]) byPart[item.timeSlot].push(item);
+    });
+    // Events eerst binnen elk dagdeel — hoogste weight bovenaan.
+    Object.keys(byPart).forEach(function (k) {
+      byPart[k].sort(function (a, b) { return b.weight - a.weight; });
+    });
 
-  return new Response(JSON.stringify({ ok: true, date: dateStr, parts: byPart }), {
-    headers: { 'Content-Type': 'application/json' }
-  });
+    return new Response(JSON.stringify({
+      ok: true, date: dateStr, parts: byPart,
+      debug: { hasTavilyKey: !!TAVILY_KEY, hasUitdatabankKey: !!UITDATABANK_KEY }
+    }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  } catch (e) {
+    // Vangnet: een onverwachte fout crasht nu niet meer stil naar een kale
+    // 500 — de echte foutmelding komt mee terug, zichtbaar in de app en
+    // in de Netlify function-logs.
+    console.error('mmd-suggestions onverwachte fout:', e && e.stack || e);
+    return new Response(JSON.stringify({
+      ok: false, error: (e && e.message) || String(e),
+      parts: { ochtend: [], middag: [], namiddag: [], avond: [] }
+    }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 };
 
 // Standaard bereikbaar op /.netlify/functions/mmd-suggestions
