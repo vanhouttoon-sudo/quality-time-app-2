@@ -3470,6 +3470,7 @@ input, select, textarea{
 .mmd-badge-web{background:#e2fbfb;color:#0a5a5a;}
 .mmd-badge-fixed{background:var(--sand2,#ece0d0);color:var(--stone,#a08060);}
 .mmd-badge-event{background:var(--gold,#d4a030);color:#3d1a0a;}
+.mmd-maps-link{display:inline-block;font-family:var(--cond);font-size:8.5px;font-weight:700;color:var(--terra,#c05818);text-decoration:underline;margin-top:5px;margin-left:6px;}
 .mmd-item-actions{display:flex;gap:6px;margin-top:8px;}
 .mmd-act-btn{font-family:var(--cond);font-size:8.5px;font-weight:700;letter-spacing:.5px;padding:5px 8px;border-radius:7px;border:1.5px solid var(--brut-ink,#0a0a0a);background:#fff;cursor:pointer;}
 .mmd-act-btn.keep{background:var(--ocean);color:var(--sand);}
@@ -16582,7 +16583,7 @@ function mmdGenerate(scope, dayType, dateObj, webParts) {
           time: w.time || mockItems[slotIdx].time, icon: w.icon || '📍', title: w.title,
           sub: w.sub || 'Online gevonden', photo: null, photoUrl: w.photoUrl || null,
           source: 'web', category: w.category, weight: w.weight || mmdDefaultWeight('web'),
-          sourceUrl: w.sourceUrl || null
+          sourceUrl: w.sourceUrl || null, mapsUrl: w.mapsUrl || null
         };
         mockItems[slotIdx].candidates.unshift(webCandidate);
       });
@@ -16607,24 +16608,33 @@ function mmdGenerate(scope, dayType, dateObj, webParts) {
   return { parts: parts };
 }
 
-function mmdTodayKey() {
-  var d = new Date();
+// De datum waarvoor Make my Day werkt: de dag die op het hoofdscherm
+// bekeken wordt (todayViewDate), of vandaag als daar niet in genavigeerd is.
+// Zo kan je via de pijltjes op VANDAAG ook een dag in de toekomst kiezen
+// en daar een "Make my Day" voor laten samenstellen.
+function mmdActiveDate() {
+  return todayViewDate ? new Date(todayViewDate) : new Date();
+}
+
+function mmdTodayKey(dateObj) {
+  var d = dateObj || mmdActiveDate();
   var y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
   return 'wf_mmd_' + y + '-' + m + '-' + day;
 }
 
 function renderMakeMyDay() {
+  var activeDate = mmdActiveDate();
   var raw = null;
-  try { raw = localStorage.getItem(mmdTodayKey()); } catch(e) {}
+  try { raw = localStorage.getItem(mmdTodayKey(activeDate)); } catch(e) {}
   if(raw) {
     try {
       var saved = JSON.parse(raw);
-      mmdState = { step:3, timeScope:saved.timeScope, dayType:saved.dayType, timeline:saved.timeline, approved:true };
+      mmdState = { step:3, timeScope:saved.timeScope, dayType:saved.dayType, timeline:saved.timeline, approved:true, forDate: activeDate.toISOString() };
       mmdRenderResult();
       return;
     } catch(e) {}
   }
-  mmdState = { step:1, timeScope:null, dayType:null, timeline:null, approved:false };
+  mmdState = { step:1, timeScope:null, dayType:null, timeline:null, approved:false, forDate: activeDate.toISOString() };
   mmdRenderStep1();
 }
 
@@ -16668,9 +16678,10 @@ async function mmdSelectType(id) {
   mmdState.dayType = id;
   mmdState.approved = false;
   mmdRenderLoading();
-  var today = new Date();
-  var webParts = await mmdFetchWebSuggestions(dk(today), id);
-  mmdState.timeline = mmdGenerate(mmdState.timeScope, mmdState.dayType, today, webParts);
+  var activeDate = mmdActiveDate();
+  mmdState.forDate = activeDate.toISOString();
+  var webParts = await mmdFetchWebSuggestions(dk(activeDate), id);
+  mmdState.timeline = mmdGenerate(mmdState.timeScope, mmdState.dayType, activeDate, webParts);
   mmdRenderResult();
 }
 
@@ -16749,7 +16760,7 @@ function mmdRenderResult() {
   clearInterval(mmdLoadingInterval);
   var tl = mmdState.timeline;
   if(!tl) { mmdRenderStep1(); return; }
-  var d = new Date();
+  var d = mmdState.forDate ? new Date(mmdState.forDate) : mmdActiveDate();
   var dateStr = d.toLocaleDateString('nl-NL', { weekday:'long', day:'numeric', month:'long' });
   var quote = MMD_QUOTES[d.getDate() % MMD_QUOTES.length];
 
@@ -16799,6 +16810,7 @@ function mmdRenderResult() {
         +       '<div><div class="mmd-item-title">' + item.title + '</div><div class="mmd-item-sub">' + item.sub + '</div></div>'
         +     '</div>'
         +     mmdItemBadge(item)
+        +     (item.mapsUrl ? '<a href="' + item.mapsUrl + '" target="_blank" rel="noopener" class="mmd-maps-link" onclick="event.stopPropagation()">📍 Route</a>' : '')
         +     (item.fixed
               ? '<div class="mmd-item-fixed-tag">Vast in je agenda</div>'
               : '<div class="mmd-item-actions">'
@@ -16851,9 +16863,10 @@ function mmdUndoSkip(pIdx, iIdx) {
 
 async function mmdRegenerate() {
   mmdRenderLoading();
-  var today = new Date();
-  var webParts = await mmdFetchWebSuggestions(dk(today), mmdState.dayType);
-  mmdState.timeline = mmdGenerate(mmdState.timeScope, mmdState.dayType, today, webParts);
+  var activeDate = mmdActiveDate();
+  mmdState.forDate = activeDate.toISOString();
+  var webParts = await mmdFetchWebSuggestions(dk(activeDate), mmdState.dayType);
+  mmdState.timeline = mmdGenerate(mmdState.timeScope, mmdState.dayType, activeDate, webParts);
   mmdState.approved = false;
   mmdRenderResult();
 }
@@ -16913,17 +16926,20 @@ function mmdUpdateHomeTile() {
   var titleEl = document.getElementById('ohMMDTitle');
   var subEl = document.getElementById('ohMMDSub');
   if(!titleEl || !subEl) return;
+  var activeDate = mmdActiveDate();
+  var isFuture = !!todayViewDate;
   var raw = null;
-  try { raw = localStorage.getItem(mmdTodayKey()); } catch(e) {}
+  try { raw = localStorage.getItem(mmdTodayKey(activeDate)); } catch(e) {}
   titleEl.textContent = 'Make my day';
+  var dayHint = isFuture ? (' · ' + activeDate.toLocaleDateString('nl-BE', { weekday:'short', day:'numeric', month:'short' })) : '';
   if(raw) {
     try {
       var saved = JSON.parse(raw);
-      subEl.textContent = MMD_TYPE_LABELS[saved.dayType] + ' · bevestigd ✓';
+      subEl.textContent = MMD_TYPE_LABELS[saved.dayType] + ' · bevestigd ✓' + dayHint;
       return;
     } catch(e) {}
   }
-  subEl.textContent = 'Tik om te starten';
+  subEl.textContent = (isFuture ? 'Plan deze dag' : 'Tik om te starten') + dayHint;
 }
 
 // ─── NOTIFICATIONS ───────────────────────────────────────────────
