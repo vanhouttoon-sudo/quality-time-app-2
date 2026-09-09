@@ -78,7 +78,8 @@ const HORECA_FLAVORS = {
   avond: [
     'een verborgen bistro', 'een authentiek buurtrestaurant',
     'een sfeervolle wijnbar met tapas', 'een familiezaak met een verrassende keuken',
-    'een intiem eetcafé'
+    'een intiem eetcafé', 'een gezellig biercafé met een uitgebreide bierkaart',
+    'een verrassend terras om een pintje te drinken'
   ]
 };
 function randomFlavor(slot) {
@@ -114,6 +115,17 @@ function cleanVenueTitle(rawTitle, fallback) {
   return t.length > 2 ? t.slice(0, 45) : fallback;
 }
 
+// Belgisch adrespatroon uit vrije tekst plukken: "Straatnaam 12, 2000 Antwerpen"
+// of "Straatnaam 12A, 2018 Antwerpen". Best-effort — lukt niet altijd, en dan
+// valt de kaart terug op naam + regio voor de Maps-link (zie fetchTavilyHoreca).
+const ADDRESS_RE = /([A-ZÀ-Ý][\wÀ-ÿ'’.\- ]{2,40}\s\d{1,4}[a-zA-Z]?)\s*,?\s*(\d{4})\s+([A-ZÀ-Ý][\wÀ-ÿ\-\s]{2,25})/;
+function extractAddress(text) {
+  if (!text) return null;
+  var m = String(text).match(ADDRESS_RE);
+  if (!m) return null;
+  return (m[1] + ', ' + m[2] + ' ' + m[3]).trim();
+}
+
 // ── Tavily: officiële regionale evenementen via de vertrouwde bronnenlijst ──
 async function fetchTavilyOfficialEvents(dateStr, dayType) {
   if (!TAVILY_KEY) return [];
@@ -141,12 +153,16 @@ async function fetchTavilyOfficialEvents(dateStr, dayType) {
     const picked = pickConcreteResult(data.results);
     return picked.slice(0, 5).map(function (r, i) {
       const fallbackHour = [10, 11, 14, 16, 19][i] || 14;
+      const name = cleanVenueTitle(r.title, 'Evenement in de buurt');
+      const address = extractAddress((r.content || '') + ' ' + (i === 0 ? (data.answer || '') : ''));
       return {
-        title: cleanVenueTitle(r.title, 'Evenement in de buurt'),
-        sub: (i === 0 && data.answer) ? data.answer.slice(0, 100) : ('Online gevonden' + (r.url ? ' · ' + new URL(r.url).hostname.replace('www.', '') : '')),
+        title: name,
+        sub: address ? ('📍 ' + address) : ((i === 0 && data.answer) ? data.answer.slice(0, 100) : ('Online gevonden' + (r.url ? ' · ' + new URL(r.url).hostname.replace('www.', '') : ''))),
         source: 'web', category: 'event', weight: WEIGHT.event,
         timeSlot: timeSlotForHour(fallbackHour), time: String(fallbackHour).padStart(2, '0') + ':00',
-        photoUrl: images[i] || null, sourceUrl: r.url || null, icon: '🎟️'
+        photoUrl: images[i] || null, sourceUrl: r.url || null,
+        mapsUrl: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address || (name + ', ' + HOME_CITY)),
+        icon: '🎟️'
       };
     });
   } catch (e) {
@@ -183,12 +199,16 @@ async function fetchTavilyHiddenGemEvent(dateStr, dayType, region) {
     const picked = pickConcreteResult(data.results);
     return picked.slice(0, 4).map(function (r, i) {
       const fallbackHour = [11, 15, 17, 20][i] || 14;
+      const name = cleanVenueTitle(r.title, 'Verrassing in de buurt');
+      const address = extractAddress((r.content || '') + ' ' + (i === 0 ? (data.answer || '') : ''));
       return {
-        title: cleanVenueTitle(r.title, 'Verrassing in de buurt'),
-        sub: (i === 0 && data.answer) ? data.answer.slice(0, 100) : ('Geheimtip · ' + (r.url ? new URL(r.url).hostname.replace('www.', '') : 'online gevonden')),
+        title: name,
+        sub: address ? ('📍 ' + address) : ((i === 0 && data.answer) ? data.answer.slice(0, 100) : ('Geheimtip · ' + (r.url ? new URL(r.url).hostname.replace('www.', '') : 'online gevonden'))),
         source: 'web', category: 'event', weight: WEIGHT.hiddenEvent,
         timeSlot: timeSlotForHour(fallbackHour), time: String(fallbackHour).padStart(2, '0') + ':00',
-        photoUrl: images[i] || null, sourceUrl: r.url || null, icon: '💎'
+        photoUrl: images[i] || null, sourceUrl: r.url || null,
+        mapsUrl: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address || (name + ', ' + region)),
+        icon: '💎'
       };
     });
   } catch (e) {
@@ -255,7 +275,8 @@ async function fetchTavilyHoreca(timeSlot, dayType) {
   const region = randomRegion();
   const flavor = timeSlot === 'namiddag' && dayType === 'fam_time' ? 'een leuke ijssalon' : randomFlavor(timeSlot);
   const query = 'Geef enkele concrete, met naam genoemde voorbeelden van ' + flavor + ' in of rond ' + region
-    + '. Ik zoek geen grote keten, maar iets bijzonders en lokaals dat de meeste mensen niet meteen zouden kennen. Noem de effectieve naam van de zaak.';
+    + '. Ik zoek geen grote keten, maar iets bijzonders en lokaals dat de meeste mensen niet meteen zouden kennen. '
+    + 'Noem telkens de effectieve naam van de zaak én het adres of de straat waar die te vinden is.';
   try {
     const res = await fetch('https://api.tavily.com/search', {
       method: 'POST',
@@ -277,15 +298,21 @@ async function fetchTavilyHoreca(timeSlot, dayType) {
     const images = data.images || [];
     const picked = pickConcreteResult(data.results);
     return picked.slice(0, 5).map(function (r, i) {
+      const name = cleanVenueTitle(r.title, 'Verrassend plekje in de buurt');
+      const address = extractAddress((r.content || '') + ' ' + (i === 0 ? (data.answer || '') : ''));
+      // Google Maps-link op basis van naam + adres (of anders naam + regio) —
+      // zo is er altijd een concrete, aanklikbare locatie, ook zonder exact adres.
+      const mapsQuery = address ? (name + ', ' + address) : (name + ', ' + region);
       return {
-        title: cleanVenueTitle(r.title, 'Verrassend plekje in de buurt'),
-        sub: (i === 0 && data.answer) ? data.answer.slice(0, 100) : ('Online gevonden · ' + region),
+        title: name,
+        sub: address ? ('📍 ' + address) : ((i === 0 && data.answer) ? data.answer.slice(0, 100) : ('Online gevonden · ' + region)),
         source: 'web',
         category: 'horeca',
         weight: WEIGHT.horeca,
         timeSlot: timeSlot,
         photoUrl: images[i] || null,
         sourceUrl: r.url || null,
+        mapsUrl: 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(mapsQuery),
         icon: '📍'
       };
     });
