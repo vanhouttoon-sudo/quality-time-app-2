@@ -3526,7 +3526,53 @@ input, select, textarea{
 .mmd-loading-dots span:nth-child(3){animation-delay:.3s;}
 .mmd-loading-dots span:nth-child(4){animation-delay:.45s;}
 @keyframes mmdDotPulse{0%,60%,100%{opacity:.2;transform:scale(1);}30%{opacity:1;transform:scale(1.3);}}
+
+/* ═══════════════════════════════════════════════════════════
+   QT SKATE LOADER — herbruikbare kickflip-animatie, overal in de
+   app waar iets aan het laden is (skateboard, geen mannetje op).
+   ═══════════════════════════════════════════════════════════ */
+.qt-skate-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 0;}
+.qt-skate-stage{position:relative;width:70px;height:64px;perspective:500px;}
+.qt-skate-board{
+  position:absolute;left:50%;top:8px;transform-origin:center;
+  font-size:38px;line-height:1;
+  transform:translateX(-50%);
+  animation:qtKickflip 1.15s cubic-bezier(.45,0,.55,1) infinite;
+}
+@keyframes qtKickflip{
+  0%  { transform:translateX(-50%) translateY(0)    rotateY(0deg)   rotate(0deg); }
+  22% { transform:translateX(-50%) translateY(-20px) rotateY(160deg) rotate(-10deg); }
+  50% { transform:translateX(-50%) translateY(-27px) rotateY(360deg) rotate(0deg); }
+  78% { transform:translateX(-50%) translateY(-12px) rotateY(560deg) rotate(9deg); }
+  100%{ transform:translateX(-50%) translateY(0)    rotateY(720deg) rotate(0deg); }
+}
+.qt-skate-shadow{
+  position:absolute;left:50%;bottom:6px;width:34px;height:8px;
+  transform:translateX(-50%);
+  background:rgba(10,10,10,.18);border-radius:50%;
+  animation:qtKickflipShadow 1.15s cubic-bezier(.45,0,.55,1) infinite;
+}
+@keyframes qtKickflipShadow{
+  0%  { transform:translateX(-50%) scale(1);    opacity:.35; }
+  50% { transform:translateX(-50%) scale(.45);  opacity:.15; }
+  100%{ transform:translateX(-50%) scale(1);    opacity:.35; }
+}
+.qt-skate-text{font-family:var(--cond);font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--stone2,#a08060);text-transform:uppercase;}
 </style>
+<script>
+// Herbruikbare skateboard-kickflip-laadindicator — gebruikt op elke plek
+// in de app waar iets opgehaald/verwerkt wordt. Geen mannetje, enkel het
+// board zelf dat een kickflip maakt (rotateY = flip, translateY = sprong).
+function qtSkateLoaderHtml(text){
+  return '<div class="qt-skate-wrap">'
+    + '<div class="qt-skate-stage">'
+    +   '<div class="qt-skate-shadow"></div>'
+    +   '<div class="qt-skate-board">🛹</div>'
+    + '</div>'
+    + (text ? '<div class="qt-skate-text">' + text + '</div>' : '')
+    + '</div>';
+}
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
 </head>
@@ -3960,7 +4006,7 @@ input, select, textarea{
         <!-- RESULTAATPAGINA -->
         <div id="mediaViewResultPage" style="display:none">
           <div style="padding:6px 14px 0;font-family:var(--grotesk);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#3d1a0a;opacity:.5" id="mediaViewResultTitle"></div>
-          <div id="tvGuideContent" style="display:block"><div class="varia-loading">Laden...</div></div>
+          <div id="tvGuideContent" style="display:block"><div class="varia-loading"><div class="qt-skate-wrap"><div class="qt-skate-stage"><div class="qt-skate-shadow"></div><div class="qt-skate-board">🛹</div></div></div></div></div>
           <div id="radioContent" style="display:none"></div>
         </div>
 
@@ -3979,7 +4025,7 @@ input, select, textarea{
         </div>
         <!-- RESULTAATPAGINA: gefilterde lijst -->
         <div id="actListPage" style="display:none">
-          <div id="eventsContent"><div class="varia-loading">Laden...</div></div>
+          <div id="eventsContent"><div class="varia-loading"><div class="qt-skate-wrap"><div class="qt-skate-stage"><div class="qt-skate-shadow"></div><div class="qt-skate-board">🛹</div></div></div></div></div>
           <div style="height:28px"></div>
         </div>
       </div>
@@ -10717,7 +10763,7 @@ function _renderWeerDetail() {
 
   var w = weatherCache[dateStr];
   if(!w) {
-    content.innerHTML = '<div style="padding:48px 24px;text-align:center;background:var(--cream)"><div style="font-size:36px;margin-bottom:12px">⏳</div><div style="font-family:var(--cond);font-size:11px;font-weight:700;letter-spacing:2px;color:var(--stone2)">LADEN...</div></div>';
+    content.innerHTML = '<div style="padding:48px 24px;text-align:center;background:var(--cream)">' + qtSkateLoaderHtml('LADEN...') + '</div>';
     modal.style.display = 'block';
     fetchWeather(dateStr, function(wd) {
       if(wd && weerDetailDate === dateStr) _renderWeerDetail();
@@ -15305,7 +15351,7 @@ function reSaveCustomListings(){ localStorage.setItem('wf_re_custom_listings', J
 function reAllRegios(){ return RE_REGIOS_BASE.concat(RE_CUSTOM_REGIOS); }
 function reSaveCustomRegios(){ localStorage.setItem('wf_re_custom_regios', JSON.stringify(RE_CUSTOM_REGIOS)); }
 var RE_TONY_REGIOS = ["Borgerhout","Mortsel","Edegem","Hove","Boechout","Berchem","2018 Antwerpen"];
-var RE_TONY_DEFAULT = { maxprijs:420000, minkamers:2, tuin:true };
+var RE_TONY_DEFAULT = { minprijs:0, maxprijs:420000, minkamers:2, tuin:true };
 
 // De 20 bronnen: naam, kleur (badge) en prioriteit bij dubbele panden (0 = wint altijd)
 var RE_BRONNEN = [
@@ -15445,6 +15491,7 @@ function reUpdateLiveStatusUI(customMsg){
 
 var reState = {
   regios: new Set(RE_TONY_REGIOS),
+  minprijs: RE_TONY_DEFAULT.minprijs,
   maxprijs: RE_TONY_DEFAULT.maxprijs,
   minkamers: RE_TONY_DEFAULT.minkamers,
   tuin: RE_TONY_DEFAULT.tuin,
@@ -15461,6 +15508,7 @@ function reFilteredSorted(){
   var items = reAllListings().filter(function(l){
     return reState.regios.has(l.regio) &&
       l.prijs <= reState.maxprijs &&
+      l.prijs >= reState.minprijs &&
       l.kamers >= reState.minkamers &&
       (!reState.tuin || l.tuin);
   });
@@ -15590,9 +15638,12 @@ function reRenderImpList(){
 
 function reApplyTonyFilter(){
   reState.regios = new Set(RE_TONY_REGIOS);
+  reState.minprijs = RE_TONY_DEFAULT.minprijs;
   reState.maxprijs = RE_TONY_DEFAULT.maxprijs;
   reState.minkamers = RE_TONY_DEFAULT.minkamers;
   reState.tuin = RE_TONY_DEFAULT.tuin;
+  var prMin = document.getElementById('rePriceRangeMin'); if(prMin) prMin.value = reState.minprijs;
+  var plMin = document.getElementById('rePriceLabelMin'); if(plMin) plMin.textContent = reFmtPrice(reState.minprijs);
   var pr = document.getElementById('rePriceRange'); if(pr) pr.value = reState.maxprijs;
   var pl = document.getElementById('rePriceLabel'); if(pl) pl.textContent = reFmtPrice(reState.maxprijs);
   var ks = document.getElementById('reKamersSel'); if(ks) ks.value = reState.minkamers;
@@ -15632,7 +15683,9 @@ function reRenderList(){
   }
   list.innerHTML = items.map(function(l){
     return '<a class="re-card '+(l.gezien?'re-seen':'')+'" href="'+l.url+'" target="_blank" rel="noopener">'
-      + '<div class="re-photo" style="background:'+l.kleur+'">'+l.icon+'</div>'
+      + (l.foto
+          ? '<div class="re-photo" style="background:'+l.kleur+';padding:0;overflow:hidden"><img src="'+l.foto+'" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.style.padding=\'\';this.parentElement.style.overflow=\'\';this.outerHTML=\''+l.icon+'\'"></div>'
+          : '<div class="re-photo" style="background:'+l.kleur+'">'+l.icon+'</div>')
       + '<div class="re-info">'
       +   '<div class="re-addr">'+l.adres+'</div>'
       +   '<div class="re-regio">'+l.regio+' · <span class="re-bronbadge" style="background:'+reBronKleur(l.bron)+'">'+l.bron+'</span></div>'
@@ -15666,7 +15719,7 @@ function renderRealEstate(){
     + '</div>'
     + '<div class="re-list" id="reList"></div>'
     + '<div class="re-loading-overlay" id="reLoadingOverlay" style="display:none">'
-    +   '<div class="re-loading-spinner"></div>'
+    +   '<div class="qt-skate-wrap"><div class="qt-skate-stage"><div class="qt-skate-shadow"></div><div class="qt-skate-board">🛹</div></div></div>'
     +   '<div class="re-loading-text">Panden ophalen bij ERA (scraper) en Immoweb, Immoscoop, We Invest, Hebbes (zoekbron)…</div>'
     + '</div>'
     + '</div>'
@@ -15685,6 +15738,8 @@ function renderRealEstate(){
     +     '</div>'
     +     '<div class="re-fgroup"><span class="re-ftitle">Regio</span><div class="re-regiolist" id="reRegioList"></div>'
     +       '<div class="re-addregio"><input type="text" id="reNewRegioInput" placeholder="Eigen regio toevoegen…"><button id="reAddRegioBtn">+</button></div></div>'
+    +     '<div class="re-fgroup"><span class="re-ftitle">Min. prijs — <span class="re-pricelabel" id="rePriceLabelMin">€ 0</span></span>'
+    +       '<input type="range" id="rePriceRangeMin" min="0" max="650000" step="10000" value="0"></div>'
     +     '<div class="re-fgroup"><span class="re-ftitle">Max. prijs — <span class="re-pricelabel" id="rePriceLabel">€ 420.000</span></span>'
     +       '<input type="range" id="rePriceRange" min="150000" max="700000" step="10000" value="420000"></div>'
     +     '<div class="re-fgroup"><span class="re-ftitle">Min. aantal kamers</span>'
@@ -15731,8 +15786,23 @@ function renderRealEstate(){
   };
   document.getElementById('reSortDatum').onclick = function(){ reSetSort('datum'); };
   document.getElementById('reSortRel').onclick = function(){ reSetSort('relevantie'); };
+  document.getElementById('rePriceRangeMin').oninput = function(e){
+    reState.minprijs = +e.target.value;
+    if(reState.minprijs > reState.maxprijs){
+      reState.maxprijs = reState.minprijs;
+      var prMax = document.getElementById('rePriceRange'); if(prMax) prMax.value = reState.maxprijs;
+      document.getElementById('rePriceLabel').textContent = reFmtPrice(reState.maxprijs);
+    }
+    document.getElementById('rePriceLabelMin').textContent = reFmtPrice(reState.minprijs);
+    reRenderList();
+  };
   document.getElementById('rePriceRange').oninput = function(e){
     reState.maxprijs = +e.target.value;
+    if(reState.maxprijs < reState.minprijs){
+      reState.minprijs = reState.maxprijs;
+      var prMin = document.getElementById('rePriceRangeMin'); if(prMin) prMin.value = reState.minprijs;
+      document.getElementById('rePriceLabelMin').textContent = reFmtPrice(reState.minprijs);
+    }
     document.getElementById('rePriceLabel').textContent = reFmtPrice(reState.maxprijs);
     reRenderList();
   };
@@ -16903,7 +16973,7 @@ var mmdLoadingInterval = null;
 function mmdRenderLoading() {
   document.getElementById('mmdContent').innerHTML =
     '<div class="mmd-loading">'
-    + '<div class="mmd-loading-dice">🎲</div>'
+    + qtSkateLoaderHtml()
     + '<div class="mmd-loading-title">Jouw dag wordt samengesteld</div>'
     + '<div class="mmd-loading-step" id="mmdLoadingStep">' + MMD_LOADING_STEPS[0] + '</div>'
     + '<div class="mmd-loading-dots"><span></span><span></span><span></span><span></span></div>'
