@@ -104,13 +104,15 @@ async function searchSite(site, regios) {
         search_depth: 'advanced',
         max_results: site.maxResults,
         include_domains: [site.domain],
+        include_images: true,
         time_range: 'week' // geeft recent doorzochte/geïndexeerde pagina's voorrang — geen garantie op "nieuwste listing", wel een bias richting verser
       })
     });
     if (!res.ok) { console.error('Tavily vastgoed HTTP (' + site.bron + ')', res.status, await res.text()); return { listings: [], metDatum: 0 }; }
     const data = await res.json();
+    const images = data.images || [];
     const listings = [];
-    (data.results || []).forEach(function (r) {
+    (data.results || []).forEach(function (r, i) {
       const text = (r.title || '') + ' ' + (r.content || '');
       const prijs = extractPrice(text);
       if (!prijs) return; // prijs is verplicht — zonder prijs geen bruikbare kaart
@@ -126,6 +128,7 @@ async function searchSite(site, regios) {
         datum: dateInfo.date.toISOString(),
         _datumHerkend: dateInfo.recognized, // enkel voor sortering hieronder, niet getoond in de app
         prijs: prijs,
+        foto: images[i] || null, // eerste/bijhorende foto uit Tavily's include_images — best-effort matching op resultaatvolgorde
         score: 72, // neutrale score — geen betrouwbare basis voor een fijnere inschatting uit zoektekst
         gezien: false
       });
