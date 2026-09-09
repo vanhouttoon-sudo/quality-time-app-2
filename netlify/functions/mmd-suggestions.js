@@ -54,7 +54,7 @@ const TAVILY_KEY = process.env.TAVILY_API_KEY;
 // Events wegen bewust zwaarder dan horeca, op uitdrukkelijk verzoek:
 // een evenement is tijdsgebonden en dus "nu of nooit", een terrasje
 // staat er morgen ook nog.
-const WEIGHT = { event: 20, hiddenEvent: 16, horeca: 5 };
+const WEIGHT = { event: 20, hiddenEvent: 16, horeca: 12 };
 
 // Variatie in het TYPE horeca-plek — telkens een andere invalshoek i.p.v.
 // altijd "koffiebar" of "terrasje". Eén willekeurige invalshoek per
@@ -95,7 +95,12 @@ function timeSlotForHour(h) {
 
 // Herkent overzichtsartikels ("Top 10 terrasjes...", "5 leukste cafés...")
 // zodat we die niet als ÉÉN concrete zaak voorstellen.
-const LISTICLE_RE = /\b(top\s*\d+|de\s*\d+\s|beste\s*\d+|\d+\s*(beste|leukste|leuke|toffe|terrassen|terrasjes|caf[ée]s|restaurants|adressen|plekjes|plekken|tips|zaken))\b/i;
+// Herkent overzichtsartikels ("Top 10 terrasjes...", "5 leukste cafés...")
+// én overzichts-/programmapagina's ("Wilrijkse Zomerkalender", "activiteiten-
+// kalender", "programma") — dat zijn ook geen concrete, ene activiteit,
+// maar een verzamelpagina van vele activiteiten. Beide worden geweerd
+// zodat er telkens één concreet ding overblijft, geen verzamelpagina.
+const LISTICLE_RE = /\b(top\s*\d+|de\s*\d+\s|beste\s*\d+|\d+\s*(beste|leukste|leuke|toffe|terrassen|terrasjes|caf[ée]s|restaurants|adressen|plekjes|plekken|tips|zaken)|(zomer|winter|lente|herfst|jaar|activiteiten|evenementen)?kalender|programma(boekje)?|activiteitenaanbod|overzicht(spagina)?|wat\s*te\s*doen\s*in)\b/i;
 
 function pickConcreteResult(results) {
   results = results || [];
@@ -114,8 +119,8 @@ async function fetchTavilyOfficialEvents(dateStr, dayType) {
   if (!TAVILY_KEY) return [];
   const dateLabel = new Date(dateStr + 'T12:00:00').toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' });
   const query = dayType === 'fam_time'
-    ? 'Welke evenementen, activiteiten of familie-uitjes zijn er specifiek op ' + dateLabel + ' in en rond ' + HOME_CITY + '? Noem concrete namen en locaties, geen algemene tips.'
-    : 'Welke evenementen of activiteiten vinden er specifiek plaats op ' + dateLabel + ' in en rond ' + HOME_CITY + '? Noem concrete namen en locaties, geen algemene tips.';
+    ? 'Welke evenementen, activiteiten of familie-uitjes zijn er specifiek op ' + dateLabel + ' in en rond ' + HOME_CITY + '? Noem één concrete, met naam genoemde activiteit met datum en locatie — geen overzichtskalender of programmapagina, wel het specifieke evenement zelf.'
+    : 'Welke evenementen of activiteiten vinden er specifiek plaats op ' + dateLabel + ' in en rond ' + HOME_CITY + '? Noem één concrete, met naam genoemde activiteit met datum en locatie — geen overzichtskalender of programmapagina, wel het specifieke evenement zelf.';
   try {
     const res = await fetch('https://api.tavily.com/search', {
       method: 'POST',
@@ -162,7 +167,7 @@ async function fetchTavilyHiddenGemEvent(dateStr, dayType, region) {
   if (!TAVILY_KEY) return [];
   const dateLabel = new Date(dateStr + 'T12:00:00').toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' });
   const query = 'Wat zijn verrassende, minder bekende evenementen, pop-ups, markten, exposities of optredens rond ' + dateLabel
-    + ' in of rond ' + region + '? Geen grote toeristische klassiekers, wel dingen die een lokale insider zou aanraden en die niet iedereen kent.';
+    + ' in of rond ' + region + '? Geen grote toeristische klassiekers, wel dingen die een lokale insider zou aanraden en die niet iedereen kent. Noem één specifieke, met naam genoemde activiteit — geen overzichtskalender of programmapagina met veel activiteiten samen.';
   try {
     const res = await fetch('https://api.tavily.com/search', {
       method: 'POST',
