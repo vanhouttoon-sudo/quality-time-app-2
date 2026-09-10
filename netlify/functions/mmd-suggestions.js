@@ -18,16 +18,20 @@
 //   UITDATABANK_API_KEY
 // ═══════════════════════════════════════════════════════════════════
 
-// Pas dit aan naar jullie eigen regio als dat niet klopt.
-const HOME_CITY = 'Antwerpen';
+// Thuisbasis — Edegem. Alle horeca-zoekopdrachten draaien hier nu rond,
+// niet meer willekeurig over een brede regio (dat zorgde net voor te
+// generieke/te verre suggesties).
+const HOME_CITY = 'Edegem';
+const HOME_RADIUS_KM = 15;
 
-// Antwerpen + de Zuidrand — per generatie wordt hier willekeurig uit
-// geput, zodat je niet iedere keer dezelfde buurt/gemeente voorgeschoteld
-// krijgt. Voel je vrij dit uit te breiden met andere buurten die jullie
-// kennen.
+// Gemeentes binnen ~15 km van Edegem — een binnenring (letterlijk vlak
+// naast Edegem) die vaker voorkomt, plus een buitenring (tot ~15 km,
+// inclusief Antwerpen-centrum en Deurne) voor meer variatie zonder de
+// straal te overschrijden. Edegem zelf staat er nog het vaakst in.
 const REGIONS = [
-  'Antwerpen centrum', 'Zurenborg Antwerpen', 'Antwerpen-Zuid', 'Berchem',
-  'Wilrijk', 'Mortsel', 'Edegem', 'Hove', 'Boechout', 'Kontich', 'Deurne'
+  'Edegem', 'Edegem', 'Edegem',
+  'Hove', 'Kontich', 'Mortsel', 'Wilrijk', 'Aartselaar', 'Boechout',
+  'Berchem', 'Borsbeek', 'Wommelgem', 'Antwerpen centrum', 'Deurne', 'Zwijndrecht', 'Boom'
 ];
 function randomRegion() {
   return REGIONS[Math.floor(Math.random() * REGIONS.length)];
@@ -54,7 +58,7 @@ const TAVILY_KEY = process.env.TAVILY_API_KEY;
 // Events wegen bewust zwaarder dan horeca, op uitdrukkelijk verzoek:
 // een evenement is tijdsgebonden en dus "nu of nooit", een terrasje
 // staat er morgen ook nog.
-const WEIGHT = { event: 20, hiddenEvent: 16, horeca: 12 };
+const WEIGHT = { event: 20, hiddenEvent: 16, horeca: 12, movie: 14 };
 
 // Variatie in het TYPE horeca-plek — telkens een andere invalshoek i.p.v.
 // altijd "koffiebar" of "terrasje". Eén willekeurige invalshoek per
@@ -274,8 +278,9 @@ async function fetchTavilyHoreca(timeSlot, dayType) {
   if (!TAVILY_KEY) return [];
   const region = randomRegion();
   const flavor = timeSlot === 'namiddag' && dayType === 'fam_time' ? 'een leuke ijssalon' : randomFlavor(timeSlot);
-  const query = 'Geef enkele concrete, met naam genoemde voorbeelden van ' + flavor + ' in of rond ' + region
-    + '. Ik zoek geen grote keten, maar iets bijzonders en lokaals dat de meeste mensen niet meteen zouden kennen. '
+  const query = 'Geef enkele concrete, met naam genoemde voorbeelden van ' + flavor + ' in ' + region
+    + ', binnen ongeveer ' + HOME_RADIUS_KM + ' km van Edegem (provincie Antwerpen). '
+    + 'Ik zoek geen grote keten, maar iets bijzonders en lokaals dat de meeste mensen niet meteen zouden kennen. '
     + 'Noem telkens de effectieve naam van de zaak én het adres of de straat waar die te vinden is.';
   try {
     const res = await fetch('https://api.tavily.com/search', {
@@ -322,6 +327,55 @@ async function fetchTavilyHoreca(timeSlot, dayType) {
   }
 }
 
+// Betrouwbare Belgische bioscoopsites — geen algemene "wat is er te zien"-
+// vraag (die geeft vaak oude/verlopen releases), maar expliciet gericht op
+// de huidige of komende week, beperkt tot bronnen die altijd actuele
+// speellijsten tonen.
+const CINEMA_DOMAINS = ['kinepolis.be', 'cinenews.be', 'cartoons.be'];
+async function fetchTavilyNewMovie(dateStr) {
+  if (!TAVILY_KEY) return [];
+  const dateLabel = new Date(dateStr + 'T12:00:00').toLocaleDateString('nl-BE', { day: 'numeric', month: 'long' });
+  const query = 'Welke nieuwe film is deze week uitgebracht in de bioscoop in België, te zien rond ' + dateLabel
+    + ' in of nabij Antwerpen/Edegem? Noem de exacte titel van de film en in welke bioscoop die draait.';
+  try {
+    const res = await fetch('https://api.tavily.com/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TAVILY_KEY },
+      body: JSON.stringify({
+        query: query,
+        search_depth: 'advanced',
+        max_results: 8,
+        include_images: true,
+        include_answer: true,
+        time_range: 'week',
+        include_domains: CINEMA_DOMAINS
+      })
+    });
+    if (!res.ok) { console.error('Tavily film HTTP', res.status, await res.text()); return []; }
+    const data = await res.json();
+    const images = data.images || [];
+    const picked = pickConcreteResult(data.results);
+    return picked.slice(0, 3).map(function (r, i) {
+      const name = cleanVenueTitle(r.title, 'Film in de bioscoop');
+      return {
+        title: name,
+        sub: (i === 0 && data.answer) ? data.answer.slice(0, 100) : 'Online gevonden · nu in de bioscoop',
+        source: 'web',
+        category: 'movie',
+        weight: WEIGHT.movie,
+        timeSlot: 'avond',
+        time: '20:00',
+        photoUrl: images[i] || null,
+        sourceUrl: r.url || null,
+        icon: '🎬'
+      };
+    });
+  } catch (e) {
+    console.error('Tavily film fout:', e.message);
+    return [];
+  }
+}
+
 export default async (req) => {
   try {
     const url = new URL(req.url);
@@ -329,10 +383,11 @@ export default async (req) => {
     const dayType = url.searchParams.get('dayType') || 'me_time';
     const hiddenGemRegion = randomRegion();
 
-    const [officialEvents, hiddenEvents, uitdatabankEvents, ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca] = await Promise.all([
+    const [officialEvents, hiddenEvents, uitdatabankEvents, newMovies, ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca] = await Promise.all([
       fetchTavilyOfficialEvents(dateStr, dayType),
       fetchTavilyHiddenGemEvent(dateStr, dayType, hiddenGemRegion),
       fetchUitdatabankEvents(dateStr, dayType === 'fam_time'),
+      fetchTavilyNewMovie(dateStr),
       fetchTavilyHoreca('ochtend', dayType),
       fetchTavilyHoreca('middag', dayType),
       fetchTavilyHoreca('namiddag', dayType),
@@ -340,7 +395,7 @@ export default async (req) => {
     ]);
 
     const horeca = [].concat(ochtendHoreca, middagHoreca, namiddagHoreca, avondHoreca);
-    const all = [].concat(officialEvents, hiddenEvents, uitdatabankEvents, horeca);
+    const all = [].concat(officialEvents, hiddenEvents, uitdatabankEvents, newMovies, horeca);
 
     const byPart = { ochtend: [], middag: [], namiddag: [], avond: [] };
     all.forEach(function (item) {
