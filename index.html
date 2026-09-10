@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -16839,6 +16840,7 @@ function mmdStatusBanner() {
 function mmdItemBadge(item) {
   if(item.source === 'fixed') return '<span class="mmd-badge mmd-badge-fixed">Vast</span>';
   if(item.category === 'event') return '<span class="mmd-badge mmd-badge-event">🎟️ Evenement</span>';
+  if(item.category === 'movie') return '<span class="mmd-badge mmd-badge-event">🎬 Nieuwe film</span>';
   if(item.category === 'horeca') return '<span class="mmd-badge mmd-badge-web">Online gevonden</span>';
   if(item.source === 'act') return '<span class="mmd-badge mmd-badge-act">Activiteit</span>';
   if(item.source === 'web') return '<span class="mmd-badge mmd-badge-web">Online gevonden</span>';
@@ -16901,6 +16903,7 @@ function mmdRenderResult() {
         +     '</div>'
         +     mmdItemBadge(item)
         +     (item.mapsUrl ? '<a href="' + item.mapsUrl + '" target="_blank" rel="noopener" class="mmd-maps-link" onclick="event.stopPropagation()">📍 Route</a>' : '')
+        +     (item.sourceUrl ? '<a href="' + item.sourceUrl + '" target="_blank" rel="noopener" class="mmd-maps-link" onclick="event.stopPropagation()">🔗 Meer info</a>' : '')
         +     (item.fixed
               ? '<div class="mmd-item-fixed-tag">Vast in je agenda</div>'
               : '<div class="mmd-item-actions">'
