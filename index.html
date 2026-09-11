@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -3714,7 +3713,7 @@ function qtSkateLoaderHtml(text){
           </div>
         </div>
         <div class="oh-card oh-card-sm" id="ohCardWaste" onclick="openDetailSheet('waste')">
-          <div class="oh-card-icon" style="background:#e8f5e8">♻️</div>
+          <div class="oh-card-icon" style="background:#e3edf7;color:#0a3d62">♻︎</div>
           <div class="oh-card-body">
             <div class="oh-card-label" id="ohWasteLabel">Afval</div>
             <div class="oh-card-title" id="ohWasteTitle">Geen ophaling</div>
@@ -4974,8 +4973,9 @@ function qtSkateLoaderHtml(text){
       <div id="exVideoTitle" style="font-family:var(--cond);font-size:11px;font-weight:700;color:var(--sand);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.5px"></div>
       <button onclick="closeExVideo()" style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);color:var(--brut-ink,#0a0a0a);width:32px;height:32px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px">✕</button>
     </div>
-    <div style="position:relative;width:100%;padding-bottom:56.25%;background:#000">
-      <iframe id="exVideoFrame" src="" allowfullscreen allow="autoplay; encrypted-media; gyroscope; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"></iframe>
+    <div style="position:relative;width:100%;padding-bottom:75%;background:#000;overflow:hidden">
+      <img id="exVideoImg1" src="" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000">
+      <img id="exVideoImg2" src="" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;opacity:0;transition:opacity .5s ease">
     </div>
     <div id="exVideoTip" style="padding:8px 14px;font-family:var(--body);font-size:11px;color:rgba(240,232,216,.5);border-top:1px solid rgba(255,255,255,.06);min-height:14px"></div>
   </div>
@@ -4990,14 +4990,13 @@ function qtSkateLoaderHtml(text){
       <div class="modal-title" id="modalTitle"></div>
       <div class="modal-sets" id="modalSets"></div>
     </div>
-    <!-- Inline YouTube player (vervangt animatie) -->
-    <div id="modalVideoWrap" style="position:relative;width:100%;padding-bottom:56.25%;background:#000;display:none">
-      <iframe id="modalVideoFrame" src="" allowfullscreen allow="autoplay; encrypted-media; gyroscope; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"></iframe>
+    <!-- Inline oefening-GIF (RepDB), vervangt YouTube -->
+    <div id="modalVideoWrap" style="position:relative;width:100%;padding-bottom:75%;background:#000;display:none;overflow:hidden">
+      <img id="modalVideoImg1" src="" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000">
+      <img id="modalVideoImg2" src="" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;opacity:0;transition:opacity .5s ease">
+      <div style="position:absolute;bottom:4px;right:8px;font-family:var(--body);font-size:8px;color:rgba(255,255,255,.5)">RepDB</div>
     </div>
-    <div id="modalNoVideo" style="display:none;height:80px;background:var(--sand2);display:flex;align-items:center;justify-content:center;gap:8px">
-      <span style="font-size:24px">🏋️</span>
-      <span style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--stone2);text-transform:uppercase">Geen video beschikbaar</span>
-    </div>
+    <div id="modalNoVideo" style="display:none"></div>
     <div style="padding:12px 18px">
       <div class="modal-desc" id="modalDesc"></div>
       <div class="sec-label" style="margin-bottom:7px">Uitvoeringstips</div>
@@ -5322,8 +5321,9 @@ function qtSkateLoaderHtml(text){
       <div id="exVideoTitle" style="font-family:var(--cond);font-size:11px;font-weight:700;color:var(--sand);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.5px"></div>
       <button onclick="closeExVideo()" style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);color:var(--brut-ink,#0a0a0a);width:32px;height:32px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px">✕</button>
     </div>
-    <div style="position:relative;width:100%;padding-bottom:56.25%;background:#000">
-      <iframe id="exVideoFrame" src="" allowfullscreen allow="autoplay; encrypted-media; gyroscope; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"></iframe>
+    <div style="position:relative;width:100%;padding-bottom:75%;background:#000;overflow:hidden">
+      <img id="exVideoImg1" src="" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000">
+      <img id="exVideoImg2" src="" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;opacity:0;transition:opacity .5s ease">
     </div>
     <div id="exVideoTip" style="padding:8px 14px;font-family:var(--body);font-size:11px;color:rgba(240,232,216,.5);border-top:1px solid rgba(255,255,255,.06);min-height:14px"></div>
   </div>
@@ -5338,14 +5338,13 @@ function qtSkateLoaderHtml(text){
       <div class="modal-title" id="modalTitle"></div>
       <div class="modal-sets" id="modalSets"></div>
     </div>
-    <!-- Inline YouTube player (vervangt animatie) -->
-    <div id="modalVideoWrap" style="position:relative;width:100%;padding-bottom:56.25%;background:#000;display:none">
-      <iframe id="modalVideoFrame" src="" allowfullscreen allow="autoplay; encrypted-media; gyroscope; picture-in-picture" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none"></iframe>
+    <!-- Inline oefening-GIF (RepDB), vervangt YouTube -->
+    <div id="modalVideoWrap" style="position:relative;width:100%;padding-bottom:75%;background:#000;display:none;overflow:hidden">
+      <img id="modalVideoImg1" src="" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000">
+      <img id="modalVideoImg2" src="" alt="" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:contain;background:#000;opacity:0;transition:opacity .5s ease">
+      <div style="position:absolute;bottom:4px;right:8px;font-family:var(--body);font-size:8px;color:rgba(255,255,255,.5)">RepDB</div>
     </div>
-    <div id="modalNoVideo" style="display:none;height:80px;background:var(--sand2);display:flex;align-items:center;justify-content:center;gap:8px">
-      <span style="font-size:24px">🏋️</span>
-      <span style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2px;color:var(--stone2);text-transform:uppercase">Geen video beschikbaar</span>
-    </div>
+    <div id="modalNoVideo" style="display:none"></div>
     <div style="padding:12px 18px">
       <div class="modal-desc" id="modalDesc"></div>
       <div class="sec-label" style="margin-bottom:7px">Uitvoeringstips</div>
@@ -7240,7 +7239,7 @@ function renderAgendaInDayPanel(dateStr) {
 const WASTE_ICONS = {
   gft: { icon:'🌿', label:'GFT',            color:'#2d6a4f', desc:'Groente-, fruit- en tuinafval' },
   hv:  { icon:'🗑️', label:'Restafval',      color:'#70624e', desc:'Huisvuil zone 1' },
-  pmd: { icon:'<span class="pmd-blue">♻</span>', label:'PMD', color:'#1a6fa8', desc:'Plastic, metaal & drankkartons' },
+  pmd: { icon:'<span class="pmd-blue" style="color:#0a3d62">♻︎</span>', label:'PMD', color:'#1a6fa8', desc:'Plastic, metaal & drankkartons' },
   pk:  { icon:'📦', label:'Papier & karton', color:'#5a3e2b', desc:'Kranten, tijdschriften, karton' },
   tex: { icon:'👕', label:'Textiel',         color:'#8b5e3c', desc:'Kleding, gordijnen, beddengoed' },
   gv:  { icon:'🪣', label:'Grofvuil',        color:'#907e6a', desc:'Groot huisraad' },
@@ -7248,6 +7247,13 @@ const WASTE_ICONS = {
   mrp: { icon:'🚚', label:'Mobiel recyclagepark', color:'#1a5276', desc:'Tijdelijk recyclagepark in de buurt' },
   kb:  { icon:'🎄', label:'Kerstboom',       color:'#196f3d', desc:'Ophaling kerstbomen' }
 };
+// Sommige WASTE_ICONS bevatten HTML (bv. pmd, voor de blauwe kleur van ♻ via innerHTML).
+// Voor plaintext-contexten zoals push-notificaties (Notification.body toont geen HTML)
+// geeft dit de kale tekst-versie terug, zodat er nooit rauwe <span>-tags verschijnen.
+function wastePlainIcon(t) {
+  var icon = (WASTE_ICONS[t] || {}).icon || '';
+  return icon.replace(/<[^>]+>/g, '');
+}
 
 // Alle ophaaldata 2026 per fractie
 // HV zone 1 en zone 2 zijn apart — kies jouw zone in instellingen
@@ -7299,7 +7305,7 @@ function scheduleWasteNotifications() {
       const msToEvening = evening - now;
       if(msToEvening > 0 && msToEvening < 86400000) {
         setTimeout(() => {
-          const fracs = tomorrowWaste.map(t => WASTE_ICONS[t].icon + ' ' + WASTE_ICONS[t].label).join(', ');
+          const fracs = tomorrowWaste.map(t => wastePlainIcon(t) + ' ' + WASTE_ICONS[t].label).join(', ');
           qtNotif('🗑️ Morgen afval!', 'Vergeet niet: ' + fracs + ' — zet voor 6:00 buiten.', {tag:'afval-morgen',requireInteraction:true});
           scheduleWasteNotifications(); // reschedule for next day
         }, msToEvening);
@@ -7310,7 +7316,7 @@ function scheduleWasteNotifications() {
       const msToMorning = morning - now;
       if(msToMorning > 0 && msToMorning < 86400000) {
         setTimeout(() => {
-          const fracs = todayWaste.map(t => WASTE_ICONS[t].icon + ' ' + WASTE_ICONS[t].label).join(', ');
+          const fracs = todayWaste.map(t => wastePlainIcon(t) + ' ' + WASTE_ICONS[t].label).join(', ');
           qtNotif('🗑️ Vandaag afval!', fracs + ' wordt vandaag opgehaald — zet buiten!', {tag:'afval-vandaag',requireInteraction:true});
         }, msToMorning);
       }
@@ -8996,63 +9002,60 @@ function openEventDetail(ev) {
   backdrop.classList.add('open');
 }
 
+// Bron: RepDB (repdb.co / github.com/RepDB/exercise-dataset), gratis tier, attributie vereist.
+// Elke entry heeft óf {start,peak} (2-frame loop) óf {main} (1 statische pose).
+// Ontbreekt een oefening hier, dan valt de modal terug op RECIPE_ULTIMATE_FALLBACK_IMG.
 var EX_VIDEOS={
-  "Push-ups (breed)":       {id:"_l3ySVKYVJ8", t:15},
-  "Push-ups":               {id:"_l3ySVKYVJ8", t:15},
-  "Decline push-ups":       {id:"pkOBNLHyJb8", t:8},
-  "Decline push-ups (voeten op stoel)": {id:"pkOBNLHyJb8", t:8},
-  "Diamond push-ups":       {id:"J0DXBSpgUxs", t:10},
-  "Wide-to-narrow push-ups":{id:"_l3ySVKYVJ8", t:40},
-  "Archer push-ups":        {id:"J0DXBSpgUxs", t:35},
-  "Archer push-ups (slow)": {id:"J0DXBSpgUxs", t:35},
-  "Plyometric push-ups":    {id:"pkOBNLHyJb8", t:45},
-  "Pseudo planche push-ups":{id:"J0DXBSpgUxs", t:55},
-  "Pike push-ups":          {id:"x7_I5SO_ExE", t:10},
-  "Pike push-ups + shoulder tap":       {id:"x7_I5SO_ExE", t:10},
-  "Pike push-ups to downward dog":      {id:"x7_I5SO_ExE", t:30},
-  "Lateral raises (2.5kg)": {id:"3VcKaXpzqRo", t:12},
-  "Lateral raises + front raise combo (2.5kg)": {id:"3VcKaXpzqRo", t:35},
-  "Tricep dips (stoel)":    {id:"0326dy_-CzM", t:10},
-  "Tricep overhead extension (2.5kg)":  {id:"0326dy_-CzM", t:40},
-  "Superman holds":         {id:"z6PJMT2y8GQ", t:10},
-  "Superman pulses":        {id:"z6PJMT2y8GQ", t:10},
-  "Reverse snow angels (mat)":          {id:"z6PJMT2y8GQ", t:30},
-  "Towel/deurlijst rows":   {id:"zC3nLlEvin4", t:10},
-  "Hammer curls (2.5kg)":   {id:"zC3nLlEvin4", t:35},
-  "Hammer curls 21s (2.5kg)":{id:"zC3nLlEvin4", t:35},
-  "Bicep curl 21s (2.5kg)": {id:"zC3nLlEvin4", t:35},
-  "Glute bridge":           {id:"8bbE64NuDKo", t:10},
-  "Hip thrusts (mat)":      {id:"8bbE64NuDKo", t:10},
-  "Hip thrusts (2.5kg op heup)":        {id:"8bbE64NuDKo", t:30},
-  "Hip thrusts (2.5kg, slow 4s)":       {id:"8bbE64NuDKo", t:30},
-  "Donkey kicks":           {id:"KgghFOMKnkE", t:10},
-  "Donkey kicks + fire hydrants":       {id:"I8lTSGfVCRs", t:10},
-  "Single-leg glute bridge":{id:"8bbE64NuDKo", t:50},
-  "Bulgarian split squat (stoel)":      {id:"KgghFOMKnkE", t:30},
-  "Single-leg deadlift (2.5kg)":        {id:"KgghFOMKnkE", t:50},
-  "Crunches":               {id:"5ER5Of4MOPI", t:8},
-  "Bicycle crunches":       {id:"5ER5Of4MOPI", t:30},
-  "Plank (elbow + arm alternating)":    {id:"pSHjTRCQxIw", t:15},
-  "Plank shoulder taps":    {id:"pSHjTRCQxIw", t:35},
-  "Hanging knee raises / lying leg raises": {id:"5ER5Of4MOPI", t:55},
-  "Leg raises (mat)":       {id:"5ER5Of4MOPI", t:55},
-  "Russian twists (2.5kg)": {id:"5ER5Of4MOPI", t:75},
-  "Oblique raises (mat)":   {id:"5ER5Of4MOPI", t:90},
-  "Oblique toe touches":    {id:"5ER5Of4MOPI", t:90},
-  "V-ups (mat)":            {id:"5ER5Of4MOPI", t:110},
-  "V-ups + tuck crunch combo":          {id:"5ER5Of4MOPI", t:110},
-  "Ab rollout (handdoek op mat)":       {id:"pSHjTRCQxIw", t:55},
-  "L-sit hold (grond)":     {id:"16a529-n9KY", t:10},
-  "Dragon flag progressie (mat)":       {id:"16a529-n9KY", t:35},
-  "Inchworm":               {id:"52yTGobHkEk", t:10},
-  "Deep squat hold":        {id:"apbPUa2hhkQ", t:10},
-  "Arm circles":            {id:"pSHjTRCQxIw", t:0},
-  "Jumping jacks":          {id:"c4DAnQ9X4tA", t:10},
-  "Child's pose":           {id:"2M-pXFpB4FY", t:10},
-  "Pigeon pose":            {id:"2M-pXFpB4FY", t:40},
-  "Doorway chest stretch":  {id:"TBv7v6Vyzmc", t:10},
-  "Seated hamstring stretch":{id:"TBv7v6Vyzmc", t:35},
-  "Cat-cow stretch":        {id:"kqnua4rHVZA", t:10}
+  "Push-ups (breed)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/push-up-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/push-up-peak.webp"},
+  "Push-ups": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/push-up-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/push-up-peak.webp"},
+  "Decline push-ups": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/decline-push-up-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/decline-push-up-peak.webp"},
+  "Decline push-ups (voeten op stoel)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/decline-push-up-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/decline-push-up-peak.webp"},
+  "Diamond push-ups": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/diamond-push-ups-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/diamond-push-ups-peak.webp"},
+  "Wide-to-narrow push-ups": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/push-up-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/push-up-peak.webp"},
+  "Archer push-ups": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/archer-push-ups-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/archer-push-ups-peak.webp"},
+  "Archer push-ups (slow)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/archer-push-ups-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/archer-push-ups-peak.webp"},
+  "Plyometric push-ups": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/push-up-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/push-up-peak.webp"},
+  "Pseudo planche push-ups": {main:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/planche-main.webp"},
+  "Pike push-ups": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/pike-push-ups-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/pike-push-ups-peak.webp"},
+  "Pike push-ups + shoulder tap": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/pike-push-ups-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/pike-push-ups-peak.webp"},
+  "Pike push-ups to downward dog": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/pike-push-ups-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/pike-push-ups-peak.webp"},
+  "Lateral raises (2.5kg)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/cable-lateral-raise-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/cable-lateral-raise-peak.webp"},
+  "Lateral raises + front raise combo (2.5kg)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/cable-lateral-raise-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/cable-lateral-raise-peak.webp"},
+  "Tricep dips (stoel)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/bench-dips-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/bench-dips-peak.webp"},
+  "Tricep overhead extension (2.5kg)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/overhead-tricep-extension-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/overhead-tricep-extension-peak.webp"},
+  "Superman holds": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/superman-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/superman-peak.webp"},
+  "Superman pulses": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/superman-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/superman-peak.webp"},
+  "Towel/deurlijst rows": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/inverted-row-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/inverted-row-peak.webp"},
+  "Hammer curls (2.5kg)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/cable-hammer-curl-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/cable-hammer-curl-peak.webp"},
+  "Hammer curls 21s (2.5kg)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/cable-hammer-curl-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/cable-hammer-curl-peak.webp"},
+  "Bicep curl 21s (2.5kg)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/trx-bicep-curl-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/trx-bicep-curl-peak.webp"},
+  "Glute bridge": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/glute-bridge-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/glute-bridge-peak.webp"},
+  "Hip thrusts (mat)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/banded-hip-thrust-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/banded-hip-thrust-peak.webp"},
+  "Hip thrusts (2.5kg op heup)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/banded-hip-thrust-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/banded-hip-thrust-peak.webp"},
+  "Hip thrusts (2.5kg, slow 4s)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/banded-hip-thrust-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/banded-hip-thrust-peak.webp"},
+  "Donkey kicks + fire hydrants": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/banded-fire-hydrant-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/banded-fire-hydrant-peak.webp"},
+  "Single-leg glute bridge": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/single-leg-glute-bridge-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/single-leg-glute-bridge-peak.webp"},
+  "Bulgarian split squat (stoel)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/bulgarian-split-squat-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/bulgarian-split-squat-peak.webp"},
+  "Single-leg deadlift (2.5kg)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/kettlebell-single-leg-deadlift-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/kettlebell-single-leg-deadlift-peak.webp"},
+  "Crunches": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/crunches-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/crunches-peak.webp"},
+  "Bicycle crunches": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/bicycle-crunch-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/bicycle-crunch-peak.webp"},
+  "Plank (elbow + arm alternating)": {main:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/plank-main.webp"},
+  "Plank shoulder taps": {main:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/plank-main.webp"},
+  "Hanging knee raises / lying leg raises": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/hanging-knee-raise-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/hanging-knee-raise-peak.webp"},
+  "Leg raises (mat)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/lying-leg-raise-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/lying-leg-raise-peak.webp"},
+  "Russian twists (2.5kg)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/russian-twist-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/russian-twist-peak.webp"},
+  "Oblique raises (mat)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/pilates-side-bend-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/pilates-side-bend-peak.webp"},
+  "V-ups (mat)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/v-ups-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/v-ups-peak.webp"},
+  "V-ups + tuck crunch combo": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/v-ups-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/v-ups-peak.webp"},
+  "Ab rollout (handdoek op mat)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/barbell-ab-rollout-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/barbell-ab-rollout-peak.webp"},
+  "L-sit hold (grond)": {main:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/l-sit-main.webp"},
+  "Dragon flag progressie (mat)": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/dragon-flag-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/dragon-flag-peak.webp"},
+  "Jumping jacks": {start:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/jumping-jacks-start.webp", peak:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/jumping-jacks-peak.webp"},
+  "Child\'s pose": {main:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/childs-pose-main.webp"},
+  "Pigeon pose": {main:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/pigeon-stretch-main.webp"},
+  "Doorway chest stretch": {main:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/doorway-chest-stretch-main.webp"},
+  "Seated hamstring stretch": {main:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/bench-hamstring-stretch-main.webp"},
+  "Cat-cow stretch": {main:"https://raw.githubusercontent.com/RepDB/exercise-dataset/main/images/flat/cat-cow-main.webp"}
 };
 function getExVideo(n){
   if(EX_VIDEOS[n]) return EX_VIDEOS[n];
@@ -9060,22 +9063,52 @@ function getExVideo(n){
   for(var i=0;i<ks.length;i++){ if(l.indexOf(ks[i].toLowerCase())>=0) return EX_VIDEOS[ks[i]]; }
   return null;
 }
+var _exImgTimer = null;
+function _setExImages(imgEl1, imgEl2, entry){
+  if(_exImgTimer){ clearInterval(_exImgTimer); _exImgTimer = null; }
+  if(!imgEl1) return;
+  if(entry && entry.start && entry.peak){
+    imgEl1.style.display = 'block';
+    if(imgEl2) imgEl2.style.display = 'block';
+    imgEl1.src = entry.start;
+    imgEl1.onerror = function(){ imgEl1.onerror=null; imgEl1.src = RECIPE_ULTIMATE_FALLBACK_IMG; if(imgEl2) imgEl2.style.display='none'; };
+    if(imgEl2){
+      imgEl2.src = entry.peak;
+      imgEl2.style.opacity = 0;
+      imgEl2.onerror = function(){ imgEl2.style.display='none'; };
+      var toggled = false;
+      _exImgTimer = setInterval(function(){
+        toggled = !toggled;
+        imgEl2.style.opacity = toggled ? 1 : 0;
+      }, 900);
+    }
+  } else if(entry && entry.main){
+    imgEl1.style.display = 'block';
+    if(imgEl2) imgEl2.style.display = 'none';
+    imgEl1.src = entry.main;
+    imgEl1.onerror = function(){ imgEl1.onerror=null; imgEl1.src = RECIPE_ULTIMATE_FALLBACK_IMG; };
+  } else {
+    imgEl1.style.display = 'block';
+    if(imgEl2) imgEl2.style.display = 'none';
+    imgEl1.onerror = null;
+    imgEl1.src = RECIPE_ULTIMATE_FALLBACK_IMG;
+  }
+}
 function openExVideo(name, tipText){
-  var entry=getExVideo(name); if(!entry) return;
-  var vid = typeof entry==='object' ? entry.id : entry;
-  var startT = typeof entry==='object' ? (entry.t||0) : 0;
+  var entry=getExVideo(name);
   var m=document.getElementById('exVideoModal'); if(!m) return;
-  var f=document.getElementById('exVideoFrame');
+  var img1=document.getElementById('exVideoImg1');
+  var img2=document.getElementById('exVideoImg2');
   var t=document.getElementById('exVideoTitle');
   var tipEl=document.getElementById('exVideoTip');
   if(t) t.textContent=name;
-  if(tipEl) tipEl.textContent = tipText || '';
-  if(f) f.src='https://www.youtube.com/embed/'+vid+'?autoplay=1&rel=0&modestbranding=1&playsinline=1&start='+startT+'&controls=1';
+  if(tipEl) tipEl.textContent = (tipText || '') + (tipText ? '  ·  ' : '') + 'Bron: RepDB (repdb.co)';
+  _setExImages(img1, img2, entry);
   m.style.display='flex';
 }
 function closeExVideo(){
   var m=document.getElementById('exVideoModal'); if(!m) return;
-  var f=document.getElementById('exVideoFrame'); if(f) f.src='';
+  if(_exImgTimer){ clearInterval(_exImgTimer); _exImgTimer=null; }
   m.style.display='none';
 }
 
@@ -12227,7 +12260,7 @@ function autoScrapeIfNeeded() {
 
 
 // ═══════════════════════════════════════════════════════
-var DEFAULT_BRONNEN = [{"id": "uitvlaanderen", "naam": "Uit in Vlaanderen", "url": "https://www.uitinvlaanderen.be", "beschrijving": "Grootste culturele agenda Vlaanderen", "vast": true}, {"id": "uitantwerpen", "naam": "Uit in Antwerpen", "url": "https://www.uitinantwerpen.be", "beschrijving": "Specifieke Antwerpse agenda", "vast": true}, {"id": "antwerpenbe", "naam": "Antwerpen.be Agenda", "url": "https://www.antwerpen.be/agenda", "beschrijving": "Officiële stedelijke agenda", "vast": true}, {"id": "mortselbe", "naam": "Mortsel Agenda", "url": "https://www.mortsel.be/agenda", "beschrijving": "Gemeentelijke agenda Mortsel", "vast": true}, {"id": "edegembe", "naam": "Edegem Agenda", "url": "https://www.edegem.be/agenda", "beschrijving": "Gemeentelijke agenda Edegem", "vast": true}, {"id": "hetpaleis", "naam": "Het Paleis", "url": "https://www.hetpaleis.be", "beschrijving": "Theater, dans, muziek", "vast": true}, {"id": "desingel", "naam": "deSingel", "url": "https://www.desingel.be", "beschrijving": "Internationaal kunstencentrum", "vast": true}, {"id": "sportantwerpen", "naam": "Sport Antwerpen", "url": "https://www.sport.antwerpen.be", "beschrijving": "Gemeentelijk sportaanbod", "vast": true}, {"id": "jogging", "naam": "Jogging.be", "url": "https://www.jogging.be", "beschrijving": "Loop- en wandelevenementen", "vast": true}, {"id": "cycling", "naam": "Cycling.be", "url": "https://www.cycling.be", "beschrijving": "Wielertochten en cyclo's", "vast": true}, {"id": "gezinsbond", "naam": "Gezinsbond", "url": "https://www.gezinsbond.be", "beschrijving": "Gezinsactiviteiten per regio", "vast": true}, {"id": "kmska", "naam": "KMSKA", "url": "https://www.kmska.be", "beschrijving": "Koninklijk Museum Schone Kunsten", "vast": true}, {"id": "rivierenhof", "naam": "Rivierenhof", "url": "https://www.rivierenhof.be", "beschrijving": "Park & evenementen Deurne", "vast": true}];
+var DEFAULT_BRONNEN = [{"id": "uitvlaanderen", "naam": "Uit in Vlaanderen", "url": "https://www.uitinvlaanderen.be", "beschrijving": "Grootste culturele agenda Vlaanderen", "vast": true}, {"id": "uitantwerpen", "naam": "Uit in Antwerpen", "url": "https://www.uitinantwerpen.be", "beschrijving": "Specifieke Antwerpse agenda", "vast": true}, {"id": "antwerpenbe", "naam": "Antwerpen.be Agenda", "url": "https://www.antwerpen.be/agenda", "beschrijving": "Officiële stedelijke agenda", "vast": true}, {"id": "beleefantwerpen", "naam": "Beleef Antwerpen", "url": "https://www.beleefantwerpen.be/evenementen", "beschrijving": "Officiële Antwerpse uitagenda", "vast": true}, {"id": "provincieantwerpen", "naam": "Provincie Antwerpen Kalender", "url": "https://www.provincieantwerpen.be/nl/kalender", "beschrijving": "Provinciale evenementenkalender", "vast": true}, {"id": "mortselbe", "naam": "Mortsel Agenda", "url": "https://www.mortsel.be/agenda", "beschrijving": "Gemeentelijke agenda Mortsel", "vast": true}, {"id": "edegembe", "naam": "Edegem Agenda", "url": "https://www.edegem.be/agenda", "beschrijving": "Gemeentelijke agenda Edegem", "vast": true}, {"id": "boechoutbe", "naam": "Boechout Agenda", "url": "https://www.boechout.be/uit", "beschrijving": "Gemeentelijke agenda Boechout", "vast": true}, {"id": "hovebe", "naam": "Hove Agenda", "url": "https://www.hove.be/agenda", "beschrijving": "Gemeentelijke agenda Hove", "vast": true}, {"id": "hetpaleis", "naam": "Het Paleis", "url": "https://www.hetpaleis.be", "beschrijving": "Theater, dans, muziek", "vast": true}, {"id": "desingel", "naam": "deSingel", "url": "https://www.desingel.be", "beschrijving": "Internationaal kunstencentrum", "vast": true}, {"id": "sportantwerpen", "naam": "Sport Antwerpen", "url": "https://www.sport.antwerpen.be", "beschrijving": "Gemeentelijk sportaanbod", "vast": true}, {"id": "jogging", "naam": "Jogging.be", "url": "https://www.jogging.be", "beschrijving": "Loop- en wandelevenementen", "vast": true}, {"id": "cycling", "naam": "Cycling.be", "url": "https://www.cycling.be", "beschrijving": "Wielertochten en cyclo's", "vast": true}, {"id": "gezinsbond", "naam": "Gezinsbond", "url": "https://www.gezinsbond.be", "beschrijving": "Gezinsactiviteiten per regio", "vast": true}, {"id": "kmska", "naam": "KMSKA", "url": "https://www.kmska.be", "beschrijving": "Koninklijk Museum Schone Kunsten", "vast": true}, {"id": "rivierenhof", "naam": "Rivierenhof", "url": "https://www.rivierenhof.be", "beschrijving": "Park & evenementen Deurne", "vast": true}];
 
 // Load from localStorage, merge with defaults
 function loadBronnen() {
@@ -12390,11 +12423,11 @@ function renderTodayPage() {
   var wasteTomorrow = getWasteForDate(dk(wt2));
   if(wasteTitle) {
     if(waste.length > 0) {
-      wasteTitle.textContent = waste.map(function(t){ return WASTE_ICONS[t].icon + ' ' + WASTE_ICONS[t].label; }).join(', ');
+      wasteTitle.innerHTML = waste.map(function(t){ return WASTE_ICONS[t].icon + ' ' + WASTE_ICONS[t].label; }).join(', ');
       if(wasteSub)  wasteSub.textContent  = 'Vandaag buiten zetten';
       if(wasteLabel)wasteLabel.textContent= '🗑 Afval vandaag';
     } else if(wasteTomorrow.length > 0) {
-      wasteTitle.textContent = wasteTomorrow.map(function(t){ return WASTE_ICONS[t].icon + ' ' + WASTE_ICONS[t].label; }).join(', ');
+      wasteTitle.innerHTML = wasteTomorrow.map(function(t){ return WASTE_ICONS[t].icon + ' ' + WASTE_ICONS[t].label; }).join(', ');
       if(wasteSub)  wasteSub.textContent  = 'Morgen buiten zetten';
       if(wasteLabel)wasteLabel.textContent= '🗑 Afval morgen';
     } else {
@@ -12982,28 +13015,22 @@ function openModal(name,sets) {
   const tc = document.getElementById('modalTips'); tc.innerHTML = '';
   d.tips.forEach((t,i) => { tc.innerHTML += `<div class="modal-tip"><span class="modal-tip-num">0${i+1}</span><span>${t}</span></div>`; });
 
-  // Video laden
+  // Afbeelding(en) laden i.p.v. YouTube
   var entry = getExVideo(name);
   var videoWrap = document.getElementById('modalVideoWrap');
-  var videoFrame = document.getElementById('modalVideoFrame');
+  var img1 = document.getElementById('modalVideoImg1');
+  var img2 = document.getElementById('modalVideoImg2');
   var noVideo = document.getElementById('modalNoVideo');
-  if(entry && videoWrap && videoFrame) {
-    var vid = typeof entry==='object' ? entry.id : entry;
-    var startT = typeof entry==='object' ? (entry.t||0) : 0;
-    videoFrame.src = 'https://www.youtube.com/embed/'+vid+'?autoplay=1&rel=0&modestbranding=1&playsinline=1&start='+startT+'&controls=1';
+  if(videoWrap && img1) {
     videoWrap.style.display = 'block';
     if(noVideo) noVideo.style.display = 'none';
-  } else {
-    if(videoWrap) videoWrap.style.display = 'none';
-    if(noVideo) noVideo.style.display = 'flex';
-    if(videoFrame) videoFrame.src = '';
+    _setExImages(img1, img2, entry);
   }
 
   document.getElementById('modalBackdrop').classList.add('open');
 }
 function closeModal() {
-  var f = document.getElementById('modalVideoFrame');
-  if(f) f.src = '';
+  if(_exImgTimer){ clearInterval(_exImgTimer); _exImgTimer=null; }
   document.getElementById('modalBackdrop').classList.remove('open');
 }
 function closeModalOutside(e) { if(e.target===document.getElementById('modalBackdrop')) closeModal(); }
@@ -13362,7 +13389,7 @@ function renderDayPanel(date) {
         trainInner += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(212,160,48,.1)">'
           + '<div style="font-family:var(--cond);font-size:10px;color:var(--ink);flex:1">' + ex.n + '</div>'
           + '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2);flex-shrink:0">' + ex.s + '</div>'
-          + (vid ? '<div class="dp2-chip dp2-chip-vid" data-n="'+ex.n.replace(/"/g,'&quot;')+'" onclick="dp2OpenExVideo(this)" style="font-size:8px;padding:2px 6px">▶</div>' : '')
+          + '<div class="dp2-chip dp2-chip-vid" data-n="'+ex.n.replace(/"/g,'&quot;')+'" onclick="dp2OpenExVideo(this)" style="font-size:8px;padding:2px 6px">▶</div>'
           + '</div>';
       });
       trainInner += '</div>';
@@ -13378,9 +13405,7 @@ function renderDayPanel(date) {
           + '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2)">' + ex.s
           + (ex.tip ? ' · <span style="font-style:italic">' + ex.tip.substring(0,40) + '</span>' : '') + '</div>'
           + '</div>'
-          + (vid
-            ? '<div class="dp2-chip dp2-chip-vid" data-n="'+ex.n.replace(/"/g,'&quot;')+'" data-tip="'+(ex.tip||'').replace(/"/g,'&quot;')+'" onclick="dp2OpenExVideo(this)" style="flex-shrink:0;display:flex;align-items:center;gap:3px;font-size:9px"><span style=\'color:red;font-size:10px\'>▶</span>Video</div>'
-            : '')
+          + '<div class="dp2-chip dp2-chip-vid" data-n="'+ex.n.replace(/"/g,'&quot;')+'" data-tip="'+(ex.tip||'').replace(/"/g,'&quot;')+'" onclick="dp2OpenExVideo(this)" style="flex-shrink:0;display:flex;align-items:center;gap:3px;font-size:9px"><span style=\'color:red;font-size:10px\'>▶</span>Video</div>'
           + '</div>';
       });
 
@@ -13392,7 +13417,7 @@ function renderDayPanel(date) {
         trainInner += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(148,173,170,.15)">'
           + '<div style="font-family:var(--cond);font-size:10px;color:var(--ink);flex:1">' + ex.n + '</div>'
           + '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2);flex-shrink:0">' + ex.s + '</div>'
-          + (vid ? '<div class="dp2-chip dp2-chip-vid" data-n="'+ex.n.replace(/"/g,'&quot;')+'" onclick="dp2OpenExVideo(this)" style="font-size:8px;padding:2px 6px">▶</div>' : '')
+          + '<div class="dp2-chip dp2-chip-vid" data-n="'+ex.n.replace(/"/g,'&quot;')+'" onclick="dp2OpenExVideo(this)" style="font-size:8px;padding:2px 6px">▶</div>'
           + '</div>';
       });
       trainInner += '</div>';
@@ -16480,8 +16505,88 @@ var MMD_QUOTES = [
 // (agenda/training/zangles) en échte webresultaten (UiTdatabank/Tavily)
 // krijgen voorrang zodra ze beschikbaar zijn — zie mmdBuildFixedItems()
 // en mmdFetchWebSuggestions() verderop.
+// ── Lokale horeca-vondsten — Mortsel / Edegem / Antwerpen-Zuid & Berchem ──
+// Een vijftigtal echte adresjes, opgedeeld per moment van de dag. mmdPickHoreca()
+// kiest er telkens willekeurig eentje uit, zodat de mock-suggesties (die getoond
+// worden zolang Tavily niets teruggeeft) niet elke keer identiek zijn.
+var HORECA_VONDSTEN = {
+  koffie: [
+    {title:'Kawa Koffie & Bokes', sub:'Voormalig stationsgebouw, Mortsel-Oude God', icon:'☕'},
+    {title:'Bar Salon', sub:'Terrasje op de Dageraadplaats, Antwerpen-Zuid', icon:'☕'},
+    {title:'Bardin', sub:'Koffiebar-lunchzaak bij het Stadspark, grote tuin', icon:'☕'},
+    {title:'Butchers Coffee', sub:'Koffiebar in een oude slagerij, ’t Zuid', icon:'☕'},
+    {title:'Kolonel Coffee Zuid', sub:'Eigen gebrande koffie, Montignystraat', icon:'☕'},
+    {title:'Café Ernst', sub:'Langs de Schelde, koffie en natural wines', icon:'☕'},
+    {title:'Bistro Brel', sub:'Koffie en een krantje, Oud-Berchem', icon:'☕'},
+    {title:'Chatleroi', sub:'Terrasje op de Leopold De Waelplaats', icon:'☕'},
+    {title:'Cafe Classics', sub:'Gezellig café in Mortsel', icon:'☕'},
+    {title:'Café Memories', sub:'Knus hoekcafé in Mortsel', icon:'☕'}
+  ],
+  brunch: [
+    {title:'Hotel Pilar', sub:'Brunch op ’t Zuid, tegenover het KMSKA', icon:'🥐'},
+    {title:'Het Zoete Hoekske', sub:'Brunch & lunch in Mortsel', icon:'🥐'},
+    {title:'Tinsel', sub:'Vaste waarde voor ontbijt en lunch, Antwerpen', icon:'🥐'},
+    {title:'Walvis', sub:'Brunchreferentie van het Zuid, Vlaamsekaai', icon:'🥐'},
+    {title:'Nordica 31', sub:'Noors geïnspireerd ontbijt, Antwerpen-Zuid', icon:'🥐'},
+    {title:'Jam.', sub:'All-day breakfast & brunch, Antwerpen', icon:'🥐'},
+    {title:'Perruche', sub:'Broodjes bij de Vogeltjesmarkt', icon:'🥐'},
+    {title:'Cuisinette Domestic', sub:'Ontbijt in een zalige retro keuken', icon:'🥐'}
+  ],
+  lunch: [
+    {title:'De Voorspoed', sub:'Spaanse tapas, Mechelsesteenweg Mortsel', icon:'🍜'},
+    {title:'Bistro Babo', sub:'Lunch aan Fort 5, Edegem', icon:'🍜'},
+    {title:'Oud Edegem', sub:'Foodbar met zonneterras, Edegem-centrum', icon:'🍜'},
+    {title:'Eetkaffee de Kleine Post', sub:'Belgische kaart, Edegem', icon:'🍜'},
+    {title:'Murni Wilrijk', sub:'Mediterraan en gezond', icon:'🍜'},
+    {title:'Bistro Hart & Ziel', sub:'Frans-Belgisch, kleinschalig pareltje', icon:'🍜'},
+    {title:'Felfel', sub:'Libanees street food, Antwerpen', icon:'🍜'},
+    {title:'CafeMatic', sub:'Lunchcafé met terras, einde van de Meir', icon:'🍜'},
+    {title:'De Nieuwe Linde', sub:'Buurtcafé met terras op de hoek, ’t Zuid', icon:'🍜'},
+    {title:'Buurtrestaurant De Plataan', sub:'Gezellig buurtrestaurant in Mortsel', icon:'🍜'}
+  ],
+  ijs: [
+    {title:'Mitico', sub:'Italiaanse gelato, Statielei Mortsel · beste ijsmeester van het land (2021)', icon:'🍦'},
+    {title:'IJsatelier Mortsel', sub:'Dagelijks vers huisbereid ijs', icon:'🍦'},
+    {title:'Gelato Factory', sub:'Ambachtelijke Italiaanse gelato, ’t Zuid', icon:'🍦'},
+    {title:'Glace Jozef', sub:'IJssalon in Edegem', icon:'🍦'},
+    {title:'De Trommelhoeve', sub:'Biologisch hoeve-ijs, Edegem', icon:'🍦'},
+    {title:'Cremerie Germaine', sub:'Gelato, wafels en pannenkoeken vers bereid', icon:'🍦'}
+  ],
+  gezinshoreca: [
+    {title:'Brasserie De Vlegel', sub:'Groot terras + speeltuin, Mechelsesteenweg Mortsel', icon:'🍕'},
+    {title:'Blauwe Regen – Bar & Bistro', sub:'Speeltuin voor de kids, Mortsel', icon:'🍕'},
+    {title:'Bistro Babo', sub:'Wafels en lunch aan Fort 5, Edegem', icon:'🧇'}
+  ],
+  avondeten: [
+    {title:'Tisson resto', sub:'Prins Leopoldlei, Mortsel', icon:'🍽️'},
+    {title:'Brasserie Pastis', sub:'Frans bistrogevoel, Lindenlei Mortsel', icon:'🍽️'},
+    {title:'Theatercafe', sub:'Café-restaurant in Mortsel', icon:'🍽️'},
+    {title:'Vjeu Djeu', sub:'Gezellige zaak in Mortsel', icon:'🍽️'},
+    {title:'Den Draak', sub:'Buurtcafé in Mortsel', icon:'🍽️'},
+    {title:'Brasserie Magalie', sub:'Brasserie in Mortsel', icon:'🍽️'}
+  ],
+  terras: [
+    {title:'Picknick in Park Den Brandt', sub:'Grasveld en vijver, Antwerpen-Zuid', icon:'🧺'},
+    {title:'Wandeling in het Harmoniepark', sub:'Rustgevend park, vlakbij ’t Zuid', icon:'🌳'},
+    {title:'Terrasjes op de Leopold De Waelplaats', sub:'Chatleroi, Patine en Hopper naast elkaar', icon:'🌳'},
+    {title:'Wandeling langs de Scheldekaaien', sub:'Uitwaaien na het ijsje', icon:'🌳'},
+    {title:'Rivierenhof', sub:'Park met terras in Deurne', icon:'🌳'}
+  ]
+};
+function mmdPickHoreca(category) {
+  var lijst = HORECA_VONDSTEN[category];
+  if(!lijst || !lijst.length) return null;
+  return lijst[Math.floor(Math.random() * lijst.length)];
+}
+
 function mmdPool(dayType) {
   var fam = (dayType === 'fam_time') || (dayType === 'surprise' && Math.random() > 0.5);
+  // Willekeurige lokale vondsten voor dit dagprogramma — bij elke Make my Day
+  // andere adresjes, zolang er geen écht Tavily-resultaat binnenkomt.
+  var pKoffie1 = mmdPickHoreca('koffie'), pKoffie2 = mmdPickHoreca('koffie');
+  var pBrunch = mmdPickHoreca('brunch'), pLunch = mmdPickHoreca('lunch');
+  var pIjs = mmdPickHoreca('ijs'), pGezin = mmdPickHoreca('gezinshoreca'), pTerras = mmdPickHoreca('terras');
+  var pAvond = mmdPickHoreca('avondeten');
   return {
     ochtend: {
       label:'OCHTEND', icon:'☀️', sub:'Rustig starten',
@@ -16495,7 +16600,7 @@ function mmdPool(dayType) {
       ] : [
         [ {time:'08:30',icon:'☕',title:'Koffie & ontbijt',sub:'Rustig beginnen, geen haast',photo:'☕',source:'qt'},
           {time:'08:30',icon:'📰',title:'Ontbijt met de krant',sub:'Even niets moeten',photo:'📰',source:'qt'},
-          {time:'08:30',icon:'🥐',title:'Croissant bij de bakker',sub:'Vers gehaald',photo:'🥐',source:'web'} ],
+          {time:'08:30',icon:pKoffie1.icon,title:'Ontbijt bij '+pKoffie1.title,sub:pKoffie1.sub,photo:'🥐',source:'web'} ],
         [ {time:'10:00',icon:'🚶',title:'Wandeling',sub:'Park Den Brandt',photo:'🌳',source:'act'},
           {time:'10:00',icon:'🧘',title:'Rustige ochtendyoga',sub:'20 minuten voor jezelf',photo:'🧘',source:'act'},
           {time:'10:00',icon:'📚',title:'Lezen met koffie',sub:'Geen schema, gewoon lezen',photo:'📚',source:'qt'} ]
@@ -16504,18 +16609,18 @@ function mmdPool(dayType) {
     middag: {
       label:'MIDDAG', icon:'🍽️', sub:'Ontdekken & genieten',
       items: fam ? [
-        [ {time:'12:00',icon:'🧺',title:'Picknick in het park',sub:'Online gevonden · als het droog blijft',photo:'🧺',source:'web'},
-          {time:'12:00',icon:'🍕',title:'Pizza in de buurt',sub:'Online gevonden · familievriendelijk',photo:'🍕',source:'web'},
+        [ {time:'12:00',icon:pTerras.icon,title:pTerras.title,sub:'Online gevonden · '+pTerras.sub,photo:'🧺',source:'web'},
+          {time:'12:00',icon:pGezin.icon,title:'Langsgaan bij '+pGezin.title,sub:pGezin.sub,photo:'🍕',source:'web'},
           {time:'12:00',icon:'🍝',title:'Lunch thuis',sub:'Uit je favoriete recepten',photo:'🍝',source:'qt'} ],
         [ {time:'13:30',icon:'🛒',title:'Boodschappen samen',sub:'Met de kinderen erbij',photo:'🛒',source:'qt'},
           {time:'13:30',icon:'🎨',title:'Knutselen',sub:'Regenboog-namiddag',photo:'🎨',source:'act'},
-          {time:'13:30',icon:'🍦',title:'IJsje halen',sub:'Bij de ijssalon om de hoek',photo:'🍦',source:'web'} ]
+          {time:'13:30',icon:pIjs.icon,title:'IJsje bij '+pIjs.title,sub:pIjs.sub,photo:'🍦',source:'web'} ]
       ] : [
-        [ {time:'11:30',icon:'☕',title:'Koffie op een terrasje',sub:'Online gevonden · in de buurt',photo:'☕',source:'web'},
+        [ {time:'11:30',icon:pKoffie2.icon,title:'Koffie bij '+pKoffie2.title,sub:'Online gevonden · '+pKoffie2.sub,photo:'☕',source:'web'},
           {time:'11:30',icon:'☕',title:'Koffie in het park',sub:'Rustig moment onderweg',photo:'☕',source:'qt'},
-          {time:'11:30',icon:'🥐',title:'Brunch onderweg',sub:'Online gevonden',photo:'🥐',source:'web'} ],
+          {time:'11:30',icon:pBrunch.icon,title:'Brunch bij '+pBrunch.title,sub:'Online gevonden · '+pBrunch.sub,photo:'🥐',source:'web'} ],
         [ {time:'13:00',icon:'🥗',title:'Lunch',sub:'Gezonde bowl',photo:'🥗',source:'qt'},
-          {time:'13:00',icon:'🍜',title:'Lunch bij een lokale zaak',sub:'Online gevonden',photo:'🍜',source:'web'},
+          {time:'13:00',icon:pLunch.icon,title:'Lunch bij '+pLunch.title,sub:'Online gevonden · '+pLunch.sub,photo:'🍜',source:'web'},
           {time:'13:00',icon:'🥪',title:'Picknicklunch',sub:'Zelf meegebracht',photo:'🥪',source:'qt'} ]
       ]
     },
@@ -16535,7 +16640,7 @@ function mmdPool(dayType) {
           {time:'20:00',icon:'🎲',title:'Bordspelavond',sub:'Ontspannen afsluiten',photo:'🎲',source:'qt'} ]
       ] : [
         [ {time:'18:30',icon:'🍽️',title:'Avondeten',sub:'Uit je favoriete recepten',photo:'🍝',source:'qt'},
-          {time:'18:30',icon:'🍷',title:'Avondeten met wijntje',sub:'Rustig tafelen',photo:'🍷',source:'qt'} ],
+          {time:'18:30',icon:pAvond.icon,title:'Uit eten bij '+pAvond.title,sub:'Online gevonden · '+pAvond.sub,photo:'🍽️',source:'web'} ],
         [ {time:'20:00',icon:'🎬',title:'Filmavond',sub:'Ontspannen afsluiten',photo:'🎬',source:'act'},
           {time:'20:00',icon:'🎧',title:'Favoriet album luisteren',sub:'Rustig, met het licht laag',photo:'🎧',source:'qt'} ]
       ]
@@ -16840,7 +16945,6 @@ function mmdStatusBanner() {
 function mmdItemBadge(item) {
   if(item.source === 'fixed') return '<span class="mmd-badge mmd-badge-fixed">Vast</span>';
   if(item.category === 'event') return '<span class="mmd-badge mmd-badge-event">🎟️ Evenement</span>';
-  if(item.category === 'movie') return '<span class="mmd-badge mmd-badge-event">🎬 Nieuwe film</span>';
   if(item.category === 'horeca') return '<span class="mmd-badge mmd-badge-web">Online gevonden</span>';
   if(item.source === 'act') return '<span class="mmd-badge mmd-badge-act">Activiteit</span>';
   if(item.source === 'web') return '<span class="mmd-badge mmd-badge-web">Online gevonden</span>';
@@ -16903,7 +17007,6 @@ function mmdRenderResult() {
         +     '</div>'
         +     mmdItemBadge(item)
         +     (item.mapsUrl ? '<a href="' + item.mapsUrl + '" target="_blank" rel="noopener" class="mmd-maps-link" onclick="event.stopPropagation()">📍 Route</a>' : '')
-        +     (item.sourceUrl ? '<a href="' + item.sourceUrl + '" target="_blank" rel="noopener" class="mmd-maps-link" onclick="event.stopPropagation()">🔗 Meer info</a>' : '')
         +     (item.fixed
               ? '<div class="mmd-item-fixed-tag">Vast in je agenda</div>'
               : '<div class="mmd-item-actions">'
