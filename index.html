@@ -8887,18 +8887,27 @@ function closePhotoDetail(){ var m=document.getElementById('photoDetailModal'); 
 // ═══ TRAINING FOTO-ANALYSE — wachtwoord + weekfoto uit de vaste progressie-bibliotheek ═══
 // Toont TRAIN_PROGRESS_PHOTOS[weeknummer] (week 0 vs week N, gebundeld in de app),
 // met een eigen, apart wachtwoord — telkens opnieuw gevraagd bij het openen.
-var tpaWeekKey = null, tpaWeekNum = null;
+var tpaWeekKey = null, tpaWeekNum = null, tpaHasWeek = false;
 function openTrainPhotoAnalyse(dateStr) {
   var d = new Date(dateStr + 'T12:00:00');
-  var wn = getTrainWeekNum(d);
-  tpaWeekNum = wn;
-  tpaWeekKey = 'wk_' + wn + '_' + d.getFullYear();
+  var entry = getTrainEntry(d);
   var m = document.getElementById('tpaModal'); if(!m) return;
   var lock = document.getElementById('tpaLock');
   var content = document.getElementById('tpaContent');
   var lbl = document.getElementById('tpaLockWeekLabel');
   var inp = document.getElementById('tpaPassInput');
-  if(lbl) lbl.textContent = 'Week ' + wn;
+  // Weeknummer komt UITSLUITEND uit het geïmporteerde schema — nooit een gok op
+  // basis van het oude, losstaande systeem, want dat zou een fotoweek tonen die
+  // niets met je échte trainingsweek te maken heeft.
+  if(entry && entry.week) {
+    tpaWeekNum = entry.week;
+    tpaHasWeek = true;
+    if(lbl) lbl.textContent = 'Week ' + entry.week;
+  } else {
+    tpaWeekNum = null;
+    tpaHasWeek = false;
+    if(lbl) lbl.textContent = 'onbekende week';
+  }
   if(lock) lock.style.display = 'block';
   if(content) content.style.display = 'none';
   if(inp) { inp.value = ''; inp.style.border = ''; inp.placeholder = 'Wachtwoord...'; }
@@ -8913,15 +8922,20 @@ function checkTrainPhotoPass() {
     var img = document.getElementById('tpaImg');
     var empty = document.getElementById('tpaEmpty');
     var lbl = document.getElementById('tpaLabel');
-    var entry = (typeof TRAIN_PROGRESS_PHOTOS !== 'undefined') ? TRAIN_PROGRESS_PHOTOS[String(tpaWeekNum)] : null;
+    var entry = (tpaHasWeek && typeof TRAIN_PROGRESS_PHOTOS !== 'undefined') ? TRAIN_PROGRESS_PHOTOS[String(tpaWeekNum)] : null;
     if(entry) {
       if(img) { img.src = entry; img.style.display = 'block'; }
       if(empty) empty.style.display = 'none';
       if(lbl) lbl.textContent = 'Week ' + tpaWeekNum + ' — vergelijking met week 0';
     } else {
       if(img) { img.style.display = 'none'; img.src = ''; }
-      if(empty) empty.style.display = 'block';
-      if(lbl) lbl.textContent = 'Week ' + tpaWeekNum;
+      if(empty) {
+        empty.style.display = 'block';
+        empty.textContent = tpaHasWeek
+          ? ('Nog geen foto voor week ' + tpaWeekNum + ' in je voortgangsbibliotheek.')
+          : 'Dit trainingsschema is nog niet geïmporteerd (Instellingen → Training) — daardoor is het weeknummer voor deze dag nog niet gekend.';
+      }
+      if(lbl) lbl.textContent = tpaHasWeek ? ('Week ' + tpaWeekNum) : '';
     }
     if(lock) lock.style.display = 'none';
     if(content) content.style.display = 'block';
@@ -12081,6 +12095,14 @@ function getTrainWeekNum(d) {
   return getWeekNum(d);
 }
 
+// Label voor UI-plekjes (kalender-tegel, knop) die het weeknummer ENKEL tonen als
+// het écht uit het geïmporteerde schema komt — nooit de oude, losstaande telling,
+// want die heeft niets te maken met je huidige trainingsweek.
+function trainWeekLabel(d) {
+  var entry = getTrainEntry(d);
+  return (entry && entry.week) ? ('Week ' + entry.week) : 'nog niet geïmporteerd';
+}
+
 // Hoeveel KRACHTTRAINING-dagen staan er deze week gepland volgens het
 // geïmporteerde schema? Valt terug op 4 (het oude vaste doel) zonder import.
 function getWeekTrainGoal(weekStart) {
@@ -13806,7 +13828,7 @@ function renderDayPanel(date) {
     var pfLabel = pfDate.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'short'});
     trainInner += '<div class="dp2-pushed-note">↻ + Ingehaalde training van ' + pfLabel + '</div>';
   }
-  trainInner += '<button onclick="openTrainPhotoAnalyse(\''+key+'\')" style="width:100%;margin-top:10px;padding:12px;border-radius:12px;border:1.5px solid var(--brut-ink,#0a0a0a);background:#fff;box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);font-family:var(--grotesk);font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--brut-ink,#0a0a0a);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">📸 Foto Analyse — Week '+getTrainWeekNum(date)+'</button>';
+  trainInner += '<button onclick="openTrainPhotoAnalyse(\''+key+'\')" style="width:100%;margin-top:10px;padding:12px;border-radius:12px;border:1.5px solid var(--brut-ink,#0a0a0a);background:#fff;box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);font-family:var(--grotesk);font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--brut-ink,#0a0a0a);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">📸 Foto Analyse — '+trainWeekLabel(date)+'</button>';
 
   // ── Wissel checklist knop (toon bij kinderfilters op wisseldag) ──
   var wisselKnop = '';
@@ -13930,7 +13952,7 @@ function renderDayPanel(date) {
       + dp2Tile('training','💪','Training', trainSub)
       + (dailyPl ? dp2Tile('muziek','🎵','Muziek', musicSub) : '')
       + (noteCount>0 ? dp2Tile('notities','📝','Notities', noteSub) : '')
-      + '<div class="dp2-tile" onclick="openTrainPhotoAnalyse(\''+key+'\')"><div class="dp2-tile-ic">📸</div><div class="dp2-tile-lbl">Foto Analyse</div><div class="dp2-tile-sub">Week '+getTrainWeekNum(date)+'</div></div>'
+      + '<div class="dp2-tile" onclick="openTrainPhotoAnalyse(\''+key+'\')"><div class="dp2-tile-ic">📸</div><div class="dp2-tile-lbl">Foto Analyse</div><div class="dp2-tile-sub">'+trainWeekLabel(date)+'</div></div>'
       + '</div>';
 
     html += dp2DetailPanel('weer', '🌤️ Weerbericht', '<div id="dp2weather_'+key+'"></div>');
