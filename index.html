@@ -2249,7 +2249,16 @@ input, select, textarea{
   border:none;
   border-left:3px solid var(--stone2, #b8a890);
   display:flex;align-items:center;gap:14px;
+  position:relative;
 }
+/* Decoratief lijn-icoontje per tegel (uit mockup 1) — z-index:-1 zodat het
+   ALTIJD achter icoon/tekst/knoppen/badge blijft zitten, dus nooit overlap. */
+.oh-deco-icon{
+  position:absolute;z-index:-1;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+  opacity:.9;
+}
+.oh-deco-icon svg{ display:block; }
 .oh-card:active{transform:scale(.98);box-shadow:0 1px 5px rgba(61,26,10,.08);}
 
 /* Groot icon blok links — rond ipv vierkant */
@@ -2800,6 +2809,7 @@ input, select, textarea{
   border:1.5px solid var(--brut-ink,#0a0a0a);
   background:#fff;font-family:var(--grotesk);
   box-shadow:3px 3px 0 var(--brut-ink,#0a0a0a);
+  position:relative;
 }
 .wc-evening { background:linear-gradient(135deg,#3d1a0a,#4a2c14) !important;border-color:rgba(100,160,220,.2) !important; }
 .wc-evening .wc-date-day,
@@ -3703,6 +3713,7 @@ function qtSkateLoaderHtml(text){
 
       <!-- Training card -->
       <div class="oh-card oh-card-train" id="ohCardTrain" onclick="openDetailSheet('training')">
+        <div class="oh-deco-icon" style="top:10px;right:12px"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"><path d="M4 9v6M2 10v4M20 9v6M22 10v4M6 12h12"/></svg></div>
         <div class="oh-card-icon" id="ohTrainIcon" style="background:#e9f1e4;font-size:28px">💪</div>
         <div class="oh-card-body">
           <div class="oh-card-label" id="ohTrainLabel">Training</div>
@@ -3719,6 +3730,7 @@ function qtSkateLoaderHtml(text){
       <!-- 2-col row: agenda + afval -->
       <div class="oh-2col">
         <div class="oh-card oh-card-sm" id="ohCardAgenda" onclick="openDetailSheet('agenda')">
+          <div class="oh-deco-icon" style="top:10px;right:10px"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
           <div class="oh-card-icon" style="background:#e9f1e4">🗓</div>
           <div class="oh-card-body">
             <div class="oh-card-label">Agenda</div>
@@ -3727,6 +3739,7 @@ function qtSkateLoaderHtml(text){
           </div>
         </div>
         <div class="oh-card oh-card-sm" id="ohCardWaste" onclick="openDetailSheet('waste')">
+          <div class="oh-deco-icon" style="top:10px;right:10px"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"><path d="M4 20c8 0 15-6 16-16C11 5 4 11 4 20Z"/></svg></div>
           <div class="oh-card-icon" style="background:#e3edf7;color:#0a3d62">♻︎</div>
           <div class="oh-card-body">
             <div class="oh-card-label" id="ohWasteLabel">Afval</div>
@@ -3739,6 +3752,7 @@ function qtSkateLoaderHtml(text){
       <!-- Avondmaal card -->
       <!-- Maaltijdkaart — zelfde lay-out als de andere kaarten (icoon + label + titel + sub) -->
       <div class="oh-card" id="ohCardMeal" onclick="openDetailSheet('meal')">
+        <div class="oh-deco-icon" style="top:10px;right:12px"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"><path d="M4 10h16l-1.5 9h-13L4 10Z"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
         <div class="oh-card-icon" style="background:#e9f1e4;font-size:24px">🍽️</div>
         <div class="oh-card-body">
           <div class="oh-card-label">Avondmaal · <span id="ohMealTijd"></span></div>
@@ -3755,6 +3769,7 @@ function qtSkateLoaderHtml(text){
       <!-- Zanglessen + Make my Day: half-breedte tegels naast elkaar -->
       <div class="oh-2col">
         <div class="oh-card oh-card-sm" id="ohCardZang" onclick="openZangPage()" style="cursor:pointer">
+          <div class="oh-deco-icon" style="top:10px;right:10px"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
           <div class="oh-card-icon" style="background:#f0e0f5;font-size:20px">🎤</div>
           <div class="oh-card-body">
             <div class="oh-card-label">Zanglessen</div>
@@ -3763,6 +3778,7 @@ function qtSkateLoaderHtml(text){
           </div>
         </div>
         <div class="oh-card oh-card-sm mmd-tile" id="ohCardMMD" onclick="openMakeMyDay()" style="cursor:pointer;background:var(--ocean);border-color:var(--brut-ink,#0a0a0a);position:relative;overflow:hidden">
+          <div class="oh-deco-icon" style="top:10px;right:10px"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.6 4.6l2 2M17.4 17.4l2 2M4.6 19.4l2-2M17.4 6.6l2-2"/></svg></div>
           <div class="mmd-tile-spark">✨</div>
           <div class="oh-card-icon" style="background:var(--gold,#d4a030);font-size:18px">☀️</div>
           <div class="oh-card-body">
@@ -10889,6 +10905,7 @@ function renderWeatherCard(dateStr, containerId) {
       ? '<div class="wc-date-loc" onclick="event.stopPropagation();openWeerLocatieModal()" title="Tik om locatie te wijzigen">📍 '+weerLocatieHuidigeNaam+'</div>'
       : '';
     var html = '<div class="wc-card' + (isEve?' wc-evening':'') + '" onclick="openWeerDetail(\'' + dateStr + '\')" style="cursor:pointer" title="Tik voor uurlijks weerbericht">'
+      + (isMain ? '<div class="oh-deco-icon" style="top:8px;right:10px"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18h11a4 4 0 0 0 .4-8 5.5 5.5 0 0 0-10.7 1.5A3.5 3.5 0 0 0 6 18Z"/></svg></div>' : '')
       + '<div class="wc-date-col">'
       + '<div class="wc-date-icon">' + (w.afternoonIcon||w.morningIcon||'🌤️') + '</div>'
       + '<div><div class="wc-date-day">' + new Date(dateStr+'T12:00:00').toLocaleDateString("nl-NL",{weekday:"short"}).toUpperCase() + '</div>'
@@ -11319,7 +11336,7 @@ function scheduleAllNotifications() {
     t3.setDate(t3.getDate() + daysUntilSun);
     if(t3 <= now3) t3.setDate(t3.getDate()+7);
     setTimeout(function() {
-      var wk = getWeekNum(new Date());
+      var wk = getTrainWeekNum(new Date());
       qtNotif('QualityTime · Week ' + (wk+1), '📅 Nieuwe week, nieuwe kansen. Je trainingsschema staat klaar!', {tag:'weekoverzicht', requireInteraction:false});
     }, t3 - now3);
   }
@@ -12628,7 +12645,9 @@ function renderTodayPage() {
   mmdUpdateHomeTile();
   const dayType = getDayType(viewDate);
   const ph = getPhIdx(viewDate);
-  const wk = getWeekNum(viewDate);
+  const wk = getTrainWeekNum(viewDate);
+  const trainEntryHero = getTrainEntry(viewDate);
+  const faseNaamHero = (trainEntryHero && trainEntryHero.faseLabel) ? trainEntryHero.faseLabel : (PHASES[ph] ? PHASES[ph].name : 'Fase 1');
   checkWeekStreak();
   const weekDone = getThisWeekTrainingsDone();
   const dinner = getDinnerForKey(key);
@@ -12649,10 +12668,9 @@ function renderTodayPage() {
   if(ohName)  ohName.textContent = viewDate.toLocaleDateString('nl-NL',{weekday:'short'}).replace('.','') + ' · ' + viewDate.toLocaleDateString('nl-NL',{month:'long'}).replace(/^\w/, c => c.toUpperCase());
   // ohFase element bestaat niet meer in HTML, maar we zetten fase info in ohStreak
   var ohFaseEl = document.getElementById('ohFase');
-  if(ohFaseEl) ohFaseEl.textContent = (PHASES[ph] ? PHASES[ph].name : '') + ' · WK ' + wk;
+  if(ohFaseEl) ohFaseEl.textContent = faseNaamHero + ' · WK ' + wk;
   if(ohStreak) {
-    var faseNaam = PHASES[ph] ? PHASES[ph].name : 'Fase 1';
-    ohStreak.textContent = faseNaam.toUpperCase() + ' · 🔥 WK ' + wk;
+    ohStreak.textContent = faseNaamHero.toUpperCase() + ' · 🔥 WK ' + wk;
   }
   if(ohTrain) { ohTrain.textContent = weekDone + '/' + getWeekTrainGoal(getWeekStart(viewDate)); ohTrain.className = 'oh-sv' + (weekDone>0?' terra':''); }
   if(ohKcal)  ohKcal.textContent = dinner ? (dinner.kcal || '520') : '—';
@@ -13539,7 +13557,9 @@ function renderCalendar() {
   const yr = calDate.getFullYear(), mn = calDate.getMonth();
   const today = new Date(); today.setHours(0,0,0,0);
   document.getElementById('calMonthTitle').textContent = MNL[mn]+' '+yr;
-  document.getElementById('calPhaseTag').textContent = PHASES[getPhIdx(new Date(yr,mn,1))].name;
+  var calFirstDay = new Date(yr,mn,1);
+  var calEntryPhase = getTrainEntry(calFirstDay);
+  document.getElementById('calPhaseTag').textContent = (calEntryPhase && calEntryPhase.faseLabel) ? calEntryPhase.faseLabel : PHASES[getPhIdx(calFirstDay)].name;
 
   const grid = document.getElementById('calGrid'); grid.innerHTML = '';
   const fd = new Date(yr,mn,1).getDay(), off = fd===0?6:fd-1, dims = new Date(yr,mn+1,0).getDate();
@@ -14075,16 +14095,20 @@ function renderProgress() {
   renderProgressDonuts();
   renderZangProgress();
   var today = new Date(); today.setHours(0,0,0,0);
-  var wk = getWeekNum(today);
+  var wk = getTrainWeekNum(today);
   var ph = getPhIdx(today);
+  var trainEntryProg = getTrainEntry(today);
+  var faseNaamProg = (trainEntryProg && trainEntryProg.faseLabel) ? trainEntryProg.faseLabel : (PHASES[ph] ? PHASES[ph].name : '');
   var weekDone = getThisWeekTrainingsDone();
-  var programDays = Math.max(0, Math.floor((today - new Date(2026,5,4)) / 86400000));
+  var importedDates = Object.keys(TRAIN_PLAN_BY_DATE).sort();
+  var programStartDate = importedDates.length ? new Date(importedDates[0]+'T12:00:00') : new Date(2026,5,4);
+  var programDays = Math.max(0, Math.floor((today - programStartDate) / 86400000));
   var totalWeeks = 52;
   var pct = Math.min(100, Math.round(programDays / (totalWeeks*7) * 100));
 
   // Subtitle
   var sub = document.getElementById('progSubtitle');
-  if(sub) sub.textContent = 'WEEK ' + wk + ' · ' + (PHASES[ph]?PHASES[ph].name:'');
+  if(sub) sub.textContent = 'WEEK ' + wk + ' · ' + faseNaamProg;
 
   // Week done
   var wd = document.getElementById('dashWeekDone');
