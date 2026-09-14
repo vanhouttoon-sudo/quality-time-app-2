@@ -1880,6 +1880,8 @@ input, select, textarea{
 .gn-add-date{background:#fff;border:1.5px solid #ece0d0;border-radius:8px;font-family:var(--body);font-size:12px;color:#3d1a0a;padding:6px 9px;outline:none;}
 .gn-add-date-clear{background:none;border:1px solid var(--sand3);border-radius:20px;color:var(--stone2);font-family:var(--cond);font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;cursor:pointer;}
 .gn-add-btn{background:#3d1a0a;color:#fff;border:none;font-family:var(--grotesk);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px 16px;cursor:pointer;flex-shrink:0;border-radius:10px;box-shadow:0 2px 8px rgba(61,26,10,.2);align-self:center;}
+.gn-icon-btn{background:#3d1a0a;color:#fff;border:none;font-size:16px;padding:0 15px;height:40px;cursor:pointer;flex-shrink:0;border-radius:10px;box-shadow:0 2px 8px rgba(61,26,10,.2);}
+.gn-icon-btn-mic{background:#c05818;}
 .gn-filter-bar{display:flex;align-items:center;gap:6px;padding:10px 14px;flex-wrap:wrap;border-bottom:1.5px solid #f5ede0;background:#fff;}
 .gn-filter-btn{flex-shrink:0;padding:6px 13px;font-family:var(--grotesk);font-size:8.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#3d1a0a;background:#fff;border:1.5px solid #ece0d0;cursor:pointer;border-radius:20px;transition:all .15s;}
 .gn-filter-btn.active{color:#fff;background:#3d1a0a;border-color:#3d1a0a;box-shadow:0 2px 8px rgba(61,26,10,.2);}
@@ -4910,6 +4912,18 @@ function qtSkateLoaderHtml(text){
       <img id="tpaImg" src="" style="width:100%;max-height:70vh;object-fit:contain;display:none">
       <div id="tpaEmpty" style="display:none;padding:60px 22px;color:rgba(240,232,216,.6);font-family:var(--body);font-size:13px;line-height:1.6">Nog geen foto voor deze week in je voortgangsbibliotheek.</div>
       <div id="tpaLabel" style="font-family:var(--cond);font-size:10px;letter-spacing:1px;color:rgba(240,232,216,.5);text-align:center;padding:8px 0"></div>
+    </div>
+  </div>
+</div>
+
+<!-- NOTITIE INSPREKEN — gestuurde spraakflow (titel -> "over" -> notitie -> "over" -> bevestiging) -->
+<div class="photo-modal-backdrop" id="voiceNoteModal" onclick="if(event.target===this)vnCancel()">
+  <div class="photo-modal" style="max-width:380px;background:#1a1410">
+    <button class="photo-modal-close" onclick="vnCancel()">✕</button>
+    <div style="padding:44px 24px 32px;text-align:center">
+      <div id="vnMicIcon" style="font-size:38px;margin-bottom:14px">🎙️</div>
+      <div id="vnStatus" style="font-family:var(--body);font-size:14px;color:#fff;line-height:1.55;min-height:64px;white-space:pre-line"></div>
+      <div id="vnTranscriptPreview" style="font-family:var(--cond);font-size:11px;color:rgba(255,255,255,.5);margin-top:14px;min-height:16px"></div>
     </div>
   </div>
 </div>
@@ -15455,7 +15469,43 @@ function applyNocoViewMode(mode) {
 // ═══ NOTITIES TAB (Varia) — alle notities in lijstvorm, filterbaar op periode/maand ═══
 var NOTITIES_GENERAL_KEY = '_general';
 var notitiesFilterMode = 'all'; // 'all' | 'month' | 'nodate'
+var notitiesFilterTag = null;   // null = geen tag-filter, anders exacte tagnaam
 var notitiesMonthDate = new Date();
+var notitiesSelectedTags = []; // tags geselecteerd voor de notitie die nu wordt toegevoegd
+var notitiesOptionsOpen = false; // toont/verbergt tags + datum bij het toevoegen (Mockup 4 — uitklapbare opties)
+function notitiesToggleOptions() {
+  notitiesOptionsOpen = !notitiesOptionsOpen;
+  renderNotitiesTab();
+}
+
+// Beschikbare tags — start met een paar voorbeelden, uitbreidbaar door de gebruiker
+var NOTITIES_TAGS = (function(){
+  try {
+    var saved = JSON.parse(localStorage.getItem('wf_notitie_tags') || 'null');
+    if(saved && saved.length) return saved;
+  } catch(e) {}
+  return ['Professioneel', 'Privé', 'Administratie'];
+})();
+function saveNotitiesTags(){ localStorage.setItem('wf_notitie_tags', JSON.stringify(NOTITIES_TAGS)); }
+
+function notitiesToggleTagSelect(tag) {
+  var i = notitiesSelectedTags.indexOf(tag);
+  if(i > -1) notitiesSelectedTags.splice(i,1); else notitiesSelectedTags.push(tag);
+  renderNotitiesTab();
+}
+function notitiesAddNewTag() {
+  var name = prompt('Naam van de nieuwe tag:');
+  if(!name) return;
+  name = name.trim();
+  if(!name) return;
+  if(NOTITIES_TAGS.indexOf(name) === -1) { NOTITIES_TAGS.push(name); saveNotitiesTags(); }
+  if(notitiesSelectedTags.indexOf(name) === -1) notitiesSelectedTags.push(name);
+  renderNotitiesTab();
+}
+function notitiesToggleFilterTag(tag) {
+  notitiesFilterTag = (notitiesFilterTag === tag) ? null : tag;
+  renderNotitiesTab();
+}
 
 function notitiesAllFlat() {
   // Verzamelt alle notities uit notesData (incl. notities zonder datum) tot 1 platte lijst
@@ -15463,7 +15513,7 @@ function notitiesAllFlat() {
   Object.keys(notesData).forEach(function(key) {
     (notesData[key] || []).forEach(function(n) {
       var ts = parseInt((n.id || '').replace('n_', ''), 10) || 0;
-      arr.push({ key: key, id: n.id, text: n.text, time: n.time, edited: n.edited, ts: ts, noDate: key === NOTITIES_GENERAL_KEY });
+      arr.push({ key: key, id: n.id, title: n.title || '', text: n.text, tags: n.tags || [], time: n.time, edited: n.edited, ts: ts, noDate: key === NOTITIES_GENERAL_KEY });
     });
   });
   arr.sort(function(a, b) { return b.ts - a.ts; });
@@ -15505,17 +15555,34 @@ function renderNotitiesTab() {
   } else {
     filtered = all;
   }
+  if (notitiesFilterTag) {
+    filtered = filtered.filter(function(n) { return n.tags && n.tags.indexOf(notitiesFilterTag) > -1; });
+  }
 
-  // ── Toevoegbalk ──
+  // ── Toevoegbalk (Mockup 4 — compact: invoerveld + icoonknoppen, tags/datum uitklapbaar) ──
   var h = '<div class="gn-add-bar">'
-    + '<div class="gn-add-row"><textarea class="gn-add-textarea" id="gnAddText" placeholder="Nieuwe notitie..." rows="1"></textarea></div>'
-    + '<div class="gn-add-date-row">'
-    + '<span class="gn-add-date-label">Datum (optioneel)</span>'
-    + '<input type="date" class="gn-add-date" id="gnAddDate">'
-    + '<button class="gn-add-date-clear" onclick="document.getElementById(\'gnAddDate\').value=\'\'">Geen datum</button>'
-    + '<button class="gn-add-btn" onclick="notitiesAddNote()" style="margin-left:auto">+ Voeg toe</button>'
+    + '<div class="gn-add-row" style="align-items:center">'
+    + '<textarea class="gn-add-textarea" id="gnAddText" placeholder="Nieuwe notitie..." rows="1" style="flex:1"></textarea>'
+    + '<button class="gn-icon-btn gn-icon-btn-mic" onclick="startVoiceNote()" title="Notitie inspreken">🎤</button>'
+    + '<button class="gn-icon-btn" onclick="notitiesAddNote()" title="Voeg toe">+</button>'
     + '</div>'
-    + '</div>';
+    + '<button type="button" class="gn-filter-btn" onclick="notitiesToggleOptions()" style="align-self:flex-start">'
+    + (notitiesOptionsOpen ? '⚙︎ − Opties verbergen' : '⚙︎ + Opties (tags, datum)')
+    + '</button>';
+  if (notitiesOptionsOpen) {
+    h += '<div class="gn-tag-select-row" style="display:flex;gap:6px;flex-wrap:wrap">'
+      + NOTITIES_TAGS.map(function(t){
+          return '<button type="button" class="gn-filter-btn' + (notitiesSelectedTags.indexOf(t)>-1?' active':'') + '" onclick="notitiesToggleTagSelect(\'' + t.replace(/'/g,"\\'") + '\')">' + t.replace(/</g,'&lt;') + '</button>';
+        }).join('')
+      + '<button type="button" class="gn-filter-btn" onclick="notitiesAddNewTag()">+ Nieuwe tag</button>'
+      + '</div>'
+      + '<div class="gn-add-date-row">'
+      + '<span class="gn-add-date-label">Datum (optioneel)</span>'
+      + '<input type="date" class="gn-add-date" id="gnAddDate">'
+      + '<button class="gn-add-date-clear" onclick="document.getElementById(\'gnAddDate\').value=\'\'">Geen datum</button>'
+      + '</div>';
+  }
+  h += '</div>';
 
   // ── Filterbalk ──
   h += '<div class="gn-filter-bar">'
@@ -15530,6 +15597,14 @@ function renderNotitiesTab() {
       + '</div>';
   }
   h += '</div>';
+  if (NOTITIES_TAGS.length) {
+    h += '<div class="gn-filter-bar" style="border-top:none;padding-top:0">'
+      + '<span style="font-family:var(--cond);font-size:8px;letter-spacing:1px;color:var(--stone2);text-transform:uppercase;align-self:center;margin-right:2px">🏷</span>'
+      + NOTITIES_TAGS.map(function(t){
+          return '<button class="gn-filter-btn' + (notitiesFilterTag===t?' active':'') + '" onclick="notitiesToggleFilterTag(\'' + t.replace(/'/g,"\\'") + '\')">' + t.replace(/</g,'&lt;') + '</button>';
+        }).join('')
+      + '</div>';
+  }
 
   // ── Lijst, gegroepeerd per key (datum of "Zonder datum"), meest recent eerst ──
   if (!filtered.length) {
@@ -15557,7 +15632,9 @@ function renderNotitiesTab() {
           + '<button class="gn-btn" data-a="edit" data-key="' + n.key + '" data-id="' + n.id + '" title="Bewerken">✏️</button>'
           + '<button class="gn-btn gn-del" data-a="del" data-key="' + n.key + '" data-id="' + n.id + '" title="Verwijderen">🗑</button>'
           + '</div></div>'
+          + (n.title ? '<div class="gn-note-title" style="font-family:var(--grotesk);font-weight:700;font-size:13.5px;color:#2c1208;margin-bottom:2px">' + n.title.replace(/</g, '&lt;') + '</div>' : '')
           + '<div class="gn-text" id="gntext_' + n.id + '">' + n.text.replace(/</g, '&lt;').replace(/\n/g, '<br>') + '</div>'
+          + (n.tags && n.tags.length ? '<div class="gn-tags" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:7px">' + n.tags.map(function(t){ return '<span style="font-family:var(--cond);font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:#ece0d0;color:#3d1a0a">' + t.replace(/</g,'&lt;') + '</span>'; }).join('') + '</div>' : '')
           + '</div>';
       });
     });
@@ -15582,10 +15659,11 @@ function notitiesAddNote() {
   if (!notesData[key]) notesData[key] = [];
   var id = 'n_' + Date.now();
   var now = new Date();
-  notesData[key].unshift({ id: id, text: ta.value.trim(), time: now.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) });
+  notesData[key].unshift({ id: id, text: ta.value.trim(), tags: notitiesSelectedTags.slice(), time: now.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) });
   localStorage.setItem('wf_notes', JSON.stringify(notesData));
   ta.value = '';
   if (dateInp) dateInp.value = '';
+  notitiesSelectedTags = [];
   renderNotitiesTab();
   renderCalendar();
 }
@@ -15606,7 +15684,13 @@ function notitiesStartEdit(key, id) {
   if (!note) return;
   var el = document.getElementById('gntext_' + id);
   if (!el) return;
+  var currentTags = note.tags || [];
   el.innerHTML = '<textarea class="gn-edit-area" id="gnedit_' + id + '">' + note.text.replace(/</g, '&lt;') + '</textarea>'
+    + '<div class="gn-tag-select-row" id="gnedittags_' + id + '" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px">'
+    + NOTITIES_TAGS.map(function(t){
+        return '<button type="button" class="gn-filter-btn' + (currentTags.indexOf(t)>-1?' active':'') + '" data-tag="' + t.replace(/"/g,'&quot;') + '" onclick="this.classList.toggle(\'active\')">' + t.replace(/</g,'&lt;') + '</button>';
+      }).join('')
+    + '</div>'
     + '<div class="gn-edit-actions">'
     + '<button class="gn-edit-save" onclick="notitiesSaveEdit(\'' + key + '\',\'' + id + '\')">Opslaan</button>'
     + '<button class="gn-edit-cancel" onclick="renderNotitiesTab()">Annuleer</button>'
@@ -15622,8 +15706,177 @@ function notitiesSaveEdit(key, id) {
   if (!note) return;
   note.text = ta.value.trim();
   note.edited = true;
+  var tagRow = document.getElementById('gnedittags_' + id);
+  if (tagRow) {
+    var selected = [];
+    tagRow.querySelectorAll('.gn-filter-btn.active').forEach(function(b){ selected.push(b.getAttribute('data-tag')); });
+    note.tags = selected;
+  }
   localStorage.setItem('wf_notes', JSON.stringify(notesData));
   renderNotitiesTab();
+}
+
+// ═══ NOTITIE INSPREKEN — gestuurde spraakflow ═══
+// Titel → "over" → notitie → "over" → gesproken samenvatting → ja/nee → bewaren.
+// Gebruikt de browser-eigen Web Speech API (SpeechRecognition + SpeechSynthesis),
+// dus geen server of API-key nodig. Werkt het best in Chrome; op iOS/Safari kan
+// de ondersteuning wisselend zijn, zeker binnen een geïnstalleerde PWA.
+var vnActive = false;
+var vnCurrentRecognition = null;
+var vnTitle = '', vnBody = '';
+
+function vnSupported() {
+  return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+}
+function vnSetStatus(text) {
+  var el = document.getElementById('vnStatus');
+  if(el) el.textContent = text;
+}
+function vnSpeak(text, onEnd) {
+  if(!('speechSynthesis' in window)) { if(onEnd) setTimeout(onEnd, 250); return; }
+  try {
+    speechSynthesis.cancel();
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = 'nl-NL'; u.rate = 1;
+    u.onend = function(){ if(onEnd) onEnd(); };
+    u.onerror = function(){ if(onEnd) onEnd(); };
+    speechSynthesis.speak(u);
+  } catch(e) { if(onEnd) onEnd(); }
+}
+// Luistert door totdat het woord "over" gezegd wordt (walkie-talkie-stijl einde-commando)
+function vnListenUntilOver(onDone, onError) {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) { onError && onError('Spraakherkenning niet ondersteund'); return; }
+  var rec = new SR();
+  rec.lang = 'nl-NL'; rec.continuous = true; rec.interimResults = true;
+  var finalTranscript = ''; var stopped = false;
+  var micIcon = document.getElementById('vnMicIcon');
+  if(micIcon) micIcon.textContent = '🔴';
+  rec.onresult = function(e) {
+    var interim = '';
+    for(var i=e.resultIndex; i<e.results.length; i++) {
+      var t = e.results[i][0].transcript;
+      if(e.results[i].isFinal) finalTranscript += t + ' '; else interim += t;
+    }
+    var preview = document.getElementById('vnTranscriptPreview');
+    if(preview) preview.textContent = (finalTranscript + interim).trim();
+    if(!stopped && /\bover\b\s*$/i.test(finalTranscript.trim())) { stopped = true; rec.stop(); }
+  };
+  rec.onerror = function(e) { if(!stopped) { stopped = true; onError && onError(e.error); } };
+  rec.onend = function() {
+    if(micIcon) micIcon.textContent = '🎙️';
+    var cleaned = finalTranscript.trim().replace(/\bover\b\s*$/i, '').trim();
+    if(cleaned) onDone(cleaned); else onError && onError('no-speech');
+  };
+  vnCurrentRecognition = rec;
+  try { rec.start(); } catch(e) { onError && onError('start-failed'); }
+}
+// Luistert naar één korte zin (voor het ja/nee-antwoord)
+function vnListenShort(onDone, onError) {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if(!SR) { onError && onError('Spraakherkenning niet ondersteund'); return; }
+  var rec = new SR();
+  rec.lang = 'nl-NL'; rec.continuous = false; rec.interimResults = false;
+  var micIcon = document.getElementById('vnMicIcon');
+  if(micIcon) micIcon.textContent = '🔴';
+  rec.onresult = function(e) { onDone(e.results[0][0].transcript); };
+  rec.onerror = function(e) { onError && onError(e.error); };
+  rec.onend = function() { if(micIcon) micIcon.textContent = '🎙️'; };
+  vnCurrentRecognition = rec;
+  try { rec.start(); } catch(e) { onError && onError('start-failed'); }
+}
+
+function startVoiceNote() {
+  if(!vnSupported()) {
+    alert('Spraakherkenning wordt niet ondersteund in deze browser. Probeer Chrome (Android of desktop).');
+    return;
+  }
+  vnActive = true; vnTitle = ''; vnBody = '';
+  var m = document.getElementById('voiceNoteModal');
+  if(m) m.classList.add('open');
+  var preview = document.getElementById('vnTranscriptPreview');
+  if(preview) preview.textContent = '';
+  vnSetStatus('Even opstarten…');
+  setTimeout(vnAskTitle, 400);
+}
+function vnAskTitle() {
+  if(!vnActive) return;
+  vnSetStatus('🎙️ Wat is de titel van je notitie? Zeg "over" zodra je klaar bent.');
+  vnSpeak('Wat is de titel van je notitie? Zeg over zodra je klaar bent.', function(){
+    if(!vnActive) return;
+    vnListenUntilOver(function(text){
+      if(!vnActive) return;
+      vnTitle = text;
+      vnSetStatus('Titel genoteerd: "' + vnTitle + '"');
+      setTimeout(vnAskBody, 700);
+    }, function(err){
+      if(!vnActive) return;
+      vnSetStatus('⚠️ Kon je niet verstaan (' + err + '). Opnieuw geprobeerd…');
+      setTimeout(function(){ if(vnActive) vnAskTitle(); }, 2200);
+    });
+  });
+}
+function vnAskBody() {
+  if(!vnActive) return;
+  vnSpeak('Spreek nu je notitie in. Zeg over zodra je klaar bent.', function(){
+    if(!vnActive) return;
+    vnSetStatus('🎙️ Spreek je notitie in. Zeg "over" zodra je klaar bent.');
+    vnListenUntilOver(function(text){
+      if(!vnActive) return;
+      vnBody = text;
+      vnAskConfirm();
+    }, function(err){
+      if(!vnActive) return;
+      vnSetStatus('⚠️ Kon je niet verstaan (' + err + '). Opnieuw geprobeerd…');
+      setTimeout(function(){ if(vnActive) vnAskBody(); }, 2200);
+    });
+  });
+}
+function vnAskConfirm() {
+  if(!vnActive) return;
+  var recap = 'Titel: ' + vnTitle + '. Notitie: ' + (vnBody || '(leeg)');
+  vnSetStatus('📋 ' + recap);
+  vnSpeak('Ik heb genoteerd. ' + recap + '. Wil je dit bewaren? Zeg ja of nee.', function(){
+    if(!vnActive) return;
+    vnSetStatus('🎙️ Zeg "ja" om te bewaren, of "nee" om te annuleren.');
+    vnListenShort(function(text){
+      if(!vnActive) return;
+      var lower = (text||'').toLowerCase();
+      if(/\bja\b/.test(lower)) { vnSaveNote(); }
+      else if(/\bnee\b/.test(lower)) { vnSpeak('Notitie niet bewaard.', function(){ vnClose(); }); }
+      else { vnSpeak('Dat heb ik niet verstaan. Zeg ja of nee.', function(){ if(vnActive) vnAskConfirm(); }); }
+    }, function(err){
+      if(!vnActive) return;
+      vnSetStatus('⚠️ Kon je niet verstaan (' + err + '). Opnieuw geprobeerd…');
+      setTimeout(function(){ if(vnActive) vnAskConfirm(); }, 2200);
+    });
+  });
+}
+function vnSaveNote() {
+  var key = NOTITIES_GENERAL_KEY;
+  if(!notesData[key]) notesData[key] = [];
+  var id = 'n_' + Date.now();
+  var now = new Date();
+  notesData[key].unshift({
+    id: id, title: vnTitle, text: vnBody, tags: [],
+    time: now.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})+' '+now.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})
+  });
+  localStorage.setItem('wf_notes', JSON.stringify(notesData));
+  vnSetStatus('✅ Bewaard!');
+  vnSpeak('Notitie bewaard.', function(){ vnClose(); });
+  if(typeof renderNotitiesTab === 'function') renderNotitiesTab();
+  if(typeof renderCalendar === 'function') renderCalendar();
+}
+function vnCancel() {
+  vnActive = false;
+  if(vnCurrentRecognition) { try { vnCurrentRecognition.abort(); } catch(e){} }
+  if('speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch(e){} }
+  vnClose();
+}
+function vnClose() {
+  vnActive = false;
+  var m = document.getElementById('voiceNoteModal');
+  if(m) m.classList.remove('open');
 }
 
 // ═══ AXXES — opnames & transcripties ═══
