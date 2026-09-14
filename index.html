@@ -8874,7 +8874,7 @@ function closePhotoDetail(){ var m=document.getElementById('photoDetailModal'); 
 var tpaWeekKey = null, tpaWeekNum = null;
 function openTrainPhotoAnalyse(dateStr) {
   var d = new Date(dateStr + 'T12:00:00');
-  var wn = getWeekNum(d);
+  var wn = getTrainWeekNum(d);
   tpaWeekNum = wn;
   tpaWeekKey = 'wk_' + wn + '_' + d.getFullYear();
   var m = document.getElementById('tpaModal'); if(!m) return;
@@ -12054,6 +12054,16 @@ function getTrainEntry(d) {
   return TRAIN_PLAN_BY_DATE[dk(d)] || null;
 }
 
+// Trainingsweeknummer voor een datum: gebruikt het weeknummer uit het geïmporteerde
+// schema (zoals in de Excel, week 1 = eerste trainingsdag van de huidige cyclus) als
+// dat er is, anders de oude vaste berekening (t.o.v. START). Zo klopt "Foto Analyse"
+// altijd met een eventuele herstart van het traject, zonder de rest van de app te raken.
+function getTrainWeekNum(d) {
+  var entry = getTrainEntry(d);
+  if(entry && entry.week) return entry.week;
+  return getWeekNum(d);
+}
+
 // Hoeveel KRACHTTRAINING-dagen staan er deze week gepland volgens het
 // geïmporteerde schema? Valt terug op 4 (het oude vaste doel) zonder import.
 function getWeekTrainGoal(weekStart) {
@@ -13707,18 +13717,21 @@ function renderDayPanel(date) {
     } else {
       var prog = getProg(date);
 
-      // ── OPWARMING ──
-      trainInner += '<div style="background:rgba(212,160,48,.08);border-radius:10px;padding:8px 10px;margin-bottom:8px">';
-      trainInner += '<div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:5px">🔥 Opwarming · 5 min</div>';
-      prog.warmup.exs.forEach(function(ex){
-        var vid = getExVideo(ex.n);
-        trainInner += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(212,160,48,.1)">'
-          + '<div style="font-family:var(--cond);font-size:10px;color:var(--ink);flex:1">' + ex.n + '</div>'
-          + '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2);flex-shrink:0">' + ex.s + '</div>'
-          + '<div class="dp2-chip dp2-chip-vid" data-n="'+ex.n.replace(/"/g,'&quot;')+'" onclick="dp2OpenExVideo(this)" style="font-size:8px;padding:2px 6px">▶</div>'
-          + '</div>';
-      });
-      trainInner += '</div>';
+      // ── OPWARMING ── (enkel bij het oude, ingebouwde schema — geïmporteerde dagen
+      // hebben geen apart opwarming-blok, die oefeningen zitten al in de hoofdlijst)
+      if(prog.warmup && prog.warmup.exs) {
+        trainInner += '<div style="background:rgba(212,160,48,.08);border-radius:10px;padding:8px 10px;margin-bottom:8px">';
+        trainInner += '<div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:5px">🔥 Opwarming · 5 min</div>';
+        prog.warmup.exs.forEach(function(ex){
+          var vid = getExVideo(ex.n);
+          trainInner += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(212,160,48,.1)">'
+            + '<div style="font-family:var(--cond);font-size:10px;color:var(--ink);flex:1">' + ex.n + '</div>'
+            + '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2);flex-shrink:0">' + ex.s + '</div>'
+            + '<div class="dp2-chip dp2-chip-vid" data-n="'+ex.n.replace(/"/g,'&quot;')+'" onclick="dp2OpenExVideo(this)" style="font-size:8px;padding:2px 6px">▶</div>'
+            + '</div>';
+        });
+        trainInner += '</div>';
+      }
 
       // ── HOOFDTRAINING ──
       trainInner += '<div style="font-family:var(--cond);font-size:11px;font-weight:700;color:var(--ink);margin-bottom:6px">' + prog.title + '</div>';
@@ -13735,18 +13748,20 @@ function renderDayPanel(date) {
           + '</div>';
       });
 
-      // ── STRETCHING ──
-      trainInner += '<div style="background:rgba(148,173,170,.1);border-radius:10px;padding:8px 10px;margin-top:8px">';
-      trainInner += '<div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--sage);margin-bottom:5px">🧘 Stretching · 5 min</div>';
-      prog.cooldown.exs.forEach(function(ex){
-        var vid = getExVideo(ex.n);
-        trainInner += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(148,173,170,.15)">'
-          + '<div style="font-family:var(--cond);font-size:10px;color:var(--ink);flex:1">' + ex.n + '</div>'
-          + '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2);flex-shrink:0">' + ex.s + '</div>'
-          + '<div class="dp2-chip dp2-chip-vid" data-n="'+ex.n.replace(/"/g,'&quot;')+'" onclick="dp2OpenExVideo(this)" style="font-size:8px;padding:2px 6px">▶</div>'
-          + '</div>';
-      });
-      trainInner += '</div>';
+      // ── STRETCHING ── (enkel bij het oude, ingebouwde schema)
+      if(prog.cooldown && prog.cooldown.exs) {
+        trainInner += '<div style="background:rgba(148,173,170,.1);border-radius:10px;padding:8px 10px;margin-top:8px">';
+        trainInner += '<div style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--sage);margin-bottom:5px">🧘 Stretching · 5 min</div>';
+        prog.cooldown.exs.forEach(function(ex){
+          var vid = getExVideo(ex.n);
+          trainInner += '<div style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid rgba(148,173,170,.15)">'
+            + '<div style="font-family:var(--cond);font-size:10px;color:var(--ink);flex:1">' + ex.n + '</div>'
+            + '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2);flex-shrink:0">' + ex.s + '</div>'
+            + '<div class="dp2-chip dp2-chip-vid" data-n="'+ex.n.replace(/"/g,'&quot;')+'" onclick="dp2OpenExVideo(this)" style="font-size:8px;padding:2px 6px">▶</div>'
+            + '</div>';
+        });
+        trainInner += '</div>';
+      }
 
       // ── ACTIEKNOPPEN ──
       trainInner += '<div class="dp2-action-row" style="margin-top:8px">';
@@ -13894,6 +13909,7 @@ function renderDayPanel(date) {
       + dp2Tile('training','💪','Training', trainSub)
       + (dailyPl ? dp2Tile('muziek','🎵','Muziek', musicSub) : '')
       + (noteCount>0 ? dp2Tile('notities','📝','Notities', noteSub) : '')
+      + '<div class="dp2-tile" onclick="openTrainPhotoAnalyse(\''+key+'\')"><div class="dp2-tile-ic">📸</div><div class="dp2-tile-lbl">Foto Analyse</div><div class="dp2-tile-sub">Week '+getTrainWeekNum(date)+'</div></div>'
       + '</div>';
 
     html += dp2DetailPanel('weer', '🌤️ Weerbericht', '<div id="dp2weather_'+key+'"></div>');
