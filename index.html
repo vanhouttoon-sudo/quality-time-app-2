@@ -1881,6 +1881,11 @@ input, select, textarea{
 .gn-add-title{width:100%;background:#fff;border:1.5px solid #ece0d0;border-radius:10px;font-family:var(--grotesk);font-size:13.5px;font-weight:700;color:#2c1208;padding:9px 13px;outline:none;box-sizing:border-box;}
 .gn-bullet-list{margin:2px 0;padding-left:18px;}
 .gn-bullet-list li{margin:2px 0;}
+.gn-chk-row{display:flex;align-items:flex-start;gap:8px;padding:4px 0;cursor:pointer;}
+.gn-chk{width:16px;height:16px;border:1.6px solid var(--brut-ink,#0a0a0a);border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;}
+.gn-chk.done{background:var(--green,#4a7a30);border-color:var(--green,#4a7a30);}
+.gn-chk-text{font-family:var(--body);font-size:12.5px;color:#2c1208;line-height:1.4;}
+.gn-chk-text.done{text-decoration:line-through;color:var(--stone2);}
 .gn-add-date-clear{background:none;border:1px solid var(--sand3);border-radius:20px;color:var(--stone2);font-family:var(--cond);font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;cursor:pointer;}
 .gn-add-btn{background:#3d1a0a;color:#fff;border:none;font-family:var(--grotesk);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px 16px;cursor:pointer;flex-shrink:0;border-radius:10px;box-shadow:0 2px 8px rgba(61,26,10,.2);align-self:center;}
 .gn-icon-btn{background:#3d1a0a;color:#fff;border:none;font-size:16px;padding:0 15px;height:40px;cursor:pointer;flex-shrink:0;border-radius:10px;box-shadow:0 2px 8px rgba(61,26,10,.2);}
@@ -15525,6 +15530,135 @@ function notitiesFormatBody(text) {
   return html;
 }
 
+// ── Pastel kleur per tag (uniek, stabiel via de volgorde in NOTITIES_TAGS) ──
+var NOTITIES_TAG_PALETTE = ['#fff7cf', '#e2fbfb', '#ffe8f5', '#cdf3e8', '#ece2fb', '#dcefd6', '#ffe0c2', '#ffd9c2', '#dceeff', '#ffd9e8'];
+function notitiesTagColor(tag) {
+  var idx = NOTITIES_TAGS.indexOf(tag);
+  if (idx === -1) idx = 0;
+  return NOTITIES_TAG_PALETTE[idx % NOTITIES_TAG_PALETTE.length];
+}
+
+// ── Afvinkbare bullets: "• " = open, "☑ " = afgevinkt, rechtstreeks in de opgeslagen tekst ──
+function notitiesParseLines(text) {
+  var lines = (text || '').split('\n');
+  return lines.map(function(line, idx) {
+    var m = line.match(/^(•|☑)\s+(.*)$/);
+    if (m) return { type: 'bullet', done: m[1] === '☑', text: m[2], lineIdx: idx };
+    return { type: 'text', text: line, lineIdx: idx };
+  });
+}
+function notitiesBulletStats(text) {
+  var bullets = notitiesParseLines(text).filter(function(p) { return p.type === 'bullet'; });
+  var total = bullets.length;
+  if (!total) return null;
+  var done = bullets.filter(function(b) { return b.done; }).length;
+  return { total: total, done: done, open: total - done, pct: Math.round(done / total * 100) };
+}
+function notitiesPieGradient(stats) {
+  var doneDeg = stats.done / stats.total * 360;
+  return 'conic-gradient(var(--green) 0deg ' + doneDeg + 'deg, var(--terra) ' + doneDeg + 'deg 360deg)';
+}
+function notitiesToggleBullet(key, id, lineIdx) {
+  var note = (notesData[key] || []).find(function(n) { return n.id === id; });
+  if (!note) return;
+  var lines = (note.text || '').split('\n');
+  var line = lines[lineIdx];
+  if (!line) return;
+  if (/^•\s+/.test(line)) lines[lineIdx] = line.replace(/^•\s+/, '☑ ');
+  else if (/^☑\s+/.test(line)) lines[lineIdx] = line.replace(/^☑\s+/, '• ');
+  else return;
+  note.text = lines.join('\n');
+  localStorage.setItem('wf_notes', JSON.stringify(notesData));
+  renderNotitiesTab();
+}
+// Rendert de opengeklapte inhoud: bullet-regels worden afvinkbare rijen, de rest blijft platte tekst
+function notitiesRenderBody(key, id, text) {
+  var parsed = notitiesParseLines(text);
+  var html = '';
+  parsed.forEach(function(p) {
+    if (p.type === 'bullet') {
+      html += '<div class="gn-chk-row" onclick="event.stopPropagation();notitiesToggleBullet(\'' + key + '\',\'' + id + '\',' + p.lineIdx + ')">'
+        + '<div class="gn-chk' + (p.done ? ' done' : '') + '">' + (p.done ? '✓' : '') + '</div>'
+        + '<div class="gn-chk-text' + (p.done ? ' done' : '') + '">' + p.text.replace(/</g, '&lt;') + '</div>'
+        + '</div>';
+    } else {
+      html += p.text.trim() ? '<div style="font-family:var(--body);font-size:12.5px;color:#2c1208;line-height:1.5">' + p.text.replace(/</g, '&lt;') + '</div>' : '<div>&nbsp;</div>';
+    }
+  });
+  return html;
+}
+
+// ── Artwork-symbool per notitie, op basis van de inhoud (titel + tekst) ──
+// Dit gebeurt volledig lokaal via trefwoorden — GEEN live web search of AI-herkenning
+// (dat zou, net als bij Make My Day, een eigen Netlify-functie + API-key vereisen die
+// ik hier niet kan opzetten; zie toelichting in mijn antwoord). Simpele, snelle,
+// offline-werkende matching op basis van woorden in de notitie.
+var NOTITIES_ARTWORK_RULES = [
+  { rx: /\b(boodschap|boodschappen|kruidenier|supermarkt|eten|recept|koken|maaltijd)\b/i, icon: '🛒' },
+  { rx: /\b(werk|project|meeting|vergadering|klant|deadline|kantoor|collega|axxes|waterweg)\b/i, icon: '💼' },
+  { rx: /\b(familie|kinderen|zoon|dochter|partner|janne|cyriel)\b/i, icon: '👪' },
+  { rx: /\b(reis|reizen|vakantie|trip|vlucht|hotel)\b/i, icon: '✈️' },
+  { rx: /\b(training|sport|loop|lopen|fitness|gym|kracht)\b/i, icon: '🏋️' },
+  { rx: /\b(zang|zingen|muziek|lied|song|noot)\b/i, icon: '🎵' },
+  { rx: /\b(belasting|factuur|bank|administratie|verzekering|contract)\b/i, icon: '🧾' },
+  { rx: /\b(dokter|arts|gezondheid|medicijn|tandarts|afspraak)\b/i, icon: '🩺' },
+  { rx: /\b(idee|ontwerp|concept|app|feature|design)\b/i, icon: '💡' },
+  { rx: /\b(huis|klus|verbouw|tuin|herstelling)\b/i, icon: '🏠' },
+  { rx: /\b(verjaardag|feest|cadeau|viering)\b/i, icon: '🎁' },
+];
+function notitiesArtworkFor(text) {
+  var t = (text || '').toLowerCase();
+  for (var i = 0; i < NOTITIES_ARTWORK_RULES.length; i++) {
+    if (NOTITIES_ARTWORK_RULES[i].rx.test(t)) return NOTITIES_ARTWORK_RULES[i].icon;
+  }
+  return '📝';
+}
+
+// ── Echte foto via Unsplash (optioneel, vervangt het emoji-icoon zodra ze binnen is) ──
+// Vereist een eigen Netlify-functie (notitie-foto.js, apart aangeleverd) + een gratis
+// Unsplash API-key als environment variable. Zolang die niet is opgezet, faalt de
+// fetch gewoon stil en blijft het emoji-icoon hierboven staan — niets breekt.
+// Dezelfde categorieën als NOTITIES_ARTWORK_RULES, maar vertaald naar Engelse
+// zoektermen die Unsplash-kant bewust richting rustige, realistische foto's met
+// ÉÉN duidelijk onderwerp sturen (de server-kant verrijkt dit nog verder).
+var NOTITIES_PHOTO_QUERY_RULES = [
+  { rx: /\b(boodschap|boodschappen|kruidenier|supermarkt|eten|recept|koken|maaltijd)\b/i, q: 'grocery bag single item' },
+  { rx: /\b(werk|project|meeting|vergadering|klant|deadline|kantoor|collega|axxes|waterweg)\b/i, q: 'laptop desk workspace' },
+  { rx: /\b(familie|kinderen|zoon|dochter|partner|janne|cyriel)\b/i, q: 'family moment warm light' },
+  { rx: /\b(reis|reizen|vakantie|trip|vlucht|hotel)\b/i, q: 'airplane window travel' },
+  { rx: /\b(training|sport|loop|lopen|fitness|gym|kracht)\b/i, q: 'dumbbell gym equipment' },
+  { rx: /\b(zang|zingen|muziek|lied|song|noot)\b/i, q: 'microphone music studio' },
+  { rx: /\b(belasting|factuur|bank|administratie|verzekering|contract)\b/i, q: 'paperwork desk stack' },
+  { rx: /\b(dokter|arts|gezondheid|medicijn|tandarts|afspraak)\b/i, q: 'stethoscope medical' },
+  { rx: /\b(idee|ontwerp|concept|app|feature|design)\b/i, q: 'lightbulb idea' },
+  { rx: /\b(huis|klus|verbouw|tuin|herstelling)\b/i, q: 'house exterior architecture' },
+  { rx: /\b(verjaardag|feest|cadeau|viering)\b/i, q: 'birthday candle gift' },
+];
+function notitiesPhotoQueryFor(text) {
+  var t = (text || '').toLowerCase();
+  for (var i = 0; i < NOTITIES_PHOTO_QUERY_RULES.length; i++) {
+    if (NOTITIES_PHOTO_QUERY_RULES[i].rx.test(t)) return NOTITIES_PHOTO_QUERY_RULES[i].q;
+  }
+  return 'notebook desk minimal';
+}
+var NOTITIES_PHOTO_ATTEMPTED = {}; // { noteId: true } — voorkomt dat we bij elke render opnieuw proberen na een mislukte fetch
+async function notitiesFetchPhoto(note) {
+  if (note.photoUrl || NOTITIES_PHOTO_ATTEMPTED[note.id]) return;
+  NOTITIES_PHOTO_ATTEMPTED[note.id] = true;
+  try {
+    var q = notitiesPhotoQueryFor((note.title || '') + ' ' + (note.text || ''));
+    var res = await fetch('/.netlify/functions/notitie-foto?query=' + encodeURIComponent(q));
+    var data = await res.json();
+    if (data && data.ok && data.url) {
+      note.photoUrl = data.url;
+      note.photoCredit = data.credit || '';
+      note.photoCreditUrl = data.creditUrl || '';
+      localStorage.setItem('wf_notes', JSON.stringify(notesData));
+      renderNotitiesTab();
+    }
+  } catch (e) { /* stil falen — emoji-icoon blijft gewoon staan */ }
+}
+
 // Beschikbare tags — start met een paar voorbeelden, uitbreidbaar door de gebruiker
 var NOTITIES_TAGS = (function(){
   try {
@@ -15691,23 +15825,35 @@ function renderNotitiesTab() {
           ? n.title.replace(/</g, '&lt;')
           : '<span style="font-style:italic;color:var(--stone2);font-weight:500">Zonder titel</span>';
         var hasBody = !!(n.text && n.text.trim());
-        h += '<div class="gn-card" id="gncard_' + n.id + '">'
+        var stats = notitiesBulletStats(n.text);
+        var bgColor = (n.tags && n.tags.length) ? notitiesTagColor(n.tags[0]) : '#fff';
+        var artIcon = notitiesArtworkFor((n.title || '') + ' ' + (n.text || ''));
+        var leadCircle = n.photoUrl
+          ? '<img src="' + n.photoUrl + '" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:1.5px solid var(--brut-ink,#0a0a0a);flex-shrink:0">'
+          : '<div style="width:28px;height:28px;border-radius:50%;border:1.5px solid var(--brut-ink,#0a0a0a);flex-shrink:0;background:#fff;display:flex;align-items:center;justify-content:center;font-size:14px">' + artIcon + '</div>';
+        if (!n.photoUrl) notitiesFetchPhoto(n); // stille achtergrond-fetch; render herlaadt zichzelf zodra de foto binnen is
+        var pieBadge = stats
+          ? '<div title="' + stats.done + '/' + stats.total + ' afgevinkt" style="width:22px;height:22px;border-radius:50%;border:1.5px solid var(--brut-ink,#0a0a0a);flex-shrink:0;background:' + notitiesPieGradient(stats) + '"></div>'
+          : '';
+        h += '<div class="gn-card" id="gncard_' + n.id + '" style="background:' + bgColor + '">'
           + '<div class="gn-card-top">'
-          + '<div class="gn-meta">' + n.time + (n.edited ? ' · bewerkt' : '') + '</div>'
+          + '<div class="gn-meta">' + n.time + (n.edited ? ' · bewerkt' : '') + (stats ? (' · ' + stats.done + '/' + stats.total + ' afgevinkt') : '') + '</div>'
           + '<div class="gn-actions">'
           + '<button class="gn-btn" data-a="edit" data-key="' + n.key + '" data-id="' + n.id + '" title="Bewerken">✏️</button>'
           + '<button class="gn-btn gn-del" data-a="del" data-key="' + n.key + '" data-id="' + n.id + '" title="Verwijderen">🗑</button>'
           + '</div></div>'
-          + '<div class="gn-note-title" onclick="notitiesToggleExpand(\'' + n.id + '\')" style="cursor:pointer;display:flex;align-items:center;gap:6px;font-family:var(--grotesk);font-weight:700;font-size:13.5px;color:#2c1208">'
+          + '<div class="gn-note-title" onclick="notitiesToggleExpand(\'' + n.id + '\')" style="cursor:pointer;display:flex;align-items:center;gap:9px;font-family:var(--grotesk);font-weight:700;font-size:13.5px;color:#2c1208">'
+          + leadCircle
           + '<span style="flex:1">' + titleHtml + '</span>'
-          + (hasBody ? '<span style="font-size:10px;color:var(--stone2);flex-shrink:0">' + (isOpen ? '▲ verbergen' : '▼ inhoud') + '</span>' : '')
+          + pieBadge
+          + (hasBody ? '<span style="font-size:10px;color:var(--stone2);flex-shrink:0">' + (isOpen ? '▲' : '▼') + '</span>' : '')
           + '</div>'
-          + (hasBody
-              ? (isOpen
-                  ? '<div class="gn-text" id="gntext_' + n.id + '">' + notitiesFormatBody(n.text) + '</div>'
-                  : '<div class="gn-text-preview" onclick="notitiesToggleExpand(\'' + n.id + '\')" style="font-family:var(--body);font-size:11.5px;color:var(--stone);margin-top:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + n.text.replace(/</g,'&lt;').replace(/\n/g,' ↵ ') + '</div>')
+          + (hasBody && isOpen
+              ? '<div class="gn-text" id="gntext_' + n.id + '" style="margin-top:6px;margin-left:37px">' + notitiesRenderBody(n.key, n.id, n.text) + '</div>'
               : '')
-          + (n.tags && n.tags.length ? '<div class="gn-tags" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:7px">' + n.tags.map(function(t){ return '<span style="font-family:var(--cond);font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:#ece0d0;color:#3d1a0a">' + t.replace(/</g,'&lt;') + '</span>'; }).join('') + '</div>' : '')
+          + (isOpen && n.photoUrl && n.photoCredit
+              ? '<div style="margin-top:6px;margin-left:37px;font-family:var(--cond);font-size:8px;color:var(--stone2)"><a href="' + (n.photoCreditUrl || '#') + '" target="_blank" rel="noopener" style="color:inherit">📷 Foto: ' + n.photoCredit.replace(/</g,'&lt;') + ' via Unsplash</a></div>'
+              : '')
           + '</div>';
       });
     });
