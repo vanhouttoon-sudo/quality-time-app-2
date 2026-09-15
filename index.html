@@ -8913,24 +8913,16 @@ function closePhotoDetail(){ var m=document.getElementById('photoDetailModal'); 
 var tpaWeekKey = null, tpaWeekNum = null, tpaHasWeek = false;
 function openTrainPhotoAnalyse(dateStr) {
   var d = new Date(dateStr + 'T12:00:00');
-  var entry = getTrainEntry(d);
   var m = document.getElementById('tpaModal'); if(!m) return;
   var lock = document.getElementById('tpaLock');
   var content = document.getElementById('tpaContent');
   var lbl = document.getElementById('tpaLockWeekLabel');
   var inp = document.getElementById('tpaPassInput');
-  // Weeknummer komt UITSLUITEND uit het geïmporteerde schema — nooit een gok op
-  // basis van het oude, losstaande systeem, want dat zou een fotoweek tonen die
-  // niets met je échte trainingsweek te maken heeft.
-  if(entry && entry.week) {
-    tpaWeekNum = entry.week;
-    tpaHasWeek = true;
-    if(lbl) lbl.textContent = 'Week ' + entry.week;
-  } else {
-    tpaWeekNum = null;
-    tpaHasWeek = false;
-    if(lbl) lbl.textContent = 'onbekende week';
-  }
+  // Foto-index komt nu uit het aantal AFGEMELDE trainingssessies (per 3 = 1 foto
+  // verder), niet meer uit het kalenderweeknummer — zie tpaPhotoIndexForDate().
+  tpaWeekNum = tpaPhotoIndexForDate(d);
+  tpaHasWeek = true;
+  if(lbl) lbl.textContent = 'Week ' + tpaWeekNum;
   if(lock) lock.style.display = 'block';
   if(content) content.style.display = 'none';
   if(inp) { inp.value = ''; inp.style.border = ''; inp.placeholder = 'Wachtwoord...'; }
@@ -8945,7 +8937,7 @@ function checkTrainPhotoPass() {
     var img = document.getElementById('tpaImg');
     var empty = document.getElementById('tpaEmpty');
     var lbl = document.getElementById('tpaLabel');
-    var entry = (tpaHasWeek && typeof TRAIN_PROGRESS_PHOTOS !== 'undefined') ? TRAIN_PROGRESS_PHOTOS[String(tpaWeekNum)] : null;
+    var entry = (typeof TRAIN_PROGRESS_PHOTOS !== 'undefined') ? TRAIN_PROGRESS_PHOTOS[String(tpaWeekNum)] : null;
     if(entry) {
       if(img) { img.src = entry; img.style.display = 'block'; }
       if(empty) empty.style.display = 'none';
@@ -8954,11 +8946,9 @@ function checkTrainPhotoPass() {
       if(img) { img.style.display = 'none'; img.src = ''; }
       if(empty) {
         empty.style.display = 'block';
-        empty.textContent = tpaHasWeek
-          ? ('Nog geen foto voor week ' + tpaWeekNum + ' in je voortgangsbibliotheek.')
-          : 'Dit trainingsschema is nog niet geïmporteerd (Instellingen → Training) — daardoor is het weeknummer voor deze dag nog niet gekend.';
+        empty.textContent = 'Nog geen foto voor week ' + tpaWeekNum + ' in je voortgangsbibliotheek.';
       }
-      if(lbl) lbl.textContent = tpaHasWeek ? ('Week ' + tpaWeekNum) : '';
+      if(lbl) lbl.textContent = 'Week ' + tpaWeekNum;
     }
     if(lock) lock.style.display = 'none';
     if(content) content.style.display = 'block';
@@ -12126,6 +12116,47 @@ function trainWeekLabel(d) {
   return (entry && entry.week) ? ('Week ' + entry.week) : 'nog niet geïmporteerd';
 }
 
+// ═══ FOTO-ANALYSE — index gebaseerd op AFGEMELDE KRACHTTRAININGEN, niet op kalenderweken ═══
+// Elke 3 afgemelde KRACHTTRAINING-sessies (lopen/rust/herstel tellen niet mee) schuift
+// de simulatiefoto één stap door. Doe je maar 1 training/week, dan blijft dezelfde foto
+// dus 3 weken staan — precies zoals gevraagd.
+// Voor een datum in het VERLEDEN of VANDAAG: gebaseerd op het werkelijke aantal afgemelde
+// trainingen tot en met die dag (historisch correct, ook bij vertraging).
+// Voor een datum in de TOEKOMST: vertrekt van je huidige, werkelijke voortgang van vandaag,
+// en telt er vanaf dan 1 foto per kalenderweek bij op (ervan uitgaand dat je vanaf nu weer
+// op het normale tempo van 3x/week zit) — zo klopt bv. "4 maanden vooruit kijken" ook als
+// je nu wat achterloopt.
+function tpaCompletedTrainCount(uptoDate) {
+  var count = 0;
+  Object.keys(doneData).forEach(function(key) {
+    var entryDone = doneData[key];
+    if (!entryDone || !entryDone.completedAt) return;
+    var d = new Date(key + 'T12:00:00');
+    if (d > uptoDate) return;
+    var trainEntry = getTrainEntry(d);
+    var type = trainEntry ? trainEntry.dayType : getDayType(d);
+    if (type === 'train') count++;
+  });
+  return count;
+}
+function tpaPhotoIndexForDate(viewDate) {
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var vd = new Date(viewDate); vd.setHours(0, 0, 0, 0);
+  if (vd <= today) {
+    var completed = tpaCompletedTrainCount(vd);
+    return Math.floor(completed / 3) + 1;
+  }
+  var completedToday = tpaCompletedTrainCount(today);
+  var currentIdx = Math.floor(completedToday / 3) + 1;
+  var weeksAhead = Math.floor((vd - today) / (7 * 86400000));
+  return currentIdx + weeksAhead;
+}
+// Label specifiek voor de Foto Analyse-knop/tegel — toont het weeknummer dat
+// overeenkomt met de foto die je effectief te zien krijgt.
+function tpaPhotoLabel(d) {
+  return 'Week ' + tpaPhotoIndexForDate(d);
+}
+
 // Hoeveel KRACHTTRAINING-dagen staan er deze week gepland volgens het
 // geïmporteerde schema? Valt terug op 4 (het oude vaste doel) zonder import.
 function getWeekTrainGoal(weekStart) {
@@ -13851,7 +13882,7 @@ function renderDayPanel(date) {
     var pfLabel = pfDate.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'short'});
     trainInner += '<div class="dp2-pushed-note">↻ + Ingehaalde training van ' + pfLabel + '</div>';
   }
-  trainInner += '<button onclick="openTrainPhotoAnalyse(\''+key+'\')" style="width:100%;margin-top:10px;padding:12px;border-radius:12px;border:1.5px solid var(--brut-ink,#0a0a0a);background:#fff;box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);font-family:var(--grotesk);font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--brut-ink,#0a0a0a);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">📸 Foto Analyse — '+trainWeekLabel(date)+'</button>';
+  trainInner += '<button onclick="openTrainPhotoAnalyse(\''+key+'\')" style="width:100%;margin-top:10px;padding:12px;border-radius:12px;border:1.5px solid var(--brut-ink,#0a0a0a);background:#fff;box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);font-family:var(--grotesk);font-size:11px;font-weight:700;letter-spacing:.5px;color:var(--brut-ink,#0a0a0a);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">📸 Foto Analyse — '+tpaPhotoLabel(date)+'</button>';
 
   // ── Wissel checklist knop (toon bij kinderfilters op wisseldag) ──
   var wisselKnop = '';
@@ -13975,7 +14006,7 @@ function renderDayPanel(date) {
       + dp2Tile('training','💪','Training', trainSub)
       + (dailyPl ? dp2Tile('muziek','🎵','Muziek', musicSub) : '')
       + (noteCount>0 ? dp2Tile('notities','📝','Notities', noteSub) : '')
-      + '<div class="dp2-tile" onclick="openTrainPhotoAnalyse(\''+key+'\')"><div class="dp2-tile-ic">📸</div><div class="dp2-tile-lbl">Foto Analyse</div><div class="dp2-tile-sub">'+trainWeekLabel(date)+'</div></div>'
+      + '<div class="dp2-tile" onclick="openTrainPhotoAnalyse(\''+key+'\')"><div class="dp2-tile-ic">📸</div><div class="dp2-tile-lbl">Foto Analyse</div><div class="dp2-tile-sub">'+tpaPhotoLabel(date)+'</div></div>'
       + '</div>';
 
     html += dp2DetailPanel('weer', '🌤️ Weerbericht', '<div id="dp2weather_'+key+'"></div>');
@@ -14528,37 +14559,45 @@ function openZangPage() {
   }
 }
 
-// Tussenscherm: "Welk nummer wil je oefenen?" — enkel getoond als er nummers zijn toegevoegd
+// Tussenscherm: "Welke nummers wil je oefenen?" — meerdere te kiezen, in klikvolgorde
+var zangPickerSelected = []; // tijdelijke selectie terwijl de kiezer open staat
 function zangShowSongPicker() {
   var existing = document.getElementById('zangSongPickerModal');
   if(existing) existing.remove();
-  var options = ZANG_SONGS.map(function(s){
+  zangPickerSelected = (zangChosenSongIds || []).slice();
+  var rows = ZANG_SONGS.map(function(s){
     var label = s.titel + (s.uitvoerder ? ' — ' + s.uitvoerder : '');
-    return '<option value="'+s.id+'"'+(zangChosenSongId===s.id?' selected':'')+'>'+label.replace(/</g,'&lt;')+'</option>';
+    var checked = zangPickerSelected.indexOf(s.id) > -1;
+    return '<label style="display:flex;align-items:center;gap:9px;padding:9px 2px;border-bottom:1px solid rgba(0,0,0,.06);cursor:pointer">'
+      + '<input type="checkbox" value="'+s.id+'" '+(checked?'checked':'')+' onchange="zangTogglePickerSong(\''+s.id+'\',this.checked)" style="width:17px;height:17px;flex-shrink:0;accent-color:var(--surf-teal,#1F7A6C)">'
+      + '<span style="font-family:var(--body);font-size:13px;color:var(--ink)">'+label.replace(/</g,'&lt;')+'</span>'
+      + '</label>';
   }).join('');
   var html = ''
     + '<div id="zangSongPickerModal" style="position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.75);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this) zangClosePicker()">'
-    + '<div style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:16px;box-shadow:4px 4px 0 var(--brut-ink,#0a0a0a);max-width:360px;width:100%;padding:22px 20px">'
-    + '<div style="font-family:var(--cond);font-size:17px;font-weight:900;color:var(--brut-ink,#0a0a0a);margin-bottom:14px">Welk nummer wil je oefenen?</div>'
-    + '<select id="zangSongPickerSelect" style="width:100%;padding:11px;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:10px;font-family:var(--body);font-size:13px;margin-bottom:14px;background:#fff">'
-    + '<option value="">— Geen specifiek nummer —</option>'
-    +   options
-    + '</select>'
+    + '<div style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:16px;box-shadow:4px 4px 0 var(--brut-ink,#0a0a0a);max-width:360px;width:100%;padding:22px 20px;max-height:80vh;display:flex;flex-direction:column">'
+    + '<div style="font-family:var(--cond);font-size:17px;font-weight:900;color:var(--brut-ink,#0a0a0a);margin-bottom:4px">Welke nummers wil je oefenen?</div>'
+    + '<div style="font-family:var(--body);font-size:11px;color:var(--stone2);margin-bottom:12px">Kies er één of meerdere — ze spelen in de volgorde waarin je ze aanvinkt, telkens eerst de gezongen versie, dan de instrumentale.</div>'
+    + '<div id="zangPickerList" style="overflow-y:auto;flex:1;margin-bottom:14px">' + (rows || '<div style="font-size:12px;color:var(--stone2)">Nog geen nummers toegevoegd.</div>') + '</div>'
     + '<button onclick="zangConfirmSongPicker()" style="width:100%;background:var(--surf-teal,#1F7A6C);color:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);border-radius:12px;font-family:var(--grotesk);font-size:12px;font-weight:700;padding:12px;cursor:pointer">Start les →</button>'
     + '</div>'
     + '</div>';
   document.body.insertAdjacentHTML('beforeend', html);
+}
+function zangTogglePickerSong(id, checked) {
+  var i = zangPickerSelected.indexOf(id);
+  if(checked && i === -1) zangPickerSelected.push(id);
+  else if(!checked && i > -1) zangPickerSelected.splice(i, 1);
 }
 function zangClosePicker() {
   var el = document.getElementById('zangSongPickerModal');
   if(el) el.remove();
 }
 function zangConfirmSongPicker() {
-  var sel = document.getElementById('zangSongPickerSelect');
-  var val = sel ? sel.value : '';
-  zangChosenSongId = val || null;
-  if(zangChosenSongId) localStorage.setItem('wf_zang_chosen_song', zangChosenSongId);
-  else localStorage.removeItem('wf_zang_chosen_song');
+  zangChosenSongIds = zangPickerSelected.slice();
+  zangQueueIndex = 0;
+  if(zangChosenSongIds.length) localStorage.setItem('wf_zang_chosen_songs', JSON.stringify(zangChosenSongIds));
+  else localStorage.removeItem('wf_zang_chosen_songs');
   zangClosePicker();
   switchTab('zang', null);
 }
@@ -14665,8 +14704,9 @@ function renderZangSheetContent() {
 var zangChosenSongStage = 'vocal'; // welk deel van het koppeltje momenteel geladen/afgespeeld wordt
 
 function zangChosenSongBlockHtml() {
-  if(!zangChosenSongId) return '';
-  var song = ZANG_SONGS.find(function(s){ return s.id === zangChosenSongId; });
+  if(!zangChosenSongIds || !zangChosenSongIds.length) return '';
+  if(zangQueueIndex >= zangChosenSongIds.length) zangQueueIndex = 0;
+  var song = ZANG_SONGS.find(function(s){ return s.id === zangChosenSongIds[zangQueueIndex]; });
   if(!song) return '';
   var meta = [song.uitvoerder, song.toonaard].filter(Boolean).join(' · ');
   var hasVocal = zangSongHasVocal(song);
@@ -14675,11 +14715,21 @@ function zangChosenSongBlockHtml() {
   zangChosenSongStage = hasVocal ? 'vocal' : 'instr';
   var firstSrc = zangSongUrlFor(song, zangChosenSongStage);
   var orderLabel = (hasVocal && hasInstr) ? '🎤 Gezongen → 🎹 Instrumentaal' : (hasVocal ? '🎤 Enkel gezongen versie' : '🎹 Enkel instrumentale versie');
+  var queueLabel = '';
+  if(zangChosenSongIds.length > 1) {
+    var parts = zangChosenSongIds.map(function(id, i){
+      var sg = ZANG_SONGS.find(function(s){ return s.id === id; });
+      if(!sg) return null;
+      return (i === zangQueueIndex ? '▶ ' : '') + sg.titel;
+    }).filter(Boolean);
+    queueLabel = 'Nummer ' + (zangQueueIndex+1) + ' van ' + zangChosenSongIds.length + ' — ' + parts.join(' · ');
+  }
   return '<div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(0,0,0,.08)">'
     + '<div style="font-family:var(--grotesk);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--surf-coral,#FF7A5C);margin-bottom:4px">🎤 Zing mee op</div>'
     + '<div style="font-family:var(--cond);font-size:14px;font-weight:700;color:var(--ink)">'+song.titel.replace(/</g,'&lt;')+'</div>'
     + (meta ? '<div style="font-family:var(--cond);font-size:10px;color:var(--stone2);margin-bottom:6px">'+meta.replace(/</g,'&lt;')+'</div>' : '')
     + '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2);margin-bottom:4px">'+orderLabel+'</div>'
+    + (queueLabel ? '<div style="font-family:var(--body);font-size:9.5px;color:var(--stone2);margin-bottom:4px">'+queueLabel.replace(/</g,'&lt;')+'</div>' : '')
     + '<audio id="zangChosenSongAudio" controls preload="none" style="width:100%;margin-top:6px" src="'+firstSrc+'" onplay="zangChosenSongOnPlay()" onended="zangChosenSongOnEnded()"></audio>'
     + '<div style="font-family:var(--body);font-size:10px;color:var(--stone2);margin-top:4px">Speelt automatisch nadat je alle oefeningen hierboven hebt afgerond.</div>'
     + '</div>';
@@ -14702,23 +14752,40 @@ function setMediaSessionMetadata(title, artist, album) {
 }
 
 function zangChosenSongOnPlay() {
-  var song = ZANG_SONGS.find(function(s){ return s.id === zangChosenSongId; });
+  var song = ZANG_SONGS.find(function(s){ return s.id === zangChosenSongIds[zangQueueIndex]; });
   if(!song) return;
   var albumLabel = zangChosenSongStage === 'vocal' ? 'Gezongen versie' : 'Instrumentale versie';
   setMediaSessionMetadata(song.titel, song.uitvoerder || 'QualityTime Zangles', albumLabel);
 }
 
-// Wanneer de gezongen versie is afgelopen: schakel automatisch over naar de instrumentale versie (indien aanwezig)
+// Wanneer een track is afgelopen: eerst gezongen → instrumentaal van hetzelfde nummer,
+// en zodra dat koppeltje helemaal is afgespeeld: door naar het volgende gekozen nummer.
 function zangChosenSongOnEnded() {
-  var song = ZANG_SONGS.find(function(s){ return s.id === zangChosenSongId; });
+  var song = ZANG_SONGS.find(function(s){ return s.id === zangChosenSongIds[zangQueueIndex]; });
   if(!song) return;
   var audioEl = document.getElementById('zangChosenSongAudio');
   if(!audioEl) return;
+
   if(zangChosenSongStage === 'vocal' && zangSongHasInstrEff(song)){
     zangChosenSongStage = 'instr';
     audioEl.src = zangSongUrlFor(song, 'instr');
     var p = audioEl.play();
     if(p && p.catch) p.catch(function(){ /* autoplay geblokkeerd — gebruiker kan zelf op play tikken */ });
+    return;
+  }
+
+  // Dit koppeltje (gezongen + instrumentaal) is klaar — naar het volgende nummer in de rij, indien er nog een is
+  if(zangQueueIndex < zangChosenSongIds.length - 1) {
+    zangQueueIndex++;
+    var nextSong = ZANG_SONGS.find(function(s){ return s.id === zangChosenSongIds[zangQueueIndex]; });
+    if(!nextSong) return;
+    zangChosenSongStage = zangSongHasVocal(nextSong) ? 'vocal' : 'instr';
+    audioEl.src = zangSongUrlFor(nextSong, zangChosenSongStage);
+    var p2 = audioEl.play();
+    if(p2 && p2.catch) p2.catch(function(){ /* autoplay geblokkeerd */ });
+    if(typeof renderZangPage === 'function') renderZangPage(); // ververst de "Nummer X van Y"-tekst en titel
+  } else {
+    zangQueueIndex = 0; // terug naar het begin, klaar voor de volgende sessie
   }
 }
 
@@ -14778,14 +14845,15 @@ function zangSessionComplete() {
   // Sessie volledig doorlopen: automatisch afmelden als dat nog niet gebeurd was
   var zp = ZANG_PLAN[zangSheetIndex];
   if(zp && !zangIsSessionDone(zp.date)) zangToggleAfmelden();
-  // Gekozen nummer automatisch starten om op te zingen
+  // Gekozen nummers-wachtrij altijd van vooraf aan starten
+  zangQueueIndex = 0;
   var songEl = document.getElementById('zangChosenSongAudio');
   if(songEl) {
     var p = songEl.play();
     if(p && p.catch) p.catch(function(){ /* autoplay geblokkeerd — gebruiker kan zelf op play tikken */ });
   }
-  // Tel deze keer mee als een repetitie van het gekozen nummer
-  if(zangChosenSongId) zangSongRepIncrement(zangChosenSongId);
+  // Tel deze keer mee als een repetitie voor élk gekozen nummer
+  (zangChosenSongIds || []).forEach(function(id){ zangSongRepIncrement(id); });
 }
 
 // ─── Zanglessen: teller "hoe vaak gerepeteerd" per oefennummer ─────────
@@ -18377,7 +18445,19 @@ function renderZangAudioSettingsList(){
 // + een instrumentale mp3, waarop de gebruiker nadien gaat zingen.
 var ZANG_SONGS = JSON.parse(localStorage.getItem('wf_zang_songs') || '[]');
 var ZANG_SONG_AUDIO_CACHE = {}; // id -> object URL (in-memory, per sessie)
-var zangChosenSongId = localStorage.getItem('wf_zang_chosen_song') || null;
+// Meerdere nummers tegelijk kiezen: een array i.p.v. één enkel id, in de volgorde
+// waarin ze gekozen zijn — die volgorde bepaalt ook de afspeelvolgorde. Migreert
+// automatisch de oude, enkelvoudige keuze (uit vorige versies) naar het nieuwe formaat.
+var zangChosenSongIds = (function(){
+  try {
+    var arr = JSON.parse(localStorage.getItem('wf_zang_chosen_songs') || 'null');
+    if(arr && arr.length) return arr;
+  } catch(e) {}
+  var legacy = localStorage.getItem('wf_zang_chosen_song');
+  if(legacy) { localStorage.setItem('wf_zang_chosen_songs', JSON.stringify([legacy])); return [legacy]; }
+  return [];
+})();
+var zangQueueIndex = 0; // welk nummer uit zangChosenSongIds momenteel aan de beurt is
 
 function zangSongsSave(){ localStorage.setItem('wf_zang_songs', JSON.stringify(ZANG_SONGS)); }
 
@@ -18473,7 +18553,12 @@ function zangSongDelete(id, ev){
       ZANG_SONGS = ZANG_SONGS.filter(function(s){ return s.id !== id; });
       zangSongsSave();
       zangSongRepDelete(id);
-      if(zangChosenSongId === id){ zangChosenSongId = null; localStorage.removeItem('wf_zang_chosen_song'); }
+      var zcsIdx = zangChosenSongIds.indexOf(id);
+      if(zcsIdx > -1) {
+        zangChosenSongIds.splice(zcsIdx, 1);
+        if(zangChosenSongIds.length) localStorage.setItem('wf_zang_chosen_songs', JSON.stringify(zangChosenSongIds));
+        else localStorage.removeItem('wf_zang_chosen_songs');
+      }
       renderZangSongsList();
     };
   });
