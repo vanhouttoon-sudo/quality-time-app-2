@@ -1878,6 +1878,9 @@ input, select, textarea{
 .gn-add-date-row{display:flex;align-items:center;gap:8px;}
 .gn-add-date-label{font-family:var(--grotesk);font-size:9px;font-weight:700;letter-spacing:.5px;color:#3d1a0a;opacity:.6;}
 .gn-add-date{background:#fff;border:1.5px solid #ece0d0;border-radius:8px;font-family:var(--body);font-size:12px;color:#3d1a0a;padding:6px 9px;outline:none;}
+.gn-add-title{width:100%;background:#fff;border:1.5px solid #ece0d0;border-radius:10px;font-family:var(--grotesk);font-size:13.5px;font-weight:700;color:#2c1208;padding:9px 13px;outline:none;box-sizing:border-box;}
+.gn-bullet-list{margin:2px 0;padding-left:18px;}
+.gn-bullet-list li{margin:2px 0;}
 .gn-add-date-clear{background:none;border:1px solid var(--sand3);border-radius:20px;color:var(--stone2);font-family:var(--cond);font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;cursor:pointer;}
 .gn-add-btn{background:#3d1a0a;color:#fff;border:none;font-family:var(--grotesk);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:9px 16px;cursor:pointer;flex-shrink:0;border-radius:10px;box-shadow:0 2px 8px rgba(61,26,10,.2);align-self:center;}
 .gn-icon-btn{background:#3d1a0a;color:#fff;border:none;font-size:16px;padding:0 15px;height:40px;cursor:pointer;flex-shrink:0;border-radius:10px;box-shadow:0 2px 8px rgba(61,26,10,.2);}
@@ -4924,6 +4927,7 @@ function qtSkateLoaderHtml(text){
       <div id="vnMicIcon" style="font-size:38px;margin-bottom:14px">🎙️</div>
       <div id="vnStatus" style="font-family:var(--body);font-size:14px;color:#fff;line-height:1.55;min-height:64px;white-space:pre-line"></div>
       <div id="vnTranscriptPreview" style="font-family:var(--cond);font-size:11px;color:rgba(255,255,255,.5);margin-top:14px;min-height:16px"></div>
+      <button id="vnDoneBtn" onclick="vnManualStop && vnManualStop()" style="display:none;margin-top:18px;padding:11px 20px;border-radius:10px;border:none;background:var(--gold,#d4a030);color:#1a1410;font-family:var(--grotesk);font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer">✓ Ik ben klaar</button>
     </div>
   </div>
 </div>
@@ -15473,9 +15477,52 @@ var notitiesFilterTag = null;   // null = geen tag-filter, anders exacte tagnaam
 var notitiesMonthDate = new Date();
 var notitiesSelectedTags = []; // tags geselecteerd voor de notitie die nu wordt toegevoegd
 var notitiesOptionsOpen = false; // toont/verbergt tags + datum bij het toevoegen (Mockup 4 — uitklapbare opties)
+var notitiesFiltersOpen = false; // filters staan standaard gecollapsed — pas zichtbaar na actief aantikken
+var notitiesExpanded = {}; // { noteId: true } — welke notities hun volledige inhoud tonen i.p.v. enkel de titel
 function notitiesToggleOptions() {
   notitiesOptionsOpen = !notitiesOptionsOpen;
   renderNotitiesTab();
+}
+function notitiesToggleFilters() {
+  notitiesFiltersOpen = !notitiesFiltersOpen;
+  renderNotitiesTab();
+}
+function notitiesToggleExpand(id) {
+  notitiesExpanded[id] = !notitiesExpanded[id];
+  renderNotitiesTab();
+}
+// Voegt "• " toe op een nieuwe regel in het opgegeven tekstveld, zodat je
+// makkelijk een bullet-lijstje kan opbouwen tijdens het typen.
+function notitiesInsertBullet(taId) {
+  var ta = document.getElementById(taId);
+  if (!ta) return;
+  var start = ta.selectionStart, end = ta.selectionEnd;
+  var before = ta.value.substring(0, start);
+  var after = ta.value.substring(end);
+  var prefix = (before.length && !/\n$/.test(before)) ? '\n• ' : '• ';
+  ta.value = before + prefix + after;
+  var pos = (before + prefix).length;
+  ta.focus();
+  ta.setSelectionRange(pos, pos);
+}
+// Zet regels die met •, - of * beginnen om naar een nette bullet-lijst;
+// gewone regels blijven gewoon platte tekst met regeleinden.
+function notitiesFormatBody(text) {
+  if (!text) return '';
+  var lines = text.split('\n');
+  var html = ''; var inList = false;
+  lines.forEach(function(line) {
+    var trimmed = line.trim();
+    if (/^[•\-*]\s+/.test(trimmed)) {
+      if (!inList) { html += '<ul class="gn-bullet-list">'; inList = true; }
+      html += '<li>' + trimmed.replace(/^[•\-*]\s+/, '').replace(/</g, '&lt;') + '</li>';
+    } else {
+      if (inList) { html += '</ul>'; inList = false; }
+      html += '<div>' + (line.replace(/</g, '&lt;') || '&nbsp;') + '</div>';
+    }
+  });
+  if (inList) html += '</ul>';
+  return html;
 }
 
 // Beschikbare tags — start met een paar voorbeelden, uitbreidbaar door de gebruiker
@@ -15559,11 +15606,15 @@ function renderNotitiesTab() {
     filtered = filtered.filter(function(n) { return n.tags && n.tags.indexOf(notitiesFilterTag) > -1; });
   }
 
-  // ── Toevoegbalk (Mockup 4 — compact: invoerveld + icoonknoppen, tags/datum uitklapbaar) ──
+  // ── Toevoegbalk: titel + inhoud (met bullet-knop), tags/datum uitklapbaar ──
   var h = '<div class="gn-add-bar">'
-    + '<div class="gn-add-row" style="align-items:center">'
-    + '<textarea class="gn-add-textarea" id="gnAddText" placeholder="Nieuwe notitie..." rows="1" style="flex:1"></textarea>'
-    + '<button class="gn-icon-btn gn-icon-btn-mic" onclick="startVoiceNote()" title="Notitie inspreken">🎤</button>'
+    + '<input class="gn-add-title" id="gnAddTitle" placeholder="Titel...">'
+    + '<div class="gn-add-row" style="align-items:flex-end">'
+    + '<textarea class="gn-add-textarea" id="gnAddText" placeholder="Inhoud (optioneel)... gebruik • Bullet voor een lijstje" rows="2"></textarea>'
+    + '</div>'
+    + '<div class="row-wrap" style="display:flex;gap:6px;flex-wrap:wrap">'
+    + '<button type="button" class="gn-filter-btn" onclick="notitiesInsertBullet(\'gnAddText\')">• Bullet toevoegen</button>'
+    + '<button class="gn-icon-btn gn-icon-btn-mic" onclick="startVoiceNote()" title="Notitie inspreken" style="margin-left:auto">🎤</button>'
     + '<button class="gn-icon-btn" onclick="notitiesAddNote()" title="Voeg toe">+</button>'
     + '</div>'
     + '<button type="button" class="gn-filter-btn" onclick="notitiesToggleOptions()" style="align-self:flex-start">'
@@ -15584,26 +15635,36 @@ function renderNotitiesTab() {
   }
   h += '</div>';
 
-  // ── Filterbalk ──
-  h += '<div class="gn-filter-bar">'
-    + '<button class="gn-filter-btn' + (notitiesFilterMode === 'all' ? ' active' : '') + '" onclick="notitiesSetFilter(\'all\')">Alle</button>'
-    + '<button class="gn-filter-btn' + (notitiesFilterMode === 'month' ? ' active' : '') + '" onclick="notitiesSetFilter(\'month\')">Maand</button>'
-    + '<button class="gn-filter-btn' + (notitiesFilterMode === 'nodate' ? ' active' : '') + '" onclick="notitiesSetFilter(\'nodate\')">Zonder datum</button>';
-  if (notitiesFilterMode === 'month') {
-    h += '<div class="gn-month-nav">'
-      + '<button class="gn-month-btn" onclick="notitiesChangeMonth(-1)">&#8249;</button>'
-      + '<div class="gn-month-lbl">' + MNL[notitiesMonthDate.getMonth()] + ' ' + notitiesMonthDate.getFullYear() + '</div>'
-      + '<button class="gn-month-btn" onclick="notitiesChangeMonth(1)">&#8250;</button>'
-      + '</div>';
-  }
-  h += '</div>';
-  if (NOTITIES_TAGS.length) {
-    h += '<div class="gn-filter-bar" style="border-top:none;padding-top:0">'
-      + '<span style="font-family:var(--cond);font-size:8px;letter-spacing:1px;color:var(--stone2);text-transform:uppercase;align-self:center;margin-right:2px">🏷</span>'
-      + NOTITIES_TAGS.map(function(t){
-          return '<button class="gn-filter-btn' + (notitiesFilterTag===t?' active':'') + '" onclick="notitiesToggleFilterTag(\'' + t.replace(/'/g,"\\'") + '\')">' + t.replace(/</g,'&lt;') + '</button>';
-        }).join('')
-      + '</div>';
+  // ── Filterbalk — standaard gecollapsed, pas zichtbaar na actief aantikken ──
+  var activeFilterParts = [];
+  if (notitiesFilterMode !== 'all') activeFilterParts.push(notitiesFilterMode === 'month' ? 'Maand' : 'Zonder datum');
+  if (notitiesFilterTag) activeFilterParts.push('🏷 ' + notitiesFilterTag);
+  var filterToggleLabel = notitiesFiltersOpen
+    ? '🔍 − Filters verbergen'
+    : ('🔍 + Filters tonen' + (activeFilterParts.length ? ' (' + activeFilterParts.join(', ') + ')' : ''));
+  h += '<button type="button" class="gn-filter-btn" onclick="notitiesToggleFilters()" style="margin:4px 0">' + filterToggleLabel + '</button>';
+
+  if (notitiesFiltersOpen) {
+    h += '<div class="gn-filter-bar">'
+      + '<button class="gn-filter-btn' + (notitiesFilterMode === 'all' ? ' active' : '') + '" onclick="notitiesSetFilter(\'all\')">Alle</button>'
+      + '<button class="gn-filter-btn' + (notitiesFilterMode === 'month' ? ' active' : '') + '" onclick="notitiesSetFilter(\'month\')">Maand</button>'
+      + '<button class="gn-filter-btn' + (notitiesFilterMode === 'nodate' ? ' active' : '') + '" onclick="notitiesSetFilter(\'nodate\')">Zonder datum</button>';
+    if (notitiesFilterMode === 'month') {
+      h += '<div class="gn-month-nav">'
+        + '<button class="gn-month-btn" onclick="notitiesChangeMonth(-1)">&#8249;</button>'
+        + '<div class="gn-month-lbl">' + MNL[notitiesMonthDate.getMonth()] + ' ' + notitiesMonthDate.getFullYear() + '</div>'
+        + '<button class="gn-month-btn" onclick="notitiesChangeMonth(1)">&#8250;</button>'
+        + '</div>';
+    }
+    h += '</div>';
+    if (NOTITIES_TAGS.length) {
+      h += '<div class="gn-filter-bar" style="border-top:none;padding-top:0">'
+        + '<span style="font-family:var(--cond);font-size:8px;letter-spacing:1px;color:var(--stone2);text-transform:uppercase;align-self:center;margin-right:2px">🏷</span>'
+        + NOTITIES_TAGS.map(function(t){
+            return '<button class="gn-filter-btn' + (notitiesFilterTag===t?' active':'') + '" onclick="notitiesToggleFilterTag(\'' + t.replace(/'/g,"\\'") + '\')">' + t.replace(/</g,'&lt;') + '</button>';
+          }).join('')
+        + '</div>';
+    }
   }
 
   // ── Lijst, gegroepeerd per key (datum of "Zonder datum"), meest recent eerst ──
@@ -15625,6 +15686,11 @@ function renderNotitiesTab() {
     groups.forEach(function(g) {
       h += '<div class="gn-group-title">' + notitiesGroupLabel(g.key) + '</div>';
       g.items.forEach(function(n) {
+        var isOpen = !!notitiesExpanded[n.id];
+        var titleHtml = n.title
+          ? n.title.replace(/</g, '&lt;')
+          : '<span style="font-style:italic;color:var(--stone2);font-weight:500">Zonder titel</span>';
+        var hasBody = !!(n.text && n.text.trim());
         h += '<div class="gn-card" id="gncard_' + n.id + '">'
           + '<div class="gn-card-top">'
           + '<div class="gn-meta">' + n.time + (n.edited ? ' · bewerkt' : '') + '</div>'
@@ -15632,8 +15698,15 @@ function renderNotitiesTab() {
           + '<button class="gn-btn" data-a="edit" data-key="' + n.key + '" data-id="' + n.id + '" title="Bewerken">✏️</button>'
           + '<button class="gn-btn gn-del" data-a="del" data-key="' + n.key + '" data-id="' + n.id + '" title="Verwijderen">🗑</button>'
           + '</div></div>'
-          + (n.title ? '<div class="gn-note-title" style="font-family:var(--grotesk);font-weight:700;font-size:13.5px;color:#2c1208;margin-bottom:2px">' + n.title.replace(/</g, '&lt;') + '</div>' : '')
-          + '<div class="gn-text" id="gntext_' + n.id + '">' + n.text.replace(/</g, '&lt;').replace(/\n/g, '<br>') + '</div>'
+          + '<div class="gn-note-title" onclick="notitiesToggleExpand(\'' + n.id + '\')" style="cursor:pointer;display:flex;align-items:center;gap:6px;font-family:var(--grotesk);font-weight:700;font-size:13.5px;color:#2c1208">'
+          + '<span style="flex:1">' + titleHtml + '</span>'
+          + (hasBody ? '<span style="font-size:10px;color:var(--stone2);flex-shrink:0">' + (isOpen ? '▲ verbergen' : '▼ inhoud') + '</span>' : '')
+          + '</div>'
+          + (hasBody
+              ? (isOpen
+                  ? '<div class="gn-text" id="gntext_' + n.id + '">' + notitiesFormatBody(n.text) + '</div>'
+                  : '<div class="gn-text-preview" onclick="notitiesToggleExpand(\'' + n.id + '\')" style="font-family:var(--body);font-size:11.5px;color:var(--stone);margin-top:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + n.text.replace(/</g,'&lt;').replace(/\n/g,' ↵ ') + '</div>')
+              : '')
           + (n.tags && n.tags.length ? '<div class="gn-tags" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:7px">' + n.tags.map(function(t){ return '<span style="font-family:var(--cond);font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;background:#ece0d0;color:#3d1a0a">' + t.replace(/</g,'&lt;') + '</span>'; }).join('') + '</div>' : '')
           + '</div>';
       });
@@ -15652,16 +15725,20 @@ function renderNotitiesTab() {
 }
 
 function notitiesAddNote() {
+  var titleInp = document.getElementById('gnAddTitle');
   var ta = document.getElementById('gnAddText');
   var dateInp = document.getElementById('gnAddDate');
-  if (!ta || !ta.value.trim()) return;
+  var title = titleInp ? titleInp.value.trim() : '';
+  var text = ta ? ta.value.trim() : '';
+  if (!title && !text) return;
   var key = (dateInp && dateInp.value) ? dateInp.value : NOTITIES_GENERAL_KEY;
   if (!notesData[key]) notesData[key] = [];
   var id = 'n_' + Date.now();
   var now = new Date();
-  notesData[key].unshift({ id: id, text: ta.value.trim(), tags: notitiesSelectedTags.slice(), time: now.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) });
+  notesData[key].unshift({ id: id, title: title, text: text, tags: notitiesSelectedTags.slice(), time: now.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) });
   localStorage.setItem('wf_notes', JSON.stringify(notesData));
-  ta.value = '';
+  if (titleInp) titleInp.value = '';
+  if (ta) ta.value = '';
   if (dateInp) dateInp.value = '';
   notitiesSelectedTags = [];
   renderNotitiesTab();
@@ -15682,10 +15759,13 @@ function notitiesStartEdit(key, id) {
   var notes = notesData[key] || [];
   var note = notes.find(function(n) { return n.id === id; });
   if (!note) return;
-  var el = document.getElementById('gntext_' + id);
-  if (!el) return;
+  notitiesExpanded[id] = true;
+  var card = document.getElementById('gncard_' + id);
+  if (!card) { renderNotitiesTab(); card = document.getElementById('gncard_' + id); if (!card) return; }
   var currentTags = note.tags || [];
-  el.innerHTML = '<textarea class="gn-edit-area" id="gnedit_' + id + '">' + note.text.replace(/</g, '&lt;') + '</textarea>'
+  card.innerHTML = '<input class="gn-add-title" id="gnedittitle_' + id + '" value="' + (note.title || '').replace(/"/g, '&quot;') + '" placeholder="Titel...">'
+    + '<textarea class="gn-edit-area" id="gnedit_' + id + '">' + (note.text || '').replace(/</g, '&lt;') + '</textarea>'
+    + '<div style="margin-top:5px"><button type="button" class="gn-filter-btn" onclick="notitiesInsertBullet(\'gnedit_' + id + '\')">• Bullet toevoegen</button></div>'
     + '<div class="gn-tag-select-row" id="gnedittags_' + id + '" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px">'
     + NOTITIES_TAGS.map(function(t){
         return '<button type="button" class="gn-filter-btn' + (currentTags.indexOf(t)>-1?' active':'') + '" data-tag="' + t.replace(/"/g,'&quot;') + '" onclick="this.classList.toggle(\'active\')">' + t.replace(/</g,'&lt;') + '</button>';
@@ -15695,16 +15775,20 @@ function notitiesStartEdit(key, id) {
     + '<button class="gn-edit-save" onclick="notitiesSaveEdit(\'' + key + '\',\'' + id + '\')">Opslaan</button>'
     + '<button class="gn-edit-cancel" onclick="renderNotitiesTab()">Annuleer</button>'
     + '</div>';
-  var ta = document.getElementById('gnedit_' + id);
-  if (ta) { ta.focus(); ta.selectionStart = ta.selectionEnd = ta.value.length; }
+  var titleInp = document.getElementById('gnedittitle_' + id);
+  if (titleInp) { titleInp.focus(); titleInp.selectionStart = titleInp.selectionEnd = titleInp.value.length; }
 }
 
 function notitiesSaveEdit(key, id) {
+  var titleInp = document.getElementById('gnedittitle_' + id);
   var ta = document.getElementById('gnedit_' + id);
-  if (!ta || !ta.value.trim()) return;
+  var title = titleInp ? titleInp.value.trim() : '';
+  var text = ta ? ta.value.trim() : '';
+  if (!title && !text) return;
   var note = (notesData[key] || []).find(function(n) { return n.id === id; });
   if (!note) return;
-  note.text = ta.value.trim();
+  note.title = title;
+  note.text = text;
   note.edited = true;
   var tagRow = document.getElementById('gnedittags_' + id);
   if (tagRow) {
@@ -15723,6 +15807,7 @@ function notitiesSaveEdit(key, id) {
 // de ondersteuning wisselend zijn, zeker binnen een geïnstalleerde PWA.
 var vnActive = false;
 var vnCurrentRecognition = null;
+var vnManualStop = null;
 var vnTitle = '', vnBody = '';
 
 function vnSupported() {
@@ -15743,32 +15828,66 @@ function vnSpeak(text, onEnd) {
     speechSynthesis.speak(u);
   } catch(e) { if(onEnd) onEnd(); }
 }
-// Luistert door totdat het woord "over" gezegd wordt (walkie-talkie-stijl einde-commando)
-function vnListenUntilOver(onDone, onError) {
+// Herkent een afsluit-commandozin (bv. "afsluiting titel") ook als de browser
+// er interpunctie/hoofdletters achter/omheen plakt (bv. "...mijn titel afsluiting
+// titel." i.p.v. kaal "afsluiting titel") — dat brak eerder de herkenning.
+function vnTriggerRegex(trigger) {
+  var esc = trigger.trim().split(/\s+/).map(function(w){ return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('\\s+');
+  return new RegExp('\\b' + esc + '\\b[\\s.,!?]*$', 'i');
+}
+function vnEndsWithTrigger(text, trigger) {
+  return vnTriggerRegex(trigger).test((text || '').trim());
+}
+function vnStripTrigger(text, trigger) {
+  return (text || '').trim().replace(vnTriggerRegex(trigger), '').trim();
+}
+// Luistert door totdat de afsluit-commandozin gezegd wordt (bv. "afsluiting titel"
+// of "afsluiting bericht" — walkie-talkie-stijl einde-commando, per stap een eigen
+// zin zodat het woord niet per ongeluk middenin een gewone zin kan voorkomen).
+// Telt ENKEL als afsluit-commando wanneer het staat aan het eind van een AFGERONDE
+// (isFinal) zin — dus na een natuurlijke pauze — én er al een echte boodschap aan
+// voorafging. Er staat ook een handmatige "Ik ben klaar"-knop als vangnet, voor als
+// de spraakherkenning de commandozin toch een keer mist.
+function vnListenUntilTrigger(trigger, onDone, onError) {
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR) { onError && onError('Spraakherkenning niet ondersteund'); return; }
   var rec = new SR();
   rec.lang = 'nl-NL'; rec.continuous = true; rec.interimResults = true;
-  var finalTranscript = ''; var stopped = false;
+  var stopped = false; var lastFinal = ''; var lastCombined = '';
   var micIcon = document.getElementById('vnMicIcon');
   if(micIcon) micIcon.textContent = '🔴';
+  var doneBtn = document.getElementById('vnDoneBtn');
+  if(doneBtn) doneBtn.style.display = 'inline-block';
   rec.onresult = function(e) {
-    var interim = '';
-    for(var i=e.resultIndex; i<e.results.length; i++) {
-      var t = e.results[i][0].transcript;
-      if(e.results[i].isFinal) finalTranscript += t + ' '; else interim += t;
+    var finalText = '', interimText = '';
+    for(var i=0; i<e.results.length; i++) {
+      if(e.results[i].isFinal) finalText += e.results[i][0].transcript + ' ';
+      else interimText += e.results[i][0].transcript;
     }
+    lastFinal = finalText.trim();
+    lastCombined = (finalText + interimText).trim();
     var preview = document.getElementById('vnTranscriptPreview');
-    if(preview) preview.textContent = (finalTranscript + interim).trim();
-    if(!stopped && /\bover\b\s*$/i.test(finalTranscript.trim())) { stopped = true; rec.stop(); }
+    if(preview) preview.textContent = lastCombined;
+    // Enkel checken op afgeronde (final) tekst, en enkel als er al iets voor de commandozin staat
+    var withoutTrigger = vnStripTrigger(lastFinal, trigger);
+    if(!stopped && vnEndsWithTrigger(lastFinal, trigger) && withoutTrigger.length > 0) {
+      stopped = true; try { rec.stop(); } catch(e2){}
+    }
   };
   rec.onerror = function(e) { if(!stopped) { stopped = true; onError && onError(e.error); } };
   rec.onend = function() {
     if(micIcon) micIcon.textContent = '🎙️';
-    var cleaned = finalTranscript.trim().replace(/\bover\b\s*$/i, '').trim();
+    if(doneBtn) doneBtn.style.display = 'none';
+    vnManualStop = null;
+    // Bij het stoppen (via de commandozin, via de "Ik ben klaar"-knop, of door
+    // stilte): gebruik de afgeronde tekst als die er is, anders wat er nog aan
+    // het "los" (interim) staat — en knip de commandozin er sowieso af.
+    var source = lastFinal || lastCombined;
+    var cleaned = vnStripTrigger(source, trigger);
     if(cleaned) onDone(cleaned); else onError && onError('no-speech');
   };
   vnCurrentRecognition = rec;
+  vnManualStop = function() { if(!stopped) { stopped = true; try { rec.stop(); } catch(e){} } };
   try { rec.start(); } catch(e) { onError && onError('start-failed'); }
 }
 // Luistert naar één korte zin (voor het ja/nee-antwoord)
@@ -15801,10 +15920,10 @@ function startVoiceNote() {
 }
 function vnAskTitle() {
   if(!vnActive) return;
-  vnSetStatus('🎙️ Wat is de titel van je notitie? Zeg "over" zodra je klaar bent.');
-  vnSpeak('Wat is de titel van je notitie? Zeg over zodra je klaar bent.', function(){
+  vnSetStatus('🎙️ Wat is de titel van je notitie? Zeg "afsluiting titel" zodra je klaar bent.');
+  vnSpeak('Wat is de titel van je notitie? Zeg afsluiting titel zodra je klaar bent.', function(){
     if(!vnActive) return;
-    vnListenUntilOver(function(text){
+    vnListenUntilTrigger('afsluiting titel', function(text){
       if(!vnActive) return;
       vnTitle = text;
       vnSetStatus('Titel genoteerd: "' + vnTitle + '"');
@@ -15818,10 +15937,10 @@ function vnAskTitle() {
 }
 function vnAskBody() {
   if(!vnActive) return;
-  vnSpeak('Spreek nu je notitie in. Zeg over zodra je klaar bent.', function(){
+  vnSpeak('Spreek nu je notitie in. Zeg afsluiting bericht zodra je klaar bent.', function(){
     if(!vnActive) return;
-    vnSetStatus('🎙️ Spreek je notitie in. Zeg "over" zodra je klaar bent.');
-    vnListenUntilOver(function(text){
+    vnSetStatus('🎙️ Spreek je notitie in. Zeg "afsluiting bericht" zodra je klaar bent.');
+    vnListenUntilTrigger('afsluiting bericht', function(text){
       if(!vnActive) return;
       vnBody = text;
       vnAskConfirm();
@@ -15869,6 +15988,7 @@ function vnSaveNote() {
 }
 function vnCancel() {
   vnActive = false;
+  vnManualStop = null;
   if(vnCurrentRecognition) { try { vnCurrentRecognition.abort(); } catch(e){} }
   if('speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch(e){} }
   vnClose();
