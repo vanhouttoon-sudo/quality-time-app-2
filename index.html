@@ -15327,6 +15327,86 @@ function notitiesInsertBullet(taId) {
   ta.focus();
   ta.setSelectionRange(pos, pos);
 }
+
+// ═══ BIJLAGEN — elk bestandstype, opgeslagen via Netlify Blobs (note-attachment.js) ═══
+// De notitie zelf onthoudt enkel {key, name, type, size} — de bestandsinhoud zelf
+// staat op Netlify, niet in de lokale opslag van het toestel (die is te klein voor
+// bv. PDF's of foto's). Vereist dat note-attachment.js gedeployed staat.
+var notitiesPendingAttachments = []; // bijlagen voor de notitie die nu wordt toegevoegd
+function notitiesFileIcon(mimetype, filename) {
+  var t = (mimetype || '').toLowerCase();
+  var ext = (filename || '').split('.').pop().toLowerCase();
+  if (t.indexOf('image') === 0) return '🖼️';
+  if (t.indexOf('video') === 0) return '🎬';
+  if (t.indexOf('audio') === 0) return '🎵';
+  if (t.indexOf('pdf') > -1 || ext === 'pdf') return '📕';
+  if (['doc', 'docx'].indexOf(ext) > -1) return '📄';
+  if (['xls', 'xlsx', 'csv'].indexOf(ext) > -1) return '📊';
+  if (['ppt', 'pptx'].indexOf(ext) > -1) return '📽️';
+  if (['zip', 'rar', '7z'].indexOf(ext) > -1) return '🗜️';
+  return '📎';
+}
+function notitiesFormatSize(bytes) {
+  bytes = bytes || 0;
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+  return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+}
+function notitiesUploadFile(file) {
+  return new Promise(function(resolve, reject) {
+    if (file.size > 5 * 1024 * 1024) { reject(new Error('groter dan 5 MB')); return; }
+    var reader = new FileReader();
+    reader.onload = function() {
+      var base64 = String(reader.result).split(',')[1];
+      fetch('/.netlify/functions/note-attachment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: file.name, mimetype: file.type, dataBase64: base64 })
+      }).then(function(res){ return res.json(); }).then(function(data){
+        if (data && data.ok) resolve(data);
+        else reject(new Error((data && data.error) || 'upload mislukt'));
+      }).catch(reject);
+    };
+    reader.onerror = function() { reject(new Error('kon bestand niet lezen')); };
+    reader.readAsDataURL(file);
+  });
+}
+async function notitiesHandleFileInput(input) {
+  var statusEl = document.getElementById('gnAttachStatus');
+  var files = Array.prototype.slice.call(input.files || []);
+  if (!files.length) return;
+  for (var i = 0; i < files.length; i++) {
+    if (statusEl) statusEl.textContent = '⏳ ' + files[i].name + ' uploaden...';
+    try {
+      var result = await notitiesUploadFile(files[i]);
+      notitiesPendingAttachments.push({ key: result.key, name: result.filename, type: result.mimetype, size: result.size });
+    } catch (e) {
+      if (statusEl) statusEl.textContent = '⚠️ ' + files[i].name + ': ' + e.message;
+    }
+  }
+  input.value = '';
+  if (statusEl) statusEl.textContent = '';
+  renderNotitiesTab();
+}
+function notitiesRemovePendingAttachment(idx) {
+  notitiesPendingAttachments.splice(idx, 1);
+  renderNotitiesTab();
+}
+function notitiesAttachmentChip(att, idx) {
+  var icon = notitiesFileIcon(att.type, att.name);
+  return '<span style="display:inline-flex;align-items:center;gap:5px;font-family:var(--body);font-size:10.5px;background:#fff;border:1.3px solid var(--sand2);border-radius:20px;padding:4px 9px 4px 8px;margin:3px 4px 0 0">'
+    + icon + ' ' + (att.name || '').replace(/</g, '&lt;') + ' <span style="color:var(--stone2)">(' + notitiesFormatSize(att.size) + ')</span>'
+    + ' <span onclick="notitiesRemovePendingAttachment(' + idx + ')" style="cursor:pointer;color:var(--terra);font-weight:700;margin-left:2px">✕</span>'
+    + '</span>';
+}
+function notitiesAttachmentLink(att) {
+  var icon = notitiesFileIcon(att.type, att.name);
+  var url = '/.netlify/functions/note-attachment?key=' + encodeURIComponent(att.key);
+  return '<a href="' + url + '" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:5px;font-family:var(--body);font-size:11px;background:#fff;border:1.3px solid var(--sand2);border-radius:20px;padding:5px 10px;margin:3px 5px 0 0;color:#2c1208;text-decoration:none">'
+    + icon + ' ' + (att.name || 'bijlage').replace(/</g, '&lt;') + ' <span style="color:var(--stone2)">(' + notitiesFormatSize(att.size) + ')</span>'
+    + '</a>';
+}
+
 // Zet regels die met •, - of * beginnen om naar een nette bullet-lijst;
 // gewone regels blijven gewoon platte tekst met regeleinden.
 function notitiesFormatBody(text) {
@@ -15565,9 +15645,13 @@ function renderNotitiesTab() {
     + '</div>'
     + '<div class="row-wrap" style="display:flex;gap:6px;flex-wrap:wrap">'
     + '<button type="button" class="gn-filter-btn" onclick="notitiesInsertBullet(\'gnAddText\')">• Bullet toevoegen</button>'
+    + '<button type="button" class="gn-filter-btn" onclick="document.getElementById(\'gnAddFile\').click()">📎 Bijlage toevoegen</button>'
+    + '<input type="file" id="gnAddFile" multiple style="display:none" onchange="notitiesHandleFileInput(this)">'
     + '<button class="gn-icon-btn gn-icon-btn-mic" onclick="startVoiceNote()" title="Notitie inspreken" style="margin-left:auto">🎤</button>'
     + '<button class="gn-icon-btn" onclick="notitiesAddNote()" title="Voeg toe">+</button>'
     + '</div>'
+    + (notitiesPendingAttachments.length ? '<div class="row-wrap" style="display:flex;flex-wrap:wrap">' + notitiesPendingAttachments.map(function(a,i){ return notitiesAttachmentChip(a,i); }).join('') + '</div>' : '')
+    + '<div id="gnAttachStatus" style="font-family:var(--cond);font-size:9px;color:var(--stone2);min-height:12px"></div>'
     + '<button type="button" class="gn-filter-btn" onclick="notitiesToggleOptions()" style="align-self:flex-start">'
     + (notitiesOptionsOpen ? '⚙︎ − Opties verbergen' : '⚙︎ + Opties (tags, datum)')
     + '</button>';
@@ -15642,6 +15726,7 @@ function renderNotitiesTab() {
           ? n.title.replace(/</g, '&lt;')
           : '<span style="font-style:italic;color:var(--stone2);font-weight:500">Zonder titel</span>';
         var hasBody = !!(n.text && n.text.trim());
+        var hasAttachments = !!(n.attachments && n.attachments.length);
         var stats = notitiesBulletStats(n.text);
         var bgColor = (n.tags && n.tags.length) ? notitiesTagColor(n.tags[0]) : '#fff';
         var artIcon = notitiesArtworkFor((n.title || '') + ' ' + (n.text || ''));
@@ -15654,7 +15739,7 @@ function renderNotitiesTab() {
           : '';
         h += '<div class="gn-card" id="gncard_' + n.id + '" style="background:' + bgColor + '">'
           + '<div class="gn-card-top">'
-          + '<div class="gn-meta">' + n.time + (n.edited ? ' · bewerkt' : '') + (stats ? (' · ' + stats.done + '/' + stats.total + ' afgevinkt') : '') + '</div>'
+          + '<div class="gn-meta">' + n.time + (n.edited ? ' · bewerkt' : '') + (stats ? (' · ' + stats.done + '/' + stats.total + ' afgevinkt') : '') + (hasAttachments ? ' · 📎' + n.attachments.length : '') + '</div>'
           + '<div class="gn-actions">'
           + '<button class="gn-btn" data-a="edit" data-key="' + n.key + '" data-id="' + n.id + '" title="Bewerken">✏️</button>'
           + '<button class="gn-btn gn-del" data-a="del" data-key="' + n.key + '" data-id="' + n.id + '" title="Verwijderen">🗑</button>'
@@ -15663,10 +15748,13 @@ function renderNotitiesTab() {
           + leadCircle
           + '<span style="flex:1">' + titleHtml + '</span>'
           + pieBadge
-          + (hasBody ? '<span style="font-size:10px;color:var(--stone2);flex-shrink:0">' + (isOpen ? '▲' : '▼') + '</span>' : '')
+          + ((hasBody || hasAttachments) ? '<span style="font-size:10px;color:var(--stone2);flex-shrink:0">' + (isOpen ? '▲' : '▼') + '</span>' : '')
           + '</div>'
-          + (hasBody && isOpen
-              ? '<div class="gn-text" id="gntext_' + n.id + '" style="margin-top:6px;margin-left:37px">' + notitiesRenderBody(n.key, n.id, n.text) + '</div>'
+          + ((hasBody || hasAttachments) && isOpen
+              ? '<div class="gn-text" id="gntext_' + n.id + '" style="margin-top:6px;margin-left:37px">'
+                + (hasBody ? notitiesRenderBody(n.key, n.id, n.text) : '')
+                + (hasAttachments ? '<div style="margin-top:6px">' + n.attachments.map(function(a){ return notitiesAttachmentLink(a); }).join('') + '</div>' : '')
+                + '</div>'
               : '')
           + (isOpen && n.photoUrl && n.photoCredit
               ? '<div style="margin-top:6px;margin-left:37px;font-family:var(--cond);font-size:8px;color:var(--stone2)"><a href="' + (n.photoCreditUrl || '#') + '" target="_blank" rel="noopener" style="color:inherit">📷 Foto: ' + n.photoCredit.replace(/</g,'&lt;') + ' via Unsplash</a></div>'
@@ -15693,17 +15781,18 @@ function notitiesAddNote() {
   var dateInp = document.getElementById('gnAddDate');
   var title = titleInp ? titleInp.value.trim() : '';
   var text = ta ? ta.value.trim() : '';
-  if (!title && !text) return;
+  if (!title && !text && !notitiesPendingAttachments.length) return;
   var key = (dateInp && dateInp.value) ? dateInp.value : NOTITIES_GENERAL_KEY;
   if (!notesData[key]) notesData[key] = [];
   var id = 'n_' + Date.now();
   var now = new Date();
-  notesData[key].unshift({ id: id, title: title, text: text, tags: notitiesSelectedTags.slice(), time: now.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) });
+  notesData[key].unshift({ id: id, title: title, text: text, tags: notitiesSelectedTags.slice(), attachments: notitiesPendingAttachments.slice(), time: now.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' }) });
   localStorage.setItem('wf_notes', JSON.stringify(notesData));
   if (titleInp) titleInp.value = '';
   if (ta) ta.value = '';
   if (dateInp) dateInp.value = '';
   notitiesSelectedTags = [];
+  notitiesPendingAttachments = [];
   renderNotitiesTab();
   renderCalendar();
 }
@@ -15718,17 +15807,58 @@ function notitiesDelete(key, id) {
   renderCalendar();
 }
 
+var notitiesEditAttachments = []; // bijlagen tijdens het bewerken van een notitie
+function notitiesEditAttachmentChip(att, idx) {
+  var icon = notitiesFileIcon(att.type, att.name);
+  return '<span style="display:inline-flex;align-items:center;gap:5px;font-family:var(--body);font-size:10.5px;background:#fff;border:1.3px solid var(--sand2);border-radius:20px;padding:4px 9px 4px 8px;margin:3px 4px 0 0">'
+    + icon + ' ' + (att.name || '').replace(/</g, '&lt;') + ' <span style="color:var(--stone2)">(' + notitiesFormatSize(att.size) + ')</span>'
+    + ' <span onclick="notitiesRemoveEditAttachment(' + idx + ')" style="cursor:pointer;color:var(--terra);font-weight:700;margin-left:2px">✕</span>'
+    + '</span>';
+}
+function notitiesRenderEditAttachmentsPreview() {
+  var el = document.getElementById('gneditattach');
+  if (el) el.innerHTML = notitiesEditAttachments.map(function(a, i){ return notitiesEditAttachmentChip(a, i); }).join('');
+}
+function notitiesRemoveEditAttachment(idx) {
+  notitiesEditAttachments.splice(idx, 1);
+  notitiesRenderEditAttachmentsPreview();
+}
+async function notitiesHandleEditFileInput(input) {
+  var statusEl = document.getElementById('gneditAttachStatus');
+  var files = Array.prototype.slice.call(input.files || []);
+  if (!files.length) return;
+  for (var i = 0; i < files.length; i++) {
+    if (statusEl) statusEl.textContent = '⏳ ' + files[i].name + ' uploaden...';
+    try {
+      var result = await notitiesUploadFile(files[i]);
+      notitiesEditAttachments.push({ key: result.key, name: result.filename, type: result.mimetype, size: result.size });
+    } catch (e) {
+      if (statusEl) statusEl.textContent = '⚠️ ' + files[i].name + ': ' + e.message;
+    }
+  }
+  input.value = '';
+  if (statusEl) statusEl.textContent = '';
+  notitiesRenderEditAttachmentsPreview();
+}
+
 function notitiesStartEdit(key, id) {
   var notes = notesData[key] || [];
   var note = notes.find(function(n) { return n.id === id; });
   if (!note) return;
   notitiesExpanded[id] = true;
+  notitiesEditAttachments = (note.attachments || []).slice();
   var card = document.getElementById('gncard_' + id);
   if (!card) { renderNotitiesTab(); card = document.getElementById('gncard_' + id); if (!card) return; }
   var currentTags = note.tags || [];
   card.innerHTML = '<input class="gn-add-title" id="gnedittitle_' + id + '" value="' + (note.title || '').replace(/"/g, '&quot;') + '" placeholder="Titel...">'
     + '<textarea class="gn-edit-area" id="gnedit_' + id + '">' + (note.text || '').replace(/</g, '&lt;') + '</textarea>'
-    + '<div style="margin-top:5px"><button type="button" class="gn-filter-btn" onclick="notitiesInsertBullet(\'gnedit_' + id + '\')">• Bullet toevoegen</button></div>'
+    + '<div style="margin-top:5px;display:flex;gap:6px;flex-wrap:wrap">'
+    + '<button type="button" class="gn-filter-btn" onclick="notitiesInsertBullet(\'gnedit_' + id + '\')">• Bullet toevoegen</button>'
+    + '<button type="button" class="gn-filter-btn" onclick="document.getElementById(\'gneditfile_' + id + '\').click()">📎 Bijlage toevoegen</button>'
+    + '<input type="file" id="gneditfile_' + id + '" multiple style="display:none" onchange="notitiesHandleEditFileInput(this)">'
+    + '</div>'
+    + '<div id="gneditattach" style="display:flex;flex-wrap:wrap;margin-top:4px">' + notitiesEditAttachments.map(function(a, i){ return notitiesEditAttachmentChip(a, i); }).join('') + '</div>'
+    + '<div id="gneditAttachStatus" style="font-family:var(--cond);font-size:9px;color:var(--stone2);min-height:12px"></div>'
     + '<div class="gn-tag-select-row" id="gnedittags_' + id + '" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px">'
     + NOTITIES_TAGS.map(function(t){
         return '<button type="button" class="gn-filter-btn' + (currentTags.indexOf(t)>-1?' active':'') + '" data-tag="' + t.replace(/"/g,'&quot;') + '" onclick="this.classList.toggle(\'active\')">' + t.replace(/</g,'&lt;') + '</button>';
@@ -15747,12 +15877,13 @@ function notitiesSaveEdit(key, id) {
   var ta = document.getElementById('gnedit_' + id);
   var title = titleInp ? titleInp.value.trim() : '';
   var text = ta ? ta.value.trim() : '';
-  if (!title && !text) return;
+  if (!title && !text && !notitiesEditAttachments.length) return;
   var note = (notesData[key] || []).find(function(n) { return n.id === id; });
   if (!note) return;
   note.title = title;
   note.text = text;
   note.edited = true;
+  note.attachments = notitiesEditAttachments.slice();
   var tagRow = document.getElementById('gnedittags_' + id);
   if (tagRow) {
     var selected = [];
