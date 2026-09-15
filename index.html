@@ -3883,8 +3883,8 @@ function qtSkateLoaderHtml(text){
     <div id="variaGrid" class="varia-grid">
       <div class="varia-tile" id="vt-noco" onclick="variaOpen('noco')">
         <div class="varia-tile-ic"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#0a0a0a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></svg></div>
-        <div class="varia-tile-lbl">Notities &amp; Communicatie</div>
-        <div class="varia-tile-sub" id="vtSub-noco">Notities · Co-ouderschap</div>
+        <div class="varia-tile-lbl">Notities</div>
+        <div class="varia-tile-sub" id="vtSub-noco">Notities</div>
       </div>
       <div class="varia-tile" id="vt-shop" onclick="variaOpen('shop')">
         <div class="varia-tile-ic"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#0a0a0a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L21 7H6"/></svg></div>
@@ -3937,23 +3937,7 @@ function qtSkateLoaderHtml(text){
       </div>
 
       <div id="subtab-noco" style="display:none">
-
-        <!-- TUSSENPAGINA: wat wil je zien? -->
-        <div id="nocoViewSelectPage" style="display:block">
-          <div style="padding:14px 14px 6px;font-family:var(--grotesk);font-size:8px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3d1a0a;opacity:.55">WAT WIL JE ZIEN?</div>
-          <div id="nocoViewGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px 14px 10px"></div>
-          <div style="padding:0 14px 14px">
-            <button id="nocoViewGoBtn" onclick="nocoViewConfirm()" style="width:100%;background:#3d1a0a;color:#fff;border:none;font-family:var(--grotesk);font-size:11px;font-weight:700;letter-spacing:1px;padding:12px;border-radius:13px;cursor:pointer;box-shadow:0 3px 10px rgba(61,26,10,.2)">Kies een optie</button>
-          </div>
-        </div>
-
-        <!-- RESULTAATPAGINA -->
-        <div id="nocoViewResultPage" style="display:none">
-          <div style="padding:6px 14px 0;font-family:var(--grotesk);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#3d1a0a;opacity:.5" id="nocoViewResultTitle"></div>
-          <div id="communicatieContent" style="display:none"></div>
-          <div id="notitiesContent" style="display:none"></div>
-        </div>
-
+        <div id="notitiesContent" style="display:block"></div>
         <div style="height:28px"></div>
       </div>
 
@@ -9837,230 +9821,6 @@ var ACT_CATEGORIES = [
   {id:'geweigerd', label:'Geweigerd', emoji:'🚫'},
 ];
 
-// ═══ COMMUNICATIE CO-OUDERSCHAP ═══
-var commData = JSON.parse(localStorage.getItem('wf_comm_data') || '{}');
-// commData = { categorie_id: { label, emoji, items: [{id, tekst, datum, open}] } }
-var commCatColors = ['#e87040','#7a4acc','#2a9a60','#3a8acc','#e8a030','#e83060','#607090'];
-
-function saveCommData() { try { localStorage.setItem('wf_comm_data', JSON.stringify(commData)); } catch(e){} }
-
-function commCatList() {
-  return Object.keys(commData).map(function(k){ return Object.assign({id:k}, commData[k]); });
-}
-
-function renderCommunicatie() {
-  var el = document.getElementById('communicatieContent');
-  if(!el) return;
-  var cats = commCatList();
-  var html = '<div style="padding:8px 10px 0">';
-
-  if(cats.length === 0) {
-    html += '<div style="padding:32px 16px;text-align:center">'
-      + '<div style="font-size:36px;margin-bottom:10px">💬</div>'
-      + '<div style="font-family:var(--grotesk);font-size:13px;font-weight:700;color:#3d1a0a;margin-bottom:6px">Nog geen categorieën</div>'
-      + '<div style="font-size:11px;color:#d8c8b0">Maak een categorie aan zoals<br>"School", "Planning" of "Gezondheid"</div>'
-      + '</div>';
-  } else {
-    cats.forEach(function(cat) {
-      var openItems = (cat.items||[]).filter(function(it){ return it.open; });
-      var lastItem = (cat.items||[])[(cat.items||[]).length - 1];
-      var badge = openItems.length > 0
-        ? '<div style="width:18px;height:18px;border-radius:50%;background:#e83060;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff">'+openItems.length+'</div>'
-        : '';
-      var sub = lastItem ? lastItem.tekst.substring(0,35)+(lastItem.tekst.length>35?'…':'') : 'Geen berichten';
-      var tijd = lastItem ? lastItem.datum : '';
-
-      html += '<div style="margin-bottom:7px;background:#fff;border-radius:14px;overflow:hidden;border:1.5px solid #ece0d0;box-shadow:0 2px 8px rgba(61,26,10,.07);cursor:pointer" onclick="openCommCat(\''+cat.id+'\')">'
-        + '<div style="display:flex;align-items:center;gap:10px;padding:12px 13px">'
-        + '<div style="width:38px;height:38px;border-radius:11px;background:'+cat.kleur+'22;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">'+cat.emoji+'</div>'
-        + '<div style="flex:1;min-width:0">'
-        + '<div style="font-family:var(--grotesk);font-size:12px;font-weight:700;color:#2c1208">'+cat.label+'</div>'
-        + '<div style="font-family:var(--grotesk);font-size:9.5px;color:#d8c8b0;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+sub+'</div>'
-        + '</div>'
-        + '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
-        + (tijd ? '<div style="font-size:8px;color:#d8c8b0">'+tijd+'</div>' : '')
-        + badge
-        + '</div>'
-        + '</div></div>';
-    });
-  }
-
-  // Nieuwe categorie knop
-  html += '<div onclick="addCommCat()" style="margin:4px 0 10px;padding:11px 13px;display:flex;align-items:center;gap:8px;cursor:pointer;background:#fff;border-radius:14px;border:1.5px dashed #d8c8b0;box-shadow:0 1px 4px rgba(61,26,10,.04)">'
-    + '<div style="width:38px;height:38px;border-radius:11px;background:#e9f1e4;border:1.5px dashed #d8c8b0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#d8c8b0">+</div>'
-    + '<div style="font-family:var(--grotesk);font-size:11px;font-weight:700;color:#d8c8b0">Nieuwe categorie</div>'
-    + '</div>';
-
-  html += '</div>';
-  el.innerHTML = html;
-}
-
-function openCommCat(catId) {
-  var cat = commData[catId];
-  if(!cat) return;
-  var el = document.getElementById('communicatieContent');
-  if(!el) return;
-  var items = cat.items || [];
-  var html = ''
-    + '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fff;border-bottom:2px solid #ece0d0;position:sticky;top:0;z-index:2">'
-    + '<button onclick="renderCommunicatie()" style="background:#e9f1e4;border:1.5px solid #ece0d0;color:#3d1a0a;font-family:var(--grotesk);font-size:12px;font-weight:700;padding:5px 11px;border-radius:20px;cursor:pointer">‹ Terug</button>'
-    + '<span style="font-size:18px">'+cat.emoji+'</span>'
-    + '<span style="font-family:var(--grotesk);font-size:13px;font-weight:700;color:#2c1208">'+cat.label+'</span>'
-    + '<button onclick="deleteCommCat(\''+catId+'\')" style="margin-left:auto;background:none;border:none;font-size:13px;color:#ece0d0;cursor:pointer" title="Verwijder categorie">🗑</button>'
-    + '</div>'
-    + '<div style="padding:8px 10px 4px">';
-
-  if(items.length === 0) {
-    html += '<div style="padding:24px 0;text-align:center;font-family:var(--grotesk);font-size:11px;color:#d8c8b0">Nog geen notities in deze categorie</div>';
-  }
-
-  items.slice().reverse().forEach(function(item, ri) {
-    var i = items.length - 1 - ri;
-    var borderColor = item.open ? cat.kleur : '#ece0d0';
-    var badgeHtml = item.open
-      ? '<span style="font-size:8px;font-weight:700;background:'+cat.kleur+'22;color:'+cat.kleur+';padding:2px 8px;border-radius:8px">Open</span>'
-      : '<span style="font-size:8px;font-weight:700;background:#e8f5ee;color:#2a9a60;padding:2px 8px;border-radius:8px">✓ Klaar</span>';
-
-    // Antwoorden
-    var antwoorden = item.antwoorden || [];
-    var antwoordHtml = '';
-    if(antwoorden.length > 0) {
-      antwoordHtml += '<div style="margin-top:8px;border-top:1px solid #e9f1e4;padding-top:6px">';
-      antwoorden.forEach(function(a, ai) {
-        antwoordHtml += '<div style="display:flex;align-items:flex-start;gap:7px;padding:5px 0;border-bottom:1px solid #f5f8fb">'
-          + '<div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#3d1a0a,#9a5020);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0">'+(a.auteur||'?').charAt(0).toUpperCase()+'</div>'
-          + '<div style="flex:1;min-width:0">'
-          + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">'
-          + '<span style="font-family:var(--grotesk);font-size:9px;font-weight:700;color:#3d1a0a">'+(a.auteur||'?')+'</span>'
-          + '<span style="font-family:var(--grotesk);font-size:8px;color:#d8c8b0">'+(a.datum||'')+'</span>'
-          + '</div>'
-          + '<div style="font-family:var(--grotesk);font-size:11px;color:#2c1208;line-height:1.4">'+a.tekst+'</div>'
-          + '</div>'
-          + '<button onclick="deleteCommAntwoord(\''+catId+'\','+i+','+ai+')" style="background:none;border:none;font-size:10px;color:#f5ede0;cursor:pointer;flex-shrink:0;padding:0 2px">✕</button>'
-          + '</div>';
-      });
-      antwoordHtml += '</div>';
-    }
-
-    var antwoordInput = '<div id="antwoordBox_'+catId+'_'+i+'" style="display:none;margin-top:6px">'
-      + '<div style="display:flex;gap:5px;align-items:center">'
-      + '<input id="antwoordInp_'+catId+'_'+i+'" type="text" placeholder="Schrijf een antwoord..." style="flex:1;background:var(--cream);border:1.5px solid #ece0d0;border-radius:9px;padding:6px 10px;font-family:var(--grotesk);font-size:10px;color:#2c1208;outline:none">'
-      + '<button onclick="addCommAntwoord(\''+catId+'\','+i+')" style="background:#3d1a0a;color:#fff;border:none;border-radius:9px;padding:6px 10px;font-family:var(--grotesk);font-size:10px;font-weight:700;cursor:pointer;flex-shrink:0">+</button>'
-      + '</div>'
-      + '</div>';
-
-    html += '<div style="background:#fff;border-radius:13px;padding:11px 13px;margin-bottom:8px;border:1.5px solid '+borderColor+';box-shadow:0 2px 7px rgba(61,26,10,.07)">'
-      // Header: badge + auteur avatar + naam + datum + verwijder
-      + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">'
-      + badgeHtml
-      + '<div style="display:flex;align-items:center;gap:5px;margin-left:auto">'
-      + '<div style="width:18px;height:18px;border-radius:50%;background:linear-gradient(135deg,#3d1a0a,#9a5020);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff">'+(item.auteur||'T').charAt(0).toUpperCase()+'</div>'
-      + '<span style="font-family:var(--grotesk);font-size:9px;font-weight:700;color:#3d1a0a">'+(item.auteur||'Toon')+'</span>'
-      + '<span style="font-family:var(--grotesk);font-size:8px;color:#d8c8b0">'+item.datum+'</span>'
-      + '<button onclick="deleteCommItem(\''+catId+'\','+i+')" style="background:none;border:none;font-size:11px;color:#f5ede0;cursor:pointer;margin-left:3px;padding:0" title="Verwijder notitie">✕</button>'
-      + '</div>'
-      + '</div>'
-      // Notitietekst
-      + '<div style="font-family:var(--grotesk);font-size:12px;font-weight:600;color:#2c1208;line-height:1.4;margin-bottom:7px">'+item.tekst+'</div>'
-      // Antwoord-draad
-      + antwoordHtml
-      + antwoordInput
-      // Actie-knoppen
-      + '<div style="display:flex;gap:5px;margin-top:7px">'
-      + (item.open
-        ? '<button onclick="toggleCommItem(\''+catId+'\','+i+')" style="padding:4px 10px;background:#e9f1e4;border:1.5px solid #ece0d0;border-radius:10px;font-family:var(--grotesk);font-size:8px;font-weight:700;color:#3d1a0a;cursor:pointer">✓ Afgehandeld</button>'
-        : '<button onclick="toggleCommItem(\''+catId+'\','+i+')" style="padding:4px 10px;background:#e9f1e4;border:1.5px solid #ece0d0;border-radius:10px;font-family:var(--grotesk);font-size:8px;font-weight:700;color:#d8c8b0;cursor:pointer">↩ Heropenen</button>')
-      + '<button onclick="toggleAntwoordBox(\''+catId+'\','+i+')" style="padding:4px 10px;background:#e9f1e4;border:1.5px solid #ece0d0;border-radius:10px;font-family:var(--grotesk);font-size:8px;font-weight:700;color:#3d1a0a;cursor:pointer">↩ Antwoord</button>'
-      + '</div>'
-      + '</div>';
-  });
-
-  html += '</div>'
-    + '<div style="padding:8px 10px;background:#e9f1e4;border-top:1.5px solid #ece0d0;display:flex;gap:6px;align-items:flex-start">'
-    + '<textarea id="commInput_'+catId+'" placeholder="Nieuwe notitie voor '+cat.label+'..." rows="2" style="flex:1;background:#fff;border:1.5px solid #ece0d0;border-radius:10px;padding:8px 10px;font-family:var(--grotesk);font-size:11px;color:#2c1208;outline:none;resize:none"></textarea>'
-    + '<button onclick="addCommItem(\''+catId+'\')" style="background:#3d1a0a;color:#fff;border:none;border-radius:10px;padding:9px 12px;font-family:var(--grotesk);font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;box-shadow:0 2px 8px rgba(61,26,10,.2)">+</button>'
-    + '</div>';
-
-  el.innerHTML = html;
-}
-
-function toggleAntwoordBox(catId, idx) {
-  var box = document.getElementById('antwoordBox_'+catId+'_'+idx);
-  if(!box) return;
-  box.style.display = box.style.display === 'none' ? 'block' : 'none';
-  if(box.style.display === 'block') {
-    var inp = document.getElementById('antwoordInp_'+catId+'_'+idx);
-    if(inp) inp.focus();
-  }
-}
-
-function addCommAntwoord(catId, idx) {
-  var inp = document.getElementById('antwoordInp_'+catId+'_'+idx);
-  if(!inp || !inp.value.trim()) return;
-  if(!commData[catId] || !commData[catId].items || !commData[catId].items[idx]) return;
-  if(!commData[catId].items[idx].antwoorden) commData[catId].items[idx].antwoorden = [];
-  var now = new Date();
-  var tijdStr = now.toLocaleDateString('nl-NL',{day:'numeric',month:'short'}) + ' ' + now.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
-  var auteur = (currentUser && currentUser.naam) ? currentUser.naam : 'Toon';
-  commData[catId].items[idx].antwoorden.push({ tekst: inp.value.trim(), datum: tijdStr, auteur: auteur });
-  saveCommData();
-  openCommCat(catId);
-}
-
-function deleteCommAntwoord(catId, itemIdx, antwoordIdx) {
-  if(!commData[catId] || !commData[catId].items || !commData[catId].items[itemIdx]) return;
-  var ant = commData[catId].items[itemIdx].antwoorden;
-  if(!ant) return;
-  ant.splice(antwoordIdx, 1);
-  saveCommData();
-  openCommCat(catId);
-}
-
-
-function addCommItem(catId) {
-  var inp = document.getElementById('commInput_'+catId);
-  if(!inp || !inp.value.trim()) return;
-  if(!commData[catId].items) commData[catId].items = [];
-  var now = new Date();
-  var tijdStr = now.toLocaleDateString('nl-NL',{day:'numeric',month:'short'}) + ' ' + now.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
-  var auteur = (currentUser && currentUser.naam) ? currentUser.naam : 'Toon';
-  commData[catId].items.push({ id: Date.now(), tekst: inp.value.trim(), datum: tijdStr, open: true, auteur: auteur, antwoorden: [] });
-  saveCommData();
-  openCommCat(catId);
-}
-
-function toggleCommItem(catId, idx) {
-  if(!commData[catId] || !commData[catId].items) return;
-  commData[catId].items[idx].open = !commData[catId].items[idx].open;
-  saveCommData();
-  openCommCat(catId);
-}
-
-function deleteCommItem(catId, idx) {
-  if(!commData[catId] || !commData[catId].items) return;
-  commData[catId].items.splice(idx, 1);
-  saveCommData();
-  openCommCat(catId);
-}
-
-function deleteCommCat(catId) {
-  if(!confirm('Verwijder categorie "'+commData[catId].label+'" en alle notities?')) return;
-  delete commData[catId];
-  saveCommData();
-  renderCommunicatie();
-}
-
-function addCommCat() {
-  var label = prompt('Naam van de categorie (bv. School, Gezondheid):');
-  if(!label || !label.trim()) return;
-  var emoji = prompt('Emoji icoon (bv. 🏫 🏥 📅 💰):') || '💬';
-  var id = 'cat_' + Date.now();
-  var kleurIdx = Object.keys(commData).length % commCatColors.length;
-  commData[id] = { label: label.trim(), emoji: emoji.trim(), kleur: commCatColors[kleurIdx], items: [] };
-  saveCommData();
-  renderCommunicatie();
-}
-
 
 // ═══ KALENDER PERSOON SELECTOR ═══
 var calSelectedPersonen = [];
@@ -10392,6 +10152,7 @@ function renderActiviteiten() {
   }
 
   el.innerHTML = html;
+  if(activiteitenCache[cacheKey]) actTriggerPhotoFetches(activiteitenCache[cacheKey]);
   if(!activiteitenCache[cacheKey]) fetchActiviteitenWeek(activiteitenWeekStart);
 }
 
@@ -10524,10 +10285,51 @@ function fetchActiviteitenWeek(weekStart) {
         + '</div>';
     } else {
       placeholder.outerHTML = renderActWeekList(allItems, weekStart);
+      actTriggerPhotoFetches(allItems);
     }
   }
 }
 
+
+// ── Echte foto per activiteit (Unsplash, via dezelfde Netlify-functie als bij notities) ──
+// Vervangt het categorie-emoji zodra er een foto binnen is. Faalt stil zolang de
+// Netlify-functie/API-key nog niet is opgezet — dan blijft gewoon het emoji staan.
+var ACT_PHOTO_CACHE = {};
+var ACT_PHOTO_ATTEMPTED = {};
+var ACT_PHOTO_QUERY = {
+  sport: 'sports equipment single object',
+  muziek: 'concert stage single instrument',
+  theater: 'theater stage curtain',
+  kunst: 'art gallery painting single piece',
+  familie: 'family fun outdoor',
+  markt: 'outdoor market stall single item',
+  manueel: 'calendar notebook minimal',
+  all: 'event calendar minimal'
+};
+function actPhotoQueryFor(item) {
+  return ACT_PHOTO_QUERY[item.categorie] || ACT_PHOTO_QUERY.all;
+}
+async function actFetchPhoto(item, cardId) {
+  if(ACT_PHOTO_CACHE[cardId] || ACT_PHOTO_ATTEMPTED[cardId]) return;
+  ACT_PHOTO_ATTEMPTED[cardId] = true;
+  try {
+    var q = actPhotoQueryFor(item);
+    var res = await fetch('/.netlify/functions/notitie-foto?query=' + encodeURIComponent(q));
+    var data = await res.json();
+    if(data && data.ok && data.url) {
+      ACT_PHOTO_CACHE[cardId] = data.url;
+      var el = document.getElementById('actphoto_' + cardId);
+      if(el) el.innerHTML = '<img src="' + data.url + '" style="width:100%;height:100%;object-fit:cover">';
+    }
+  } catch(e) { /* stil falen — categorie-emoji blijft gewoon staan */ }
+}
+function actTriggerPhotoFetches(items) {
+  (items || []).forEach(function(item) {
+    var actKey = (item.name||'') + '_' + (item.rawDate||'');
+    var cardId = btoa(encodeURIComponent(actKey)).replace(/[^a-zA-Z0-9]/g,'').substring(0,12);
+    actFetchPhoto(item, cardId);
+  });
+}
 
 function renderActWeekList(items, weekStart) {
   if(!items || !items.length) {
@@ -10588,11 +10390,20 @@ function renderActWeekList(items, weekStart) {
       var safeUrl  = (item.url||'').replace(/"/g,'&quot;');
       var actKey   = (item.name||'') + '_' + (item.rawDate||'');
       var safeKey  = actKey.replace(/"/g,'&quot;');
+      var cardId   = btoa(encodeURIComponent(actKey)).replace(/[^a-zA-Z0-9]/g,'').substring(0,12);
 
-      html += '<div class="act-card" id="actcard_'+btoa(encodeURIComponent(actKey)).replace(/[^a-zA-Z0-9]/g,'').substring(0,12)+'">'
+      html += '<div class="act-card" id="actcard_'+cardId+'">'
         + (function(){
             var cs = getActCatStyle(item.categorie||'all');
             return '<div class="act-card-stripe" style="background:'+cs.color+'"></div>';
+          })()
+        + (function(){
+            var cs = getActCatStyle(item.categorie||'all');
+            var cached = ACT_PHOTO_CACHE[cardId];
+            var emoji = (cs.label||'🗓️').split(' ')[0];
+            return '<div class="act-card-photo" id="actphoto_'+cardId+'" style="width:38px;height:38px;border-radius:50%;border:1.5px solid var(--brut-ink,#0a0a0a);flex-shrink:0;margin:10px 0 10px 10px;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;background:'+cs.bg+'">'
+              + (cached ? '<img src="'+cached+'" style="width:100%;height:100%;object-fit:cover">' : emoji)
+              + '</div>';
           })()
         + '<div class="act-card-body">'
         + (function(){
@@ -15386,7 +15197,7 @@ function getIngredientsForDay(date) {
 // ═══ VARIA GRID NAVIGATIE ═══
 var variaCurrentTab = null;
 var VARIA_LABELS = {
-  noco:'📝 Notities & Communicatie',
+  noco:'📝 Notities',
   shop:'🛒 Boodschappen', todo:'✅ To do', media:'📺 Media',
   events:'🎭 Activiteiten', favs:'⭐ Receptfavorieten',
   realestate:'🏠 Real Estate', axxes:'🎙️ Axxes'
@@ -15416,11 +15227,7 @@ function variaOpen(name) {
   // Render inhoud
   activeSubtab = name;
   if(name==='noco') {
-    var nocoSel = document.getElementById('nocoViewSelectPage');
-    var nocoRes = document.getElementById('nocoViewResultPage');
-    if(nocoSel) nocoSel.style.display = 'block';
-    if(nocoRes) nocoRes.style.display = 'none';
-    renderNocoViewSelect();
+    renderNotitiesTab();
   }
   else if(name==='shop') {
     var shopSel = document.getElementById('shopViewSelectPage');
@@ -15469,10 +15276,6 @@ function variaBack() {
 // Slim kruisje bovenaan Varia-subpagina's: sluit terug naar het vorige keuzemenu
 // (bv. Boodschappen/Wedstrijden/Promo's/Seizoenskaart) als dat er is, anders helemaal terug naar Varia.
 function variaCloseX() {
-  if(activeSubtab === 'noco') {
-    var nocoRes = document.getElementById('nocoViewResultPage');
-    if(nocoRes && nocoRes.style.display !== 'none') { nocoViewBack(); return; }
-  }
   if(activeSubtab === 'shop') {
     var shopRes = document.getElementById('shopViewResultPage');
     if(shopRes && shopRes.style.display !== 'none') { shopViewBack(); return; }
@@ -15487,60 +15290,6 @@ function variaCloseX() {
 function switchSubtab(name){
   // Compat: als varia grid actief is, gebruik variaOpen
   variaOpen(name);
-}
-
-// ═══ VARIA: Notities & Communicatie — tussenpagina keuze Notities / Communicatie ═══
-var NOCO_VIEW_OPTIONS = [
-  {id:'notities', label:'Notities', icon:'notes'},
-  {id:'communicatie', label:'Communicatie', icon:'chat'}
-];
-var nocoViewMode = null;
-
-function renderNocoViewSelect() {
-  var grid = document.getElementById('nocoViewGrid');
-  if(!grid) return;
-  grid.innerHTML = NOCO_VIEW_OPTIONS.map(function(o){
-    var isSel = nocoViewMode === o.id;
-    return '<div onclick="selectNocoView(\''+o.id+'\')" class="brut-choice-card'+(isSel?' brut-choice-sel':'')+'">'
-      + brutIcon(o.icon, isSel?'#e9f1e4':'#0a0a0a')
-      + '<div style="font-family:var(--grotesk);font-size:10.5px;font-weight:700;color:'+(isSel?'#fff':'#2c1208')+';line-height:1.2;margin-top:6px">'+o.label+'</div>'
-      + '</div>';
-  }).join('');
-  var btn = document.getElementById('nocoViewGoBtn');
-  if(btn) {
-    var opt = NOCO_VIEW_OPTIONS.find(function(o){ return o.id===nocoViewMode; });
-    btn.textContent = opt ? ('Toon ' + opt.label + ' →') : 'Kies een optie';
-  }
-}
-function selectNocoView(id) {
-  nocoViewMode = id;
-  renderNocoViewSelect();
-}
-function nocoViewConfirm() {
-  if(!nocoViewMode) return;
-  var selPage = document.getElementById('nocoViewSelectPage');
-  var resPage = document.getElementById('nocoViewResultPage');
-  if(selPage) selPage.style.display = 'none';
-  if(resPage) resPage.style.display = 'block';
-  var titleEl = document.getElementById('nocoViewResultTitle');
-  var opt = NOCO_VIEW_OPTIONS.find(function(o){ return o.id===nocoViewMode; });
-  if(titleEl) titleEl.textContent = opt ? opt.label : '';
-  applyNocoViewMode(nocoViewMode);
-}
-function nocoViewBack() {
-  var selPage = document.getElementById('nocoViewSelectPage');
-  var resPage = document.getElementById('nocoViewResultPage');
-  if(selPage) selPage.style.display = 'block';
-  if(resPage) resPage.style.display = 'none';
-  renderNocoViewSelect();
-}
-function applyNocoViewMode(mode) {
-  var commEl = document.getElementById('communicatieContent');
-  var noteEl = document.getElementById('notitiesContent');
-  if(commEl) commEl.style.display = mode==='communicatie' ? 'block' : 'none';
-  if(noteEl) noteEl.style.display = mode==='notities' ? 'block' : 'none';
-  if(mode==='communicatie') renderCommunicatie();
-  else if(mode==='notities') renderNotitiesTab();
 }
 
 // ═══ NOTITIES TAB (Varia) — alle notities in lijstvorm, filterbaar op periode/maand ═══
