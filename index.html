@@ -3891,11 +3891,6 @@ function qtSkateLoaderHtml(text){
         <div class="varia-tile-lbl">Boodschappen</div>
         <div class="varia-tile-sub" id="vtSub-shop">Boodschappen · Wedstrijden · Promo's</div>
       </div>
-      <div class="varia-tile" id="vt-todo" onclick="variaOpen('todo')">
-        <div class="varia-tile-ic"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#0a0a0a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7 12.5 10.5 16 17 8.5"/></svg></div>
-        <div class="varia-tile-lbl">To do</div>
-        <div class="varia-tile-sub" id="vtSub-todo">Taken</div>
-      </div>
       <div class="varia-tile" id="vt-favs" onclick="variaOpen('favs')">
         <div class="varia-tile-ic"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#0a0a0a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 14.6 9.1 21.5 9.6 16.2 14 18 21 12 17.1 6 21 7.8 14 2.5 9.6 9.4 9.1 12 2.5Z"/></svg></div>
         <div class="varia-tile-lbl">Recepten</div>
@@ -4008,11 +4003,6 @@ function qtSkateLoaderHtml(text){
           <div id="seizoenVariaContent" style="display:none"></div>
         </div>
 
-        <div style="height:28px"></div>
-      </div>
-
-      <div id="subtab-todo" style="display:none">
-        <div id="todoContent"></div>
         <div style="height:28px"></div>
       </div>
 
@@ -6648,7 +6638,6 @@ let rejectedDinners = JSON.parse(localStorage.getItem('wf_rejected')||'{}');
 let todayViewDate = null;
 let activeSubtab = 'shop';
 let epgRefreshTimer = null;
-let todoItems = JSON.parse(localStorage.getItem('wf_todo')||'[]');
 let customLists = JSON.parse(localStorage.getItem('wf_clists')||'[]');
 let detailSheetKey = null;
 let detailSheetType = null;
@@ -7575,7 +7564,9 @@ const DINNER_CATEGORIES = {
 
 // Photo cache: localStorage key = 'wf_photo_' + dinnerName hash
 function getDinnerPhotoKey(name) {
-  return 'wf_photo_' + btoa(encodeURIComponent(name).substring(0,40)).substring(0,16);
+  // Prefix bewust gewijzigd (v2) zodat oude, in de cache staande AI-gegenereerde
+  // foto's niet blijven hangen nu we overgeschakeld zijn naar échte webfoto's.
+  return 'wf_photo2_' + btoa(encodeURIComponent(name).substring(0,40)).substring(0,16);
 }
 
 function getDinnerCategory(name) {
@@ -7631,10 +7622,10 @@ function fetchDagelijksekostPhoto(url, name, callback) {
   } catch(e){ callback(null); }
 }
 
-// Foto instellen in de hero banner: eerst de échte bronfoto proberen, dan een
-// relevante zoekfoto (op basis van de receptnaam), en pas als allerlaatste
-// redmiddel de generieke Foodish-foto
-// ─── Pollinations-prompt opgebouwd uit de vastgelegde "Dagelijkse Kost"-
+// Foto instellen in de hero banner: een échte foto via webzoekopdracht
+// (recipe-image), op basis van de receptnaam + eventuele bronlink — geen
+// AI-gegenereerde afbeelding meer. Lukt de zoekopdracht niet, dan de
+// generieke koelkast-noodfoto.
 function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
   try {
     if(!imgEl) return;
@@ -7644,7 +7635,7 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
     var cached = localStorage.getItem(cacheKey);
     if(cached && cached === RECIPE_ULTIMATE_FALLBACK_IMG) {
       // De koelkast-foto wordt bewust nooit gecachet gehouden — elk bezoek
-      // probeert opnieuw een échte AI-foto te genereren.
+      // probeert opnieuw een échte foto te vinden.
       cached = null;
     }
     if(cached) {
@@ -7652,12 +7643,11 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
       imgEl.style.display = 'block';
       if(patternEl) patternEl.style.display = 'none';
       if(loadingEl) loadingEl.style.display = 'none';
-      if(cached.indexOf('data:image') === 0) addAiWatermark(imgEl);
       return;
     }
 
     function showUltimateFallback() {
-      // Bewust niet gecachet — een volgend bezoek probeert opnieuw een AI-foto
+      // Bewust niet gecachet — een volgend bezoek probeert opnieuw een echte foto
       imgEl.src = RECIPE_ULTIMATE_FALLBACK_IMG;
       imgEl.style.display = 'block';
       imgEl.classList.add('rf-fallback-img');
@@ -7669,24 +7659,32 @@ function setDinnerPhotoHero(imgEl, name, patternEl, link, ingredients) {
       } catch(e){}
     }
 
-    // Enkel nog OpenAI (dezelfde motor als ChatGPT). Lukt dit niet (geen
-    // tegoed, netwerkfout, ...), dan meteen de koelkast-noodfoto — geen
-    // Pollinations-tussenstap meer.
-    var ingQs = (ingredients || []).slice(0, 5).join(', ');
-    fetch('/.netlify/functions/generate-recipe-image-openai?name=' + encodeURIComponent(name) + '&ingredients=' + encodeURIComponent(ingQs))
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        if(data && data.image) {
-          try { localStorage.setItem(cacheKey, data.image); } catch(e){}
-          imgEl.src = data.image;
-          imgEl.style.display = 'block';
-          if(patternEl) patternEl.style.display = 'none';
-          if(loadingEl) loadingEl.style.display = 'none';
-        } else {
-          showUltimateFallback();
-        }
-      })
-      .catch(function(){ showUltimateFallback(); });
+    fetchDagelijksekostPhoto(link, name, function(url){
+      if(url) {
+        try { localStorage.setItem(cacheKey, url); } catch(e){}
+        imgEl.src = url;
+        imgEl.style.display = 'block';
+        if(patternEl) patternEl.style.display = 'none';
+        if(loadingEl) loadingEl.style.display = 'none';
+        return;
+      }
+      // recipe-image gaf niets terug — extra vangnet via dezelfde Unsplash-koppeling
+      // als bij notities/activiteiten, met een op eten gerichte zoekterm.
+      fetch('/.netlify/functions/notitie-foto?query=' + encodeURIComponent(name + ' dish food plated'))
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if(data && data.ok && data.url) {
+            try { localStorage.setItem(cacheKey, data.url); } catch(e){}
+            imgEl.src = data.url;
+            imgEl.style.display = 'block';
+            if(patternEl) patternEl.style.display = 'none';
+            if(loadingEl) loadingEl.style.display = 'none';
+          } else {
+            showUltimateFallback();
+          }
+        })
+        .catch(function(){ showUltimateFallback(); });
+    });
   } catch(e){}
 }
 
@@ -9318,7 +9316,7 @@ function applyRolRestrictions(rol) {
     }
     setTimeout(function(){
       // Verberg alle varia tiles behalve communicatie
-      ['shop','todo','favs','events','tv','radio','progress'].forEach(function(id){
+      ['shop','favs','events','tv','radio','progress'].forEach(function(id){
         var tile = document.getElementById('vt-'+id);
         if(tile) tile.style.display = 'none';
       });
@@ -15211,7 +15209,7 @@ function variaOpen(name) {
   if(grid) grid.style.display = 'none';
   if(detail) { detail.style.display = 'flex'; detail.style.flexDirection = 'column'; detail.style.flex = '1'; detail.style.overflowY = 'auto'; }
   // Toon juiste subtab
-  var subs = ['noco','shop','todo','media','events','favs','realestate','axxes','progress'];
+  var subs = ['noco','shop','media','events','favs','realestate','axxes','progress'];
   subs.forEach(function(s){
     var el = document.getElementById('subtab-'+s);
     if(el) el.style.display = s===name ? 'block' : 'none';
@@ -15236,7 +15234,6 @@ function variaOpen(name) {
     if(shopRes) shopRes.style.display = 'none';
     renderShopViewSelect();
   }
-  else if(name==='todo') renderTodo();
   else if(name==='media') {
     var mediaSel = document.getElementById('mediaViewSelectPage');
     var mediaRes = document.getElementById('mediaViewResultPage');
@@ -15266,7 +15263,7 @@ function variaBack() {
   if(grid) grid.style.display = 'grid';
   if(detail) detail.style.display = 'none';
   // Alle actieve tiles resetten
-  ['noco','shop','todo','media','events','favs','realestate','axxes','progress'].forEach(function(s){
+  ['noco','shop','media','events','favs','realestate','axxes','progress'].forEach(function(s){
     var t = document.getElementById('vt-'+s);
     if(t) t.classList.remove('vt-active');
   });
@@ -16913,42 +16910,6 @@ function renderWedstrijden() {
   el.innerHTML = html;
 }
 
-function saveTodo(){localStorage.setItem('wf_todo',JSON.stringify(todoItems));}
-function addTodoItem(){
-  var inp=document.getElementById('todoInput');
-  if(!inp||!inp.value.trim()) return;
-  todoItems.unshift({id:'todo_'+Date.now(),text:inp.value.trim(),done:false,
-    created:new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'short'})});
-  saveTodo();inp.value='';renderTodo();
-}
-function toggleTodoItem(id){
-  var it=todoItems.find(function(t){return t.id===id;});
-  if(it){it.done=!it.done;saveTodo();renderTodo();}
-}
-function deleteTodoItem(id){todoItems=todoItems.filter(function(t){return t.id!==id;});saveTodo();renderTodo();}
-function clearDoneTodos(){todoItems=todoItems.filter(function(t){return !t.done;});saveTodo();renderTodo();}
-function renderTodo(){
-  var c=document.getElementById('todoContent');if(!c)return;
-  var open=todoItems.filter(function(t){return !t.done;});
-  var done=todoItems.filter(function(t){return t.done;});
-  var h='<div class="todo-add-bar"><input class="todo-add-input" id="todoInput" type="text" placeholder="Nieuwe taak..." onkeydown="if(event.keyCode===13)addTodoItem()"><button class="todo-add-btn" onclick="addTodoItem()">+ Voeg toe</button></div>';
-  if(!todoItems.length){h+='<div class="todo-empty">Geen taken. Voeg iets toe hierboven.</div>';}
-  else{
-    if(open.length){
-      h+='<div class="todo-section-title">Te doen — '+open.length+'</div>';
-      for(var i=0;i<open.length;i++){var it=open[i];
-        h+='<div class="todo-item"><div class="todo-check" data-a="chk" data-id="'+it.id+'"></div><div style="flex:1;min-width:0"><div class="todo-text">'+it.text.replace(/</g,'&lt;')+'</div><div class="todo-meta">'+it.created+'</div></div><button class="todo-del" data-a="del" data-id="'+it.id+'">✕</button></div>';}
-    }
-    if(done.length){
-      h+='<div class="todo-section-title">Klaar — '+done.length+'</div>';
-      for(var j=0;j<done.length;j++){var dt=done[j];
-        h+='<div class="todo-item"><div class="todo-check checked" data-a="chk" data-id="'+dt.id+'"></div><div style="flex:1;min-width:0"><div class="todo-text done">'+dt.text.replace(/</g,'&lt;')+'</div><div class="todo-meta">'+dt.created+'</div></div><button class="todo-del" data-a="del" data-id="'+dt.id+'">✕</button></div>';}
-      h+='<button class="todo-clear-btn" onclick="clearDoneTodos()">Wis voltooide taken</button>';
-    }
-  }
-  c.innerHTML=h;
-  c.querySelectorAll('[data-a]').forEach(function(el){el.onclick=function(e){e.stopPropagation();var a=this.getAttribute('data-a'),id=this.getAttribute('data-id');if(a==='chk')toggleTodoItem(id);else if(a==='del')deleteTodoItem(id);};});
-}
 function saveCustomLists(){localStorage.setItem('wf_clists',JSON.stringify(customLists));}
 function addCustomList(){
   var inp=document.getElementById('clistTitleInput');
