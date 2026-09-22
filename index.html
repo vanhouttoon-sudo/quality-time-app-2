@@ -18799,4 +18799,66 @@ syncZangPlanToAgenda();
 renderTodayPage();
 // Schedule waste notifications if permission already granted
 if(typeof Notification !== 'undefined' && Notification.permission === 'granted') {
- 
+  scheduleWasteNotifications();
+  scheduleAllNotifications();
+  scheduleZangNotification();
+}
+// Refresh ICS cache silently on boot
+setTimeout(() => refreshICSCache(true).then(() => { renderAgendaToday(dk(new Date())); }), 1500);
+// Laad eerder geüploade zang-mp3's uit lokale opslag en werk audio-links bij
+zangAudioPreload(function(){
+  if(typeof renderZangSheetContent === 'function') renderZangSheetContent();
+  if(typeof renderZangAudioSettingsList === 'function') renderZangAudioSettingsList();
+});
+zangSongsPreload(function(){
+  if(typeof renderZangSongsList === 'function') renderZangSongsList();
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+</body>
+</html>
