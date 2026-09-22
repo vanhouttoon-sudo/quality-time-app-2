@@ -16176,7 +16176,7 @@ function zangarchOpenNewSongForm(){
     + '<input class="gn-add-title" id="zaToonaard" placeholder="Toonaard (bv. C majeur)" style="margin-bottom:8px;font-weight:500">'
     + '<input type="date" class="gn-add-date" id="zaDate" style="width:100%;margin-bottom:8px;box-sizing:border-box" value="'+dk(new Date())+'">'
     + '<button type="button" class="gn-filter-btn" onclick="document.getElementById(\'zaFile\').click()" style="width:100%;margin-bottom:6px">🎙️ Kies audiobestand</button>'
-    + '<input type="file" id="zaFile" accept="audio/*" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus\')">'
+    + '<input type="file" id="zaFile" accept="audio/*,video/*" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus\')">'
     + '<div id="zaFileStatus" style="font-family:var(--cond);font-size:9px;color:var(--stone2);min-height:14px;margin-bottom:8px"></div>'
     + '<textarea class="gn-edit-area" id="zaComment" placeholder="Commentaar bij deze opname (optioneel)" style="margin-bottom:12px"></textarea>'
     + '<div style="display:flex;gap:8px">'
@@ -16249,7 +16249,7 @@ function zangarchOpenAddVersionForm(songId){
     + '<div style="font-family:var(--body);font-size:12px;color:var(--stone2);margin-bottom:14px">'+(song.title||'').replace(/</g,'&lt;')+'</div>'
     + '<input type="date" class="gn-add-date" id="zaDate2" style="width:100%;margin-bottom:8px;box-sizing:border-box" value="'+dk(new Date())+'">'
     + '<button type="button" class="gn-filter-btn" onclick="document.getElementById(\'zaFile2\').click()" style="width:100%;margin-bottom:6px">🎙️ Kies audiobestand</button>'
-    + '<input type="file" id="zaFile2" accept="audio/*" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus2\')">'
+    + '<input type="file" id="zaFile2" accept="audio/*,video/*" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus2\')">'
     + '<div id="zaFileStatus2" style="font-family:var(--cond);font-size:9px;color:var(--stone2);min-height:14px;margin-bottom:8px"></div>'
     + '<textarea class="gn-edit-area" id="zaComment2" placeholder="Commentaar bij deze opname (optioneel)" style="margin-bottom:12px"></textarea>'
     + '<div style="display:flex;gap:8px">'
@@ -16360,7 +16360,7 @@ function zangarchOpenPlayerModal(){
     + '<div id="zaPlayerTitle" style="font-family:var(--grotesk);font-size:16px;font-weight:700;color:#fff;margin-bottom:4px"></div>'
     + '<div id="zaPlayerMeta" style="font-family:var(--cond);font-size:10px;color:rgba(255,255,255,.5);margin-bottom:4px"></div>'
     + '<div id="zaPlayerComment" style="font-family:var(--body);font-size:11px;color:rgba(255,255,255,.65);margin-bottom:14px"></div>'
-    + '<audio id="zaPlayerAudio" controls autoplay style="width:100%" onended="zangarchQueueNext()"></audio>'
+    + '<div id="zaPlayerMediaWrap"></div>'
     + '</div></div></div>';
   document.body.insertAdjacentHTML('beforeend', html);
   zangarchLoadCurrentInPlayer();
@@ -16374,15 +16374,19 @@ function zangarchLoadCurrentInPlayer(){
   var titleEl = document.getElementById('zaPlayerTitle');
   var metaEl = document.getElementById('zaPlayerMeta');
   var commentEl = document.getElementById('zaPlayerComment');
-  var audioEl = document.getElementById('zaPlayerAudio');
+  var mediaWrap = document.getElementById('zaPlayerMediaWrap');
   if(labelEl) labelEl.textContent = zangarchQueue.length>1 ? ('Nummer ' + (zangarchQueueIndex+1) + ' van ' + zangarchQueue.length) : '';
   if(titleEl) titleEl.textContent = found.song.title;
   if(metaEl) metaEl.textContent = [found.song.uitvoerder, found.song.toonaard, found.version.date].filter(Boolean).join(' · ');
   if(commentEl) commentEl.textContent = found.version.comment || '';
-  if(audioEl) {
-    audioEl.src = '/.netlify/functions/note-attachment?key=' + encodeURIComponent(found.version.key);
-    var p = audioEl.play();
-    if(p && p.catch) p.catch(function(){});
+  if(mediaWrap) {
+    var isVideo = found.version.mimetype && found.version.mimetype.indexOf('video') === 0;
+    var src = '/.netlify/functions/note-attachment?key=' + encodeURIComponent(found.version.key);
+    mediaWrap.innerHTML = isVideo
+      ? '<video id="zaPlayerAudio" controls autoplay style="width:100%;max-height:220px;border-radius:10px" src="'+src+'" onended="zangarchQueueNext()"></video>'
+      : '<audio id="zaPlayerAudio" controls autoplay style="width:100%" src="'+src+'" onended="zangarchQueueNext()"></audio>';
+    var mediaEl = document.getElementById('zaPlayerAudio');
+    if(mediaEl) { var p = mediaEl.play(); if(p && p.catch) p.catch(function(){}); }
   }
 }
 function zangarchQueueNext(){
@@ -16476,7 +16480,10 @@ function axxesTogglePlay(id){
       if(!rec){ wrap.innerHTML = '<div style="font-family:var(--grotesk);font-size:10px;color:#a08060">Bestand niet gevonden.</div>'; return; }
       if(axxesCurrentUrl) URL.revokeObjectURL(axxesCurrentUrl);
       axxesCurrentUrl = URL.createObjectURL(rec.blob);
-      wrap.innerHTML = '<audio controls autoplay src="'+axxesCurrentUrl+'"></audio>';
+      var isVideo = rec.blob && rec.blob.type && rec.blob.type.indexOf('video') === 0;
+      wrap.innerHTML = isVideo
+        ? '<video controls autoplay style="width:100%;max-height:260px;border-radius:10px" src="'+axxesCurrentUrl+'"></video>'
+        : '<audio controls autoplay src="'+axxesCurrentUrl+'"></audio>';
     };
   });
 }
@@ -16524,7 +16531,7 @@ function renderAxxes(){
       '<div class="axxes-sub">Meetingopnames &amp; transcripties</div>' +
     '</div>' +
     '<a class="axxes-notebook-btn" href="'+AXXES_NOTEBOOKLM_URL+'" target="_blank" rel="noopener">🔗 Open in Google NotebookLM</a>' +
-    '<input type="file" id="axxesFileInput" accept="audio/*" multiple style="display:none" onchange="axxesAddFiles(this)">' +
+    '<input type="file" id="axxesFileInput" accept="audio/*,video/*" multiple style="display:none" onchange="axxesAddFiles(this)">' +
     '<div class="axxes-upload-box" onclick="document.getElementById(\'axxesFileInput\').click()">' +
       '<div class="aui">⬆️</div>' +
       '<div class="aut">Opname toevoegen</div>' +
@@ -18792,66 +18799,4 @@ syncZangPlanToAgenda();
 renderTodayPage();
 // Schedule waste notifications if permission already granted
 if(typeof Notification !== 'undefined' && Notification.permission === 'granted') {
-  scheduleWasteNotifications();
-  scheduleAllNotifications();
-  scheduleZangNotification();
-}
-// Refresh ICS cache silently on boot
-setTimeout(() => refreshICSCache(true).then(() => { renderAgendaToday(dk(new Date())); }), 1500);
-// Laad eerder geüploade zang-mp3's uit lokale opslag en werk audio-links bij
-zangAudioPreload(function(){
-  if(typeof renderZangSheetContent === 'function') renderZangSheetContent();
-  if(typeof renderZangAudioSettingsList === 'function') renderZangAudioSettingsList();
-});
-zangSongsPreload(function(){
-  if(typeof renderZangSongsList === 'function') renderZangSongsList();
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-</script>
-</body>
-</html>
+ 
