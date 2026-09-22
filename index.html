@@ -3562,46 +3562,57 @@ input, select, textarea{
 @keyframes mmdDotPulse{0%,60%,100%{opacity:.2;transform:scale(1);}30%{opacity:1;transform:scale(1.3);}}
 
 /* ═══════════════════════════════════════════════════════════
-   QT SKATE LOADER — herbruikbare kickflip-animatie, overal in de
-   app waar iets aan het laden is (skateboard, geen mannetje op).
+   QT SKYLINE LOADER — herbruikbare "haventekening tekent zichzelf"-
+   animatie, overal in de app waar iets aan het laden is (vervangt
+   de vorige skateboard-kickflip). Elk onderdeel (kraan, pakhuis,
+   kraan, kraan, Antwerpse skyline, waterlijn) tekent zichzelf van
+   links naar rechts via stroke-dasharray/-dashoffset, met een
+   kleine vertraging per onderdeel zodat het geheel van links naar
+   rechts opbouwt — net als de tekening die is aangeleverd.
    ═══════════════════════════════════════════════════════════ */
-.qt-skate-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:8px 0;}
-.qt-skate-stage{position:relative;width:70px;height:64px;perspective:500px;}
-.qt-skate-board{
-  position:absolute;left:50%;top:8px;transform-origin:center;
-  font-size:38px;line-height:1;
-  transform:translateX(-50%);
-  animation:qtKickflip 1.15s cubic-bezier(.45,0,.55,1) infinite;
-}
-@keyframes qtKickflip{
-  0%  { transform:translateX(-50%) translateY(0)    rotateY(0deg)   rotate(0deg); }
-  22% { transform:translateX(-50%) translateY(-20px) rotateY(160deg) rotate(-10deg); }
-  50% { transform:translateX(-50%) translateY(-27px) rotateY(360deg) rotate(0deg); }
-  78% { transform:translateX(-50%) translateY(-12px) rotateY(560deg) rotate(9deg); }
-  100%{ transform:translateX(-50%) translateY(0)    rotateY(720deg) rotate(0deg); }
-}
-.qt-skate-shadow{
-  position:absolute;left:50%;bottom:6px;width:34px;height:8px;
-  transform:translateX(-50%);
-  background:rgba(10,10,10,.18);border-radius:50%;
-  animation:qtKickflipShadow 1.15s cubic-bezier(.45,0,.55,1) infinite;
-}
-@keyframes qtKickflipShadow{
-  0%  { transform:translateX(-50%) scale(1);    opacity:.35; }
-  50% { transform:translateX(-50%) scale(.45);  opacity:.15; }
-  100%{ transform:translateX(-50%) scale(1);    opacity:.35; }
+.qt-skate-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:10px 0;}
+.qt-skate-stage{width:190px;max-width:72vw;}
+.qt-skate-stage svg{width:100%;height:auto;display:block;overflow:visible}
+.qt-draw-path{fill:none;stroke:var(--brut-ink,#0a0a0a);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:700;stroke-dashoffset:700;animation:qtDrawReveal 2.6s cubic-bezier(.65,0,.35,1) infinite;}
+.qt-draw-p1{animation-delay:0s;}
+.qt-draw-p2{animation-delay:.22s;}
+.qt-draw-p3{animation-delay:.44s;}
+.qt-draw-p4{animation-delay:.66s;}
+.qt-draw-p5{animation-delay:.88s;}
+.qt-draw-p6{animation-delay:1.1s;}
+@keyframes qtDrawReveal{
+  0%  { stroke-dashoffset:700; opacity:.85; }
+  45% { stroke-dashoffset:0;   opacity:1; }
+  78% { stroke-dashoffset:0;   opacity:1; }
+  100%{ stroke-dashoffset:-700;opacity:0; }
 }
 .qt-skate-text{font-family:var(--cond);font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--stone2,#a08060);text-transform:uppercase;}
 </style>
 <script>
-// Herbruikbare skateboard-kickflip-laadindicator — gebruikt op elke plek
-// in de app waar iets opgehaald/verwerkt wordt. Geen mannetje, enkel het
-// board zelf dat een kickflip maakt (rotateY = flip, translateY = sprong).
+// Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
+// app waar iets opgehaald/verwerkt wordt. Er is geen echte byte-voor-byte
+// laadvoortgang beschikbaar op de meeste plekken waar dit wordt aangeroepen,
+// dus de tekening loopt in een vloeiende, herhalende cyclus van links naar
+// rechts — hetzelfde idee als de vorige skateboard-animatie (altijd in
+// beweging zolang er iets laadt), maar dan als een zichzelf tekenende
+// havenschets i.p.v. een kickflip.
 function qtSkateLoaderHtml(text){
   return '<div class="qt-skate-wrap">'
     + '<div class="qt-skate-stage">'
-    +   '<div class="qt-skate-shadow"></div>'
-    +   '<div class="qt-skate-board">🛹</div>'
+    + '<svg viewBox="0 0 860 300" xmlns="http://www.w3.org/2000/svg">'
+      // Kraan 1 (links, hoogste)
+    + '<path class="qt-draw-path qt-draw-p1" d="M70,285 L70,35 M70,35 L145,95 M70,35 L35,95 M38,95 L100,62 M50,240 L45,285 M90,240 L95,285 M48,240 L92,240"/>'
+      // Pakhuis met zigzag-dak + torentje
+    + '<path class="qt-draw-path qt-draw-p2" d="M165,250 L165,285 M165,250 L190,220 L215,250 L240,220 L265,250 L290,220 L315,250 M315,250 L315,285 M165,285 L315,285 M200,285 L200,255 L215,255 L215,285 M340,285 L340,190 M330,190 L350,190 M335,175 L345,175"/>'
+      // Kraan 2
+    + '<path class="qt-draw-path qt-draw-p3" d="M475,285 L475,90 M475,90 L520,130 M475,90 L440,130 M448,130 L505,105 M462,255 L458,285 M488,255 L492,285 M460,255 L490,255"/>'
+      // Kraan 3
+    + '<path class="qt-draw-path qt-draw-p4" d="M580,285 L580,95 M580,95 L625,133 M580,95 L545,133 M552,133 L610,110 M567,255 L563,285 M593,255 L597,285 M565,255 L595,255"/>'
+      // Antwerpse skyline met kathedraaltoren
+    + '<path class="qt-draw-path qt-draw-p5" d="M640,285 L640,230 L655,230 L655,285 M660,285 L660,210 L672,210 L672,285 M680,285 L680,180 L692,180 L692,285 M700,150 L706,140 L712,150 M706,140 L706,55 M700,150 L712,150 L708,90 L716,90 L712,150 M702,60 L710,60 L706,38 Z M760,285 L760,240 L775,240 L775,285 M780,285 L780,200 L795,200 L795,285 M800,285 L800,250 L815,250 L815,285 M820,285 L820,220 L835,220 L835,285 M840,285 L840,260 L855,260 L855,285"/>'
+      // Waterlijn
+    + '<path class="qt-draw-path qt-draw-p6" d="M20,292 L120,292 M170,296 L260,296 M330,292 L420,292 M470,296 L560,296 M610,292 L700,292 M740,296 L830,296"/>'
+    + '</svg>'
     + '</div>'
     + (text ? '<div class="qt-skate-text">' + text + '</div>' : '')
     + '</div>';
@@ -3921,6 +3932,11 @@ function qtSkateLoaderHtml(text){
         <div class="varia-tile-lbl">Axxes</div>
         <div class="varia-tile-sub" id="vtSub-axxes">Opnames</div>
       </div>
+      <div class="varia-tile" id="vt-zangarch" onclick="variaOpen('zangarch')">
+        <div class="varia-tile-ic"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#0a0a0a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/><path d="M8.5 21h7"/><circle cx="12" cy="7.5" r="1"/></svg></div>
+        <div class="varia-tile-lbl">Zanglessen</div>
+        <div class="varia-tile-sub" id="vtSub-zangarch">Opgenomen nummers</div>
+      </div>
     </div>
 
     <!-- DETAIL VIEWS — worden getoond als tile aangeklikt -->
@@ -4176,6 +4192,10 @@ function qtSkateLoaderHtml(text){
       </div>
       <div id="subtab-axxes" style="display:none">
         <div id="axxesContent"></div>
+        <div style="height:28px"></div>
+      </div>
+      <div id="subtab-zangarch" style="display:none">
+        <div id="zangarchContent"></div>
         <div style="height:28px"></div>
       </div>
     </div>
@@ -15196,9 +15216,9 @@ function getIngredientsForDay(date) {
 var variaCurrentTab = null;
 var VARIA_LABELS = {
   noco:'📝 Notities',
-  shop:'🛒 Boodschappen', todo:'✅ To do', media:'📺 Media',
+  shop:'🛒 Boodschappen', media:'📺 Media',
   events:'🎭 Activiteiten', favs:'⭐ Receptfavorieten',
-  realestate:'🏠 Real Estate', axxes:'🎙️ Axxes'
+  realestate:'🏠 Real Estate', axxes:'🎙️ Axxes', zangarch:'🎤 Zanglessen'
 };
 
 function variaOpen(name) {
@@ -15209,7 +15229,7 @@ function variaOpen(name) {
   if(grid) grid.style.display = 'none';
   if(detail) { detail.style.display = 'flex'; detail.style.flexDirection = 'column'; detail.style.flex = '1'; detail.style.overflowY = 'auto'; }
   // Toon juiste subtab
-  var subs = ['noco','shop','media','events','favs','realestate','axxes','progress'];
+  var subs = ['noco','shop','media','events','favs','realestate','axxes','progress','zangarch'];
   subs.forEach(function(s){
     var el = document.getElementById('subtab-'+s);
     if(el) el.style.display = s===name ? 'block' : 'none';
@@ -15254,6 +15274,7 @@ function variaOpen(name) {
   else if(name==='realestate') { renderRealEstate(); reFetchLiveListings(); }
   else if(name==='axxes') renderAxxes();
   else if(name==='progress') { renderProgress(); }
+  else if(name==='zangarch') renderZangArchTab();
 }
 
 function variaBack() {
@@ -15263,7 +15284,7 @@ function variaBack() {
   if(grid) grid.style.display = 'grid';
   if(detail) detail.style.display = 'none';
   // Alle actieve tiles resetten
-  ['noco','shop','media','events','favs','realestate','axxes','progress'].forEach(function(s){
+  ['noco','shop','media','events','favs','realestate','axxes','progress','zangarch'].forEach(function(s){
     var t = document.getElementById('vt-'+s);
     if(t) t.classList.remove('vt-active');
   });
@@ -16088,6 +16109,299 @@ function vnClose() {
   vnActive = false;
   var m = document.getElementById('voiceNoteModal');
   if(m) m.classList.remove('open');
+}
+
+// ═══ ZANGLESSEN-ARCHIEF (Varia) — opgenomen nummers van repetities, met meerdere
+// versies per nummer, elk met eigen datum + commentaar. Audio wordt net als bij
+// notitie-bijlagen opgeslagen via Netlify Blobs (note-attachment.js) — geen nieuwe
+// Netlify-functie nodig, wel dezelfde grens van ~5 MB per opname.
+var ZANGARCH_SONGS = JSON.parse(localStorage.getItem('wf_zangarch_songs') || '[]');
+function zangarchSave(){ localStorage.setItem('wf_zangarch_songs', JSON.stringify(ZANGARCH_SONGS)); }
+
+var zangarchPendingUpload = null;   // {key,filename,mimetype,size} van de laatst geüploade audio in het open formulier
+var zangarchPickerSelected = [];    // geselecteerde versie-id's in de versie-kiezer, in klikvolgorde
+var zangarchQueue = [];             // [{songId,versionId}] — huidige afspeel-wachtrij
+var zangarchQueueIndex = 0;
+
+function renderZangArchTab(){
+  var c = document.getElementById('zangarchContent');
+  if(!c) return;
+  var h = '<div style="padding:14px 14px 6px">'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'
+    + '<button class="gn-add-btn" onclick="zangarchOpenNewSongForm()">+ Nieuw nummer</button>'
+    + '<button class="gn-add-btn" style="background:#3a8acc" onclick="zangarchOpenExistingSongPicker()">+ Bestaand nummer</button>'
+    + '</div>'
+    + '<button onclick="zangarchPlayAllLatest()" style="width:100%;background:var(--terra);color:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;letter-spacing:.5px;padding:11px;cursor:pointer;margin-bottom:14px"'+(ZANGARCH_SONGS.length?'':' disabled')+'>▶ Beluister alle laatste versies</button>'
+    + '</div>';
+
+  if(!ZANGARCH_SONGS.length){
+    h += '<div style="text-align:center;padding:40px 20px;color:var(--stone2);font-family:var(--cond);font-size:11px;letter-spacing:1px">Nog geen nummers opgenomen.</div>';
+  } else {
+    h += '<div style="padding:0 14px 14px">';
+    ZANGARCH_SONGS.forEach(function(song){
+      var versions = (song.versions||[]).slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+      var latest = versions[0];
+      h += '<div class="gn-card" style="cursor:pointer;margin-bottom:10px" onclick="zangarchOpenVersionPicker(\''+song.id+'\')">'
+        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
+        + '<div style="flex:1;min-width:0">'
+        + '<div style="font-family:var(--grotesk);font-weight:700;font-size:14px;color:#2c1208">'+(song.title||'').replace(/</g,'&lt;')+'</div>'
+        + '<div style="font-family:var(--cond);font-size:10px;color:var(--stone2);margin-top:2px">'+[song.uitvoerder,song.toonaard].filter(Boolean).join(' · ').replace(/</g,'&lt;')+'</div>'
+        + '</div>'
+        + '<div style="text-align:right;flex-shrink:0">'
+        + '<div style="font-family:var(--grotesk);font-size:10px;font-weight:700;color:var(--terra)">'+versions.length+' versie'+(versions.length===1?'':'s')+'</div>'
+        + (latest ? '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2)">laatste: '+latest.date+'</div>' : '')
+        + '</div>'
+        + '</div>'
+        + '</div>';
+    });
+    h += '</div>';
+  }
+  c.innerHTML = h;
+}
+
+function zangarchCloseModal(){
+  var el = document.getElementById('zangarchModal');
+  if(el) el.remove();
+}
+
+// ── Nieuw nummer toevoegen (titel + uitvoerder + toonaard + eerste versie) ──
+function zangarchOpenNewSongForm(){
+  zangarchPendingUpload = null;
+  var html = ''
+    + '<div id="zangarchModal" style="position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.75);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)zangarchCloseModal()">'
+    + '<div style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:16px;box-shadow:4px 4px 0 var(--brut-ink,#0a0a0a);max-width:380px;width:100%;padding:22px 20px;max-height:85vh;overflow-y:auto">'
+    + '<div style="font-family:var(--cond);font-size:17px;font-weight:900;color:var(--brut-ink,#0a0a0a);margin-bottom:14px">Nieuw nummer toevoegen</div>'
+    + '<input class="gn-add-title" id="zaTitle" placeholder="Titel" style="margin-bottom:8px">'
+    + '<input class="gn-add-title" id="zaUitvoerder" placeholder="Uitvoerder" style="margin-bottom:8px;font-weight:500">'
+    + '<input class="gn-add-title" id="zaToonaard" placeholder="Toonaard (bv. C majeur)" style="margin-bottom:8px;font-weight:500">'
+    + '<input type="date" class="gn-add-date" id="zaDate" style="width:100%;margin-bottom:8px;box-sizing:border-box" value="'+dk(new Date())+'">'
+    + '<button type="button" class="gn-filter-btn" onclick="document.getElementById(\'zaFile\').click()" style="width:100%;margin-bottom:6px">🎙️ Kies audiobestand</button>'
+    + '<input type="file" id="zaFile" accept="audio/*" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus\')">'
+    + '<div id="zaFileStatus" style="font-family:var(--cond);font-size:9px;color:var(--stone2);min-height:14px;margin-bottom:8px"></div>'
+    + '<textarea class="gn-edit-area" id="zaComment" placeholder="Commentaar bij deze opname (optioneel)" style="margin-bottom:12px"></textarea>'
+    + '<div style="display:flex;gap:8px">'
+    + '<button onclick="zangarchSubmitNewSong()" style="flex:1;background:var(--surf-teal,#1F7A6C);color:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px;cursor:pointer">Bewaren</button>'
+    + '<button onclick="zangarchCloseModal()" style="background:none;border:1.5px solid var(--sand3);color:var(--stone2);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px 16px;cursor:pointer">Annuleer</button>'
+    + '</div>'
+    + '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+function zangarchHandleFile(input, statusId){
+  var statusEl = document.getElementById(statusId);
+  var file = input.files && input.files[0];
+  if(!file) return;
+  if(statusEl) statusEl.textContent = '⏳ ' + file.name + ' uploaden...';
+  notitiesUploadFile(file).then(function(result){
+    zangarchPendingUpload = result;
+    if(statusEl) statusEl.textContent = '✅ ' + file.name + ' (' + notitiesFormatSize(result.size) + ')';
+  }).catch(function(e){
+    if(statusEl) statusEl.textContent = '⚠️ ' + e.message;
+  });
+}
+function zangarchSubmitNewSong(){
+  var title = ((document.getElementById('zaTitle')||{}).value || '').trim();
+  var uitvoerder = ((document.getElementById('zaUitvoerder')||{}).value || '').trim();
+  var toonaard = ((document.getElementById('zaToonaard')||{}).value || '').trim();
+  var date = (document.getElementById('zaDate')||{}).value || dk(new Date());
+  var comment = ((document.getElementById('zaComment')||{}).value || '').trim();
+  if(!title){ alert('Geef een titel op.'); return; }
+  if(!zangarchPendingUpload){ alert('Kies eerst een audiobestand.'); return; }
+  ZANGARCH_SONGS.push({
+    id: 'zsong_' + Date.now(),
+    title: title, uitvoerder: uitvoerder, toonaard: toonaard,
+    versions: [{
+      id: 'zver_' + Date.now(), date: date, comment: comment,
+      key: zangarchPendingUpload.key, filename: zangarchPendingUpload.filename,
+      mimetype: zangarchPendingUpload.mimetype, size: zangarchPendingUpload.size
+    }]
+  });
+  zangarchSave();
+  zangarchCloseModal();
+  renderZangArchTab();
+}
+
+// ── Bestaand nummer: eerst kiezen welk, dan enkel datum + bestand + commentaar ──
+function zangarchOpenExistingSongPicker(){
+  if(!ZANGARCH_SONGS.length){ alert('Er zijn nog geen nummers om een versie aan toe te voegen.'); return; }
+  var rows = ZANGARCH_SONGS.map(function(s){
+    return '<div onclick="zangarchOpenAddVersionForm(\''+s.id+'\')" style="padding:11px 4px;border-bottom:1px solid rgba(0,0,0,.06);cursor:pointer;font-family:var(--body);font-size:13px;color:#2c1208">'
+      + (s.title||'').replace(/</g,'&lt;') + (s.uitvoerder?' <span style="color:var(--stone2);font-size:11px">— '+s.uitvoerder.replace(/</g,'&lt;')+'</span>':'')
+      + '</div>';
+  }).join('');
+  var html = ''
+    + '<div id="zangarchModal" style="position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.75);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)zangarchCloseModal()">'
+    + '<div style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:16px;box-shadow:4px 4px 0 var(--brut-ink,#0a0a0a);max-width:380px;width:100%;padding:22px 20px;max-height:80vh;display:flex;flex-direction:column">'
+    + '<div style="font-family:var(--cond);font-size:17px;font-weight:900;color:var(--brut-ink,#0a0a0a);margin-bottom:12px">Welk nummer krijgt een nieuwe versie?</div>'
+    + '<div style="overflow-y:auto;flex:1">'+rows+'</div>'
+    + '<button onclick="zangarchCloseModal()" style="margin-top:14px;background:none;border:1.5px solid var(--sand3);color:var(--stone2);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px;cursor:pointer">Annuleer</button>'
+    + '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+function zangarchOpenAddVersionForm(songId){
+  zangarchCloseModal();
+  zangarchPendingUpload = null;
+  var song = ZANGARCH_SONGS.find(function(s){ return s.id===songId; });
+  if(!song) return;
+  var html = ''
+    + '<div id="zangarchModal" style="position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.75);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)zangarchCloseModal()">'
+    + '<div style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:16px;box-shadow:4px 4px 0 var(--brut-ink,#0a0a0a);max-width:380px;width:100%;padding:22px 20px;max-height:85vh;overflow-y:auto">'
+    + '<div style="font-family:var(--cond);font-size:17px;font-weight:900;color:var(--brut-ink,#0a0a0a);margin-bottom:4px">Nieuwe versie</div>'
+    + '<div style="font-family:var(--body);font-size:12px;color:var(--stone2);margin-bottom:14px">'+(song.title||'').replace(/</g,'&lt;')+'</div>'
+    + '<input type="date" class="gn-add-date" id="zaDate2" style="width:100%;margin-bottom:8px;box-sizing:border-box" value="'+dk(new Date())+'">'
+    + '<button type="button" class="gn-filter-btn" onclick="document.getElementById(\'zaFile2\').click()" style="width:100%;margin-bottom:6px">🎙️ Kies audiobestand</button>'
+    + '<input type="file" id="zaFile2" accept="audio/*" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus2\')">'
+    + '<div id="zaFileStatus2" style="font-family:var(--cond);font-size:9px;color:var(--stone2);min-height:14px;margin-bottom:8px"></div>'
+    + '<textarea class="gn-edit-area" id="zaComment2" placeholder="Commentaar bij deze opname (optioneel)" style="margin-bottom:12px"></textarea>'
+    + '<div style="display:flex;gap:8px">'
+    + '<button onclick="zangarchSubmitNewVersion(\''+song.id+'\')" style="flex:1;background:var(--surf-teal,#1F7A6C);color:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px;cursor:pointer">Bewaren</button>'
+    + '<button onclick="zangarchCloseModal()" style="background:none;border:1.5px solid var(--sand3);color:var(--stone2);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px 16px;cursor:pointer">Annuleer</button>'
+    + '</div>'
+    + '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+function zangarchSubmitNewVersion(songId){
+  var song = ZANGARCH_SONGS.find(function(s){ return s.id===songId; });
+  if(!song) return;
+  var date = (document.getElementById('zaDate2')||{}).value || dk(new Date());
+  var comment = ((document.getElementById('zaComment2')||{}).value || '').trim();
+  if(!zangarchPendingUpload){ alert('Kies eerst een audiobestand.'); return; }
+  song.versions = song.versions || [];
+  song.versions.push({
+    id: 'zver_' + Date.now(), date: date, comment: comment,
+    key: zangarchPendingUpload.key, filename: zangarchPendingUpload.filename,
+    mimetype: zangarchPendingUpload.mimetype, size: zangarchPendingUpload.size
+  });
+  zangarchSave();
+  zangarchCloseModal();
+  renderZangArchTab();
+}
+
+// ── Versie-kiezer per nummer (categorie) — meerdere versies selecteerbaar, in klikvolgorde ──
+function zangarchOpenVersionPicker(songId){
+  var song = ZANGARCH_SONGS.find(function(s){ return s.id===songId; });
+  if(!song) return;
+  zangarchPickerSelected = [];
+  var versions = (song.versions||[]).slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+  var rows = versions.map(function(v){
+    return '<label style="display:flex;align-items:flex-start;gap:9px;padding:9px 2px;border-bottom:1px solid rgba(0,0,0,.06);cursor:pointer">'
+      + '<input type="checkbox" value="'+v.id+'" onchange="zangarchTogglePickerVersion(\''+v.id+'\',this.checked)" style="width:17px;height:17px;flex-shrink:0;margin-top:2px;accent-color:var(--surf-teal,#1F7A6C)">'
+      + '<div style="flex:1"><div style="font-family:var(--grotesk);font-size:12.5px;font-weight:700;color:#2c1208">'+v.date+'</div>'
+      + (v.comment ? '<div style="font-family:var(--body);font-size:11px;color:var(--stone2);margin-top:1px">'+v.comment.replace(/</g,'&lt;')+'</div>' : '')
+      + '</div>'
+      + '<button type="button" onclick="event.preventDefault();event.stopPropagation();zangarchPlaySingle(\''+song.id+'\',\''+v.id+'\')" style="background:none;border:1.3px solid var(--sand3);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;flex-shrink:0">▶</button>'
+      + '</label>';
+  }).join('');
+  var html = ''
+    + '<div id="zangarchModal" style="position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.75);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)zangarchCloseModal()">'
+    + '<div style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:16px;box-shadow:4px 4px 0 var(--brut-ink,#0a0a0a);max-width:380px;width:100%;padding:22px 20px;max-height:82vh;display:flex;flex-direction:column">'
+    + '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:2px">'
+    + '<div style="flex:1;font-family:var(--cond);font-size:17px;font-weight:900;color:var(--brut-ink,#0a0a0a)">'+(song.title||'').replace(/</g,'&lt;')+'</div>'
+    + '<button type="button" onclick="zangarchDeleteSong(\''+song.id+'\')" title="Volledig nummer verwijderen" style="background:none;border:none;color:var(--terra);font-size:14px;cursor:pointer;flex-shrink:0">🗑</button>'
+    + '</div>'
+    + '<div style="font-family:var(--body);font-size:11px;color:var(--stone2);margin-bottom:12px">Kies welke versie(s) je wil beluisteren — in de volgorde die je aanvinkt.</div>'
+    + '<div style="overflow-y:auto;flex:1">'+rows+'</div>'
+    + '<button onclick="zangarchPlaySelected(\''+song.id+'\')" style="width:100%;margin-top:12px;background:var(--surf-teal,#1F7A6C);color:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px;cursor:pointer">▶ Afspelen</button>'
+    + '</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+function zangarchTogglePickerVersion(id, checked){
+  var i = zangarchPickerSelected.indexOf(id);
+  if(checked && i===-1) zangarchPickerSelected.push(id);
+  else if(!checked && i>-1) zangarchPickerSelected.splice(i,1);
+}
+function zangarchPlaySelected(songId){
+  if(!zangarchPickerSelected.length){ alert('Kies eerst minstens één versie.'); return; }
+  var queue = zangarchPickerSelected.map(function(vid){ return { songId: songId, versionId: vid }; });
+  zangarchCloseModal();
+  zangarchStartQueue(queue);
+}
+function zangarchPlaySingle(songId, versionId){
+  zangarchCloseModal();
+  zangarchStartQueue([{ songId: songId, versionId: versionId }]);
+}
+function zangarchDeleteSong(songId){
+  if(!confirm('Dit hele nummer met al zijn versies verwijderen?')) return;
+  ZANGARCH_SONGS = ZANGARCH_SONGS.filter(function(s){ return s.id!==songId; });
+  zangarchSave();
+  zangarchCloseModal();
+  renderZangArchTab();
+}
+
+// ── "Beluister alle laatste versies" — wachtrij van de nieuwste versie per nummer ──
+function zangarchPlayAllLatest(){
+  if(!ZANGARCH_SONGS.length) return;
+  var queue = ZANGARCH_SONGS.map(function(song){
+    var versions = (song.versions||[]).slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+    return versions.length ? { songId: song.id, versionId: versions[0].id } : null;
+  }).filter(Boolean);
+  zangarchStartQueue(queue);
+}
+
+// ── Afspeel-engine: wachtrij van {songId,versionId}, speelt na elkaar af ──
+function zangarchFindVersion(songId, versionId){
+  var song = ZANGARCH_SONGS.find(function(s){ return s.id===songId; });
+  if(!song) return null;
+  var v = (song.versions||[]).find(function(v){ return v.id===versionId; });
+  return v ? { song: song, version: v } : null;
+}
+function zangarchStartQueue(queue){
+  if(!queue || !queue.length) return;
+  zangarchQueue = queue;
+  zangarchQueueIndex = 0;
+  zangarchOpenPlayerModal();
+}
+function zangarchOpenPlayerModal(){
+  var html = ''
+    + '<div id="zangarchPlayerModal" class="photo-modal-backdrop open" onclick="if(event.target===this)zangarchClosePlayer()">'
+    + '<div class="photo-modal" style="max-width:380px;background:#1a1410;padding:0">'
+    + '<button class="photo-modal-close" onclick="zangarchClosePlayer()">✕</button>'
+    + '<div style="padding:34px 22px 26px;text-align:center">'
+    + '<div id="zaPlayerLabel" style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px"></div>'
+    + '<div id="zaPlayerTitle" style="font-family:var(--grotesk);font-size:16px;font-weight:700;color:#fff;margin-bottom:4px"></div>'
+    + '<div id="zaPlayerMeta" style="font-family:var(--cond);font-size:10px;color:rgba(255,255,255,.5);margin-bottom:4px"></div>'
+    + '<div id="zaPlayerComment" style="font-family:var(--body);font-size:11px;color:rgba(255,255,255,.65);margin-bottom:14px"></div>'
+    + '<audio id="zaPlayerAudio" controls autoplay style="width:100%" onended="zangarchQueueNext()"></audio>'
+    + '</div></div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+  zangarchLoadCurrentInPlayer();
+}
+function zangarchLoadCurrentInPlayer(){
+  var item = zangarchQueue[zangarchQueueIndex];
+  if(!item) { zangarchClosePlayer(); return; }
+  var found = zangarchFindVersion(item.songId, item.versionId);
+  if(!found) { zangarchQueueNext(); return; }
+  var labelEl = document.getElementById('zaPlayerLabel');
+  var titleEl = document.getElementById('zaPlayerTitle');
+  var metaEl = document.getElementById('zaPlayerMeta');
+  var commentEl = document.getElementById('zaPlayerComment');
+  var audioEl = document.getElementById('zaPlayerAudio');
+  if(labelEl) labelEl.textContent = zangarchQueue.length>1 ? ('Nummer ' + (zangarchQueueIndex+1) + ' van ' + zangarchQueue.length) : '';
+  if(titleEl) titleEl.textContent = found.song.title;
+  if(metaEl) metaEl.textContent = [found.song.uitvoerder, found.song.toonaard, found.version.date].filter(Boolean).join(' · ');
+  if(commentEl) commentEl.textContent = found.version.comment || '';
+  if(audioEl) {
+    audioEl.src = '/.netlify/functions/note-attachment?key=' + encodeURIComponent(found.version.key);
+    var p = audioEl.play();
+    if(p && p.catch) p.catch(function(){});
+  }
+}
+function zangarchQueueNext(){
+  if(zangarchQueueIndex < zangarchQueue.length - 1) {
+    zangarchQueueIndex++;
+    zangarchLoadCurrentInPlayer();
+  } else {
+    zangarchClosePlayer();
+  }
+}
+function zangarchClosePlayer(){
+  var el = document.getElementById('zangarchPlayerModal');
+  if(el) {
+    var audioEl = document.getElementById('zaPlayerAudio');
+    if(audioEl) { try { audioEl.pause(); } catch(e){} }
+    el.remove();
+  }
+  zangarchQueue = [];
+  zangarchQueueIndex = 0;
 }
 
 // ═══ AXXES — opnames & transcripties ═══
