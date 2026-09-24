@@ -2112,6 +2112,14 @@ input, select, textarea{
   flex-shrink:0;
   border-bottom:none;
 }
+/* Kleine versie-indicatie linksboven de banner — datum/tijdstip van de laatst
+   aangeleverde HTML-versie, telkens handmatig aangepast bij een nieuwe levering. */
+.oh-version-tag{
+  position:absolute;top:6px;left:20px;z-index:6;
+  font-family:var(--grotesk,sans-serif);font-size:8px;font-weight:600;
+  letter-spacing:.5px;color:rgba(255,255,255,.35);text-transform:lowercase;
+  pointer-events:none;
+}
 /* Subtiel lichtblauw gloed rechtsboven — het "lichtpunt" */
 .oh-hero::before {
   content:'';position:absolute;
@@ -3725,6 +3733,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
+    <div class="oh-version-tag" id="ohVersionTag">v24/09/26 · 12:05</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
