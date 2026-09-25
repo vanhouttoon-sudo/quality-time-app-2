@@ -6876,6 +6876,8 @@ function openEventModal(dateStr, isKidsOrEditId=null) {
   if(status) status.style.display = 'none';
 
   document.getElementById('eventModal').classList.add('open');
+  var modalInner = document.getElementById('eventModalInner');
+  if(modalInner) modalInner.scrollTop = 0; // altijd bovenaan starten, ongeacht de vorige scrollpositie
   setTimeout(() => document.getElementById('evTitle').focus(), 300);
 }
 
@@ -7318,6 +7320,27 @@ async function refreshGcalReadCache(silent=true) {
   if(!isGcalConnected()) return silent ? undefined : { ok:false, error:'Niet verbonden met Google Kalender.' };
   try {
     const parsed = await fetchGcalEventsFromApi();
+
+    // Verwijderde Google-afspraken ook effectief uit de cache halen: binnen
+    // hetzelfde tijdsbereik dat we net ophaalden, verwijderen we elke eerder
+    // gecachete Google-afspraak (herkenbaar aan gcalId) die niet meer in de
+    // nieuwste ophaling voorkomt — anders bleef een in Google verwijderde
+    // afspraak hier voor altijd staan. Afspraken zonder gcalId (bv. uit een
+    // losse ICS-feed) blijven altijd gewoon staan, die worden hier niet geraakt.
+    const now = new Date();
+    const rangeStart = new Date(now.getFullYear(), now.getMonth()-2, 1);
+    const rangeEnd = new Date(now.getFullYear(), now.getMonth()+6, 1);
+    Object.keys(icsCache).forEach(function(key){
+      const d = new Date(key + 'T12:00:00');
+      if(d < rangeStart || d > rangeEnd) return;
+      const freshIdsForDay = (parsed[key] || []).map(function(e){ return e.gcalId; }).filter(Boolean);
+      icsCache[key] = (icsCache[key] || []).filter(function(e){
+        if(!e.gcalId) return true;
+        return freshIdsForDay.indexOf(e.gcalId) > -1;
+      });
+      if(icsCache[key].length === 0) delete icsCache[key];
+    });
+
     // Samenvoegen met de bestaande icsCache (bv. als er ook nog een Outlook/ICS-link
     // actief is) i.p.v. die te overschrijven — events per dag worden samengevoegd,
     // met dubbels op titel+starttijd eruit gefilterd.
@@ -16699,7 +16722,7 @@ function zangarchOpenNewSongForm(){
     + '<input class="gn-add-title" id="zaToonaard" placeholder="Toonaard (bv. C majeur)" style="margin-bottom:8px;font-weight:500">'
     + '<input type="date" class="gn-add-date" id="zaDate" style="width:100%;margin-bottom:8px;box-sizing:border-box" value="'+dk(new Date())+'">'
     + '<button type="button" class="gn-filter-btn" onclick="document.getElementById(\'zaFile\').click()" style="width:100%;margin-bottom:6px">🎙️ Kies audiobestand</button>'
-    + '<input type="file" id="zaFile" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.mpeg,.mpga,.mpg,.mp4,.mov,.m4v,.3gp,.webm" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus\')">'
+    + '<input type="file" id="zaFile" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.oga,.flac,.wma,.aiff,.aif,.opus,.amr,.mpga,.mpeg,.mp4a,.weba,.caf" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus\')">'
     + '<div id="zaFileStatus" style="font-family:var(--cond);font-size:9px;color:var(--stone2);min-height:14px;margin-bottom:8px"></div>'
     + '<textarea class="gn-edit-area" id="zaComment" placeholder="Commentaar bij deze opname (optioneel)" style="margin-bottom:12px"></textarea>'
     + '<div style="display:flex;gap:8px">'
@@ -16772,7 +16795,7 @@ function zangarchOpenAddVersionForm(songId){
     + '<div style="font-family:var(--body);font-size:12px;color:var(--stone2);margin-bottom:14px">'+(song.title||'').replace(/</g,'&lt;')+'</div>'
     + '<input type="date" class="gn-add-date" id="zaDate2" style="width:100%;margin-bottom:8px;box-sizing:border-box" value="'+dk(new Date())+'">'
     + '<button type="button" class="gn-filter-btn" onclick="document.getElementById(\'zaFile2\').click()" style="width:100%;margin-bottom:6px">🎙️ Kies audiobestand</button>'
-    + '<input type="file" id="zaFile2" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.mpeg,.mpga,.mpg,.mp4,.mov,.m4v,.3gp,.webm" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus2\')">'
+    + '<input type="file" id="zaFile2" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.oga,.flac,.wma,.aiff,.aif,.opus,.amr,.mpga,.mpeg,.mp4a,.weba,.caf" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus2\')">'
     + '<div id="zaFileStatus2" style="font-family:var(--cond);font-size:9px;color:var(--stone2);min-height:14px;margin-bottom:8px"></div>'
     + '<textarea class="gn-edit-area" id="zaComment2" placeholder="Commentaar bij deze opname (optioneel)" style="margin-bottom:12px"></textarea>'
     + '<div style="display:flex;gap:8px">'
@@ -17054,7 +17077,7 @@ function renderAxxes(){
       '<div class="axxes-sub">Meetingopnames &amp; transcripties</div>' +
     '</div>' +
     '<a class="axxes-notebook-btn" href="'+AXXES_NOTEBOOKLM_URL+'" target="_blank" rel="noopener">🔗 Open in Google NotebookLM</a>' +
-    '<input type="file" id="axxesFileInput" accept="audio/*,video/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.mpeg,.mpga,.mpg,.mp4,.mov,.m4v,.3gp,.webm" multiple style="display:none" onchange="axxesAddFiles(this)">' +
+    '<input type="file" id="axxesFileInput" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.oga,.flac,.wma,.aiff,.aif,.opus,.amr,.mpga,.mpeg,.mp4a,.weba,.caf" multiple style="display:none" onchange="axxesAddFiles(this)">' +
     '<div class="axxes-upload-box" onclick="document.getElementById(\'axxesFileInput\').click()">' +
       '<div class="aui">⬆️</div>' +
       '<div class="aut">Opname of MP3 toevoegen</div>' +
