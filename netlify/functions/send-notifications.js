@@ -20,7 +20,7 @@
 // van de app zelf zetten — dat is publiek zichtbaar.
 // ═══════════════════════════════════════════════════════════════════
 
-const ONESIGNAL_APP_ID = 'b050e836-af04-491a-beeb-b1ac13a48359';
+const ONESIGNAL_APP_ID = 'c16ca1d9-af10-4fb3-aa7c-ca4ef37f9d78';
 const ONESIGNAL_REST_API_KEY = process.env.ONESIGNAL_REST_API_KEY;
 const ONESIGNAL_API = 'https://onesignal.com/api/v1/notifications';
 
