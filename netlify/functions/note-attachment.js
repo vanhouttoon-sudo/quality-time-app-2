@@ -1,71 +1,77 @@
 // netlify/functions/note-attachment.js
 //
-// Slaat bijlagen bij notities op in Netlify Blobs (ingebouwde, gratis opslag van
-// Netlify zelf — geen aparte database of API-key nodig, in tegenstelling tot de
-// andere functies zoals notitie-foto.js).
+// Slaat bijlagen op in Netlify Blobs (ingebouwde opslag van Netlify) en geeft
+// ze terug. Gebruikt voor bijlagen bij notities én voor de opnames in Zanglessen.
 //
-// POST  → upload een bestand, geeft een key terug om het later op te vragen
-// GET   → haal een bestand op via ?key=...
-// DELETE → verwijder een bijlage via ?key=...
+//   POST   → bestand als binaire inhoud in de body; naam in de header X-Filename
+//   GET    → ?key=...   haalt een bestand op
+//   DELETE → ?key=...   verwijdert een bestand
 //
-// Let op: Netlify-functies verwerken uploads synchroon; hou bijlagen bij voorkeur
-// onder ~4-5 MB (grotere bestanden vereisen een andere upload-strategie).
+// Dit is het MODERNE functieformaat (export default + Request/Response), net als
+// send-notifications.js. In dat formaat wordt Netlify Blobs automatisch
+// geconfigureerd. De vorige versie gebruikte het oudere Lambda-formaat zonder
+// connectLambda(event) aan te roepen, waardoor elke aanroep crashte.
+//
+// VEREIST: een package.json in de hoofdmap van de repo met de dependency
+// "@netlify/blobs" (zie meegeleverd package.json), zodat Netlify die installeert.
+//
+// Limiet: Netlify-functies accepteren max ~6 MB per aanvraag, dus houden we
+// ~5 MB per bestand aan.
 
-const { getStore } = require('@netlify/blobs');
+import { getStore } from '@netlify/blobs';
 
-exports.handler = async function (event) {
-  const store = getStore('note-attachments');
+const MAX_BYTES = 5.5 * 1024 * 1024;
 
+function json(obj, status) {
+  return new Response(JSON.stringify(obj), {
+    status: status || 200,
+    headers: { 'Content-Type': 'application/json' }
+  });
+}
+
+export default async (req) => {
   try {
-    if (event.httpMethod === 'POST') {
-      const body = JSON.parse(event.body || '{}');
-      const { filename, mimetype, dataBase64 } = body;
-      if (!filename || !dataBase64) {
-        return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'filename en dataBase64 zijn verplicht' }) };
-      }
-      const buffer = Buffer.from(dataBase64, 'base64');
-      // Ruwe limiet i.f.v. de synchrone Netlify-functie-omgeving
-      if (buffer.length > 5 * 1024 * 1024) {
-        return { statusCode: 413, body: JSON.stringify({ ok: false, error: 'Bestand is groter dan 5 MB — niet ondersteund via deze route.' }) };
-      }
-      var safeName = String(filename).replace(/[^a-zA-Z0-9._-]/g, '_');
-      var key = Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '_' + safeName;
-      await store.set(key, buffer, {
-        metadata: { filename: String(filename), mimetype: mimetype || 'application/octet-stream', size: buffer.length }
-      });
-      return {
-        statusCode: 200,
-        body: JSON.stringify({ ok: true, key: key, filename: filename, mimetype: mimetype || 'application/octet-stream', size: buffer.length })
-      };
+    const store = getStore('note-attachments');
+    const url = new URL(req.url);
+
+    if (req.method === 'POST') {
+      let filename = 'bestand';
+      try { filename = decodeURIComponent(req.headers.get('x-filename') || 'bestand'); } catch (e) {}
+      const mimetype = req.headers.get('content-type') || 'application/octet-stream';
+      const buf = await req.arrayBuffer();
+      if (!buf.byteLength) return json({ ok: false, error: 'Leeg bestand ontvangen' }, 400);
+      if (buf.byteLength > MAX_BYTES) return json({ ok: false, error: 'Bestand is groter dan ~5 MB' }, 413);
+      const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const key = Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '_' + safeName;
+      await store.set(key, buf, { metadata: { filename: filename, mimetype: mimetype, size: buf.byteLength } });
+      return json({ ok: true, key: key, filename: filename, mimetype: mimetype, size: buf.byteLength });
     }
 
-    if (event.httpMethod === 'GET') {
-      var qKey = event.queryStringParameters && event.queryStringParameters.key;
-      if (!qKey) return { statusCode: 400, body: 'key ontbreekt' };
-      var entry = await store.getWithMetadata(qKey, { type: 'arrayBuffer' });
-      if (!entry) return { statusCode: 404, body: 'Bijlage niet gevonden' };
-      var meta = entry.metadata || {};
-      return {
-        statusCode: 200,
+    if (req.method === 'GET') {
+      const key = url.searchParams.get('key');
+      if (!key) return new Response('key ontbreekt', { status: 400 });
+      const entry = await store.getWithMetadata(key, { type: 'arrayBuffer' });
+      if (!entry) return new Response('Bijlage niet gevonden', { status: 404 });
+      const meta = entry.metadata || {};
+      return new Response(entry.data, {
+        status: 200,
         headers: {
           'Content-Type': meta.mimetype || 'application/octet-stream',
-          'Content-Disposition': 'inline; filename="' + (meta.filename || qKey) + '"',
+          'Content-Disposition': "inline; filename*=UTF-8''" + encodeURIComponent(meta.filename || key),
           'Cache-Control': 'public, max-age=31536000, immutable'
-        },
-        body: Buffer.from(entry.data).toString('base64'),
-        isBase64Encoded: true
-      };
+        }
+      });
     }
 
-    if (event.httpMethod === 'DELETE') {
-      var dKey = event.queryStringParameters && event.queryStringParameters.key;
-      if (!dKey) return { statusCode: 400, body: JSON.stringify({ ok: false, error: 'key ontbreekt' }) };
-      await store.delete(dKey);
-      return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+    if (req.method === 'DELETE') {
+      const key = url.searchParams.get('key');
+      if (!key) return json({ ok: false, error: 'key ontbreekt' }, 400);
+      await store.delete(key);
+      return json({ ok: true });
     }
 
-    return { statusCode: 405, body: 'Method not allowed' };
+    return new Response('Method not allowed', { status: 405 });
   } catch (e) {
-    return { statusCode: 500, body: JSON.stringify({ ok: false, error: (e && e.message) || 'onbekende fout' }) };
+    return json({ ok: false, error: (e && e.message) || 'onbekende fout' }, 500);
   }
 };
