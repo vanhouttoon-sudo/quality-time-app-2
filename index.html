@@ -3647,89 +3647,145 @@ input, select, textarea{
 }
 .qt-skate-text{font-family:var(--cond);font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--stone2,#a08060);text-transform:uppercase;}
 
-/* ═══ ZANGLESSEN-ARCHIEF ═══ */
-.za-wrap{padding:14px;display:flex;flex-direction:column;gap:10px}
-.za-btn{font-family:var(--grotesk);font-size:11px;font-weight:700;letter-spacing:.3px;padding:11px 14px;border:2px solid var(--brut-ink,#0a0a0a);border-radius:12px;background:#fff;color:var(--brut-ink,#0a0a0a);cursor:pointer;box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a)}
-.za-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--brut-ink,#0a0a0a)}
-.za-btn:disabled{opacity:.38;cursor:default;box-shadow:none}
-.za-btn-dark{background:var(--brut-ink,#0a0a0a);color:#fff}
-.za-btn-terra{background:var(--terra,#c05818);color:#fff}
-.za-btn-teal{background:var(--surf-teal,#1F7A6C);color:#fff}
-.za-btn-sm{padding:6px 10px;font-size:10px;border-radius:9px;border-width:1.5px;box-shadow:none;flex-shrink:0}
-.za-full{width:100%}
-.za-empty{text-align:center;padding:26px 16px;color:var(--stone2,#c0a880);font-family:var(--cond);font-size:11px;letter-spacing:.5px;line-height:1.5}
-.za-card{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--brut-ink,#0a0a0a);border-radius:14px;box-shadow:3px 3px 0 var(--brut-ink,#0a0a0a);padding:12px 14px;cursor:pointer}
-.za-card-l{min-width:0;flex:1}
-.za-card-t{font-family:var(--grotesk);font-weight:700;font-size:14px;color:var(--ink,#2c1208)}
-.za-card-m{font-family:var(--cond);font-size:10px;color:var(--stone,#a08060);margin-top:2px}
-.za-card-r{text-align:right;flex-shrink:0}
-.za-card-n{font-family:var(--grotesk);font-size:10px;font-weight:700;color:var(--terra,#c05818)}
-.za-card-d{font-family:var(--cond);font-size:9px;color:var(--stone,#a08060);margin-top:2px}
+/* ═══ ZANGLESSEN-ARCHIEF ═══
+   Bouwt volledig voort op de bestaande onderdelen van de app: .oh-card, .oh-chip,
+   .axxes-upload-box, .axxes-list-lbl, .detail-sheet / .ds-* , .ge-btn, .ds-ev-edit,
+   .ds-event-row, .ds-ex-row. Hier staan enkel de kleine aanvullingen die er nog geen
+   equivalent voor hebben. Palet = "Cali Surf": teal, mint, koraal, zongeel. */
+.za-bd{ z-index:9600 !important; }
 
-.za-backdrop{position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.78);display:flex;align-items:flex-end;justify-content:center}
-.za-panel{width:100%;max-width:430px;max-height:90vh;overflow-y:auto;background:var(--sand,#f5ede0);border-top:3px solid var(--brut-ink,#0a0a0a);border-radius:20px 20px 0 0;padding:18px 16px 26px;box-sizing:border-box;-webkit-overflow-scrolling:touch}
-.za-top{display:flex;align-items:center;gap:6px}
-.za-h{font-family:var(--cond);font-size:18px;font-weight:900;color:var(--brut-ink,#0a0a0a);margin-bottom:6px}
-.za-hint{font-family:var(--body);font-size:11.5px;color:var(--stone,#a08060);margin:0 0 10px;line-height:1.45}
-.za-lbl{font-family:var(--grotesk);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--stone,#a08060);margin:10px 0 5px}
-.za-input{width:100%;padding:10px 12px;border:1.5px solid var(--sand3,#d8c8b0);border-radius:10px;font-family:var(--body);font-size:14px;background:#fff;color:var(--ink,#2c1208);box-sizing:border-box}
-.za-sep{height:1px;background:var(--sand3,#d8c8b0);margin:16px 0 4px}
-.za-status{font-family:var(--cond);font-size:11px;min-height:16px;margin-top:6px;word-break:break-word}
-.za-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.za-actions .za-btn{flex:1;min-width:110px}
-.za-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.za-chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--body);font-size:11px;background:#fff;border:1.3px solid var(--sand3,#d8c8b0);border-radius:20px;padding:5px 10px;color:var(--ink,#2c1208);text-decoration:none;max-width:100%}
-.za-x{color:var(--terra,#c05818);cursor:pointer;padding:0 2px}
-.za-ic{background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:10px;width:36px;height:36px;font-size:15px;cursor:pointer;flex-shrink:0;color:var(--brut-ink,#0a0a0a)}
-.za-ic-w{background:transparent;border-color:rgba(255,255,255,.5);color:#fff}
+/* Hoofdscherm */
+.za-btns{ margin:0 14px 14px; display:flex; flex-direction:column; gap:10px; }
+.za-pagebtn{
+  display:flex; align-items:center; justify-content:center; gap:8px; width:100%; box-sizing:border-box;
+  font-size:11px; padding:13px 12px; cursor:pointer; color:#fff; background:var(--surf-teal,#1F7A6C);
+}
+.za-pagebtn.za-sunbtn{ background:var(--surf-sun,#FFD166); color:var(--surf-teal-dark,#12463C); }
+.za-pagebtn:disabled{ opacity:.4; box-shadow:none !important; cursor:default; }
+.za-status:empty, .za-chips:empty{ display:none; }
+.za-big{ width:100%; padding:12px 10px !important; font-size:10px !important; letter-spacing:.8px !important; }
+.ge-btn.za-sun{
+  background:var(--surf-sun,#FFD166) !important; color:var(--surf-teal-dark,#12463C) !important;
+  border:1.5px solid var(--brut-ink,#0a0a0a) !important; border-radius:20px !important;
+  box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a) !important;
+}
+.ge-btn:disabled{ opacity:.4; box-shadow:none !important; cursor:default; }
+.za-list{ display:flex; flex-direction:column; }
+.za-list > .oh-card{ margin:0 14px 12px; }
+.za-list > .oh-card:nth-child(3n+1){ background:#fff7cf !important; }
+.za-list > .oh-card:nth-child(3n+2){ background:#e2fbfb !important; }
+.za-list > .oh-card:nth-child(3n+3){ background:#ffe8f5 !important; }
+.za-list > .oh-card:nth-child(odd){ transform:rotate(-.3deg); }
+.za-list > .oh-card:nth-child(even){ transform:rotate(.35deg); }
+.za-cat .oh-card-icon{ width:44px; height:44px; font-size:22px; }
+.za-cat .oh-card-title{ font-size:15px; }
+.za-cat .oh-card-sub{ color:var(--surf-teal,#1F7A6C); }
+.za-cat .oh-chip{
+  background:var(--surf-sun,#FFD166); color:var(--surf-teal-dark,#12463C);
+  box-shadow:1.5px 1.5px 0 var(--brut-ink,#0a0a0a); flex-shrink:0; align-self:flex-start; white-space:nowrap;
+}
 
-.za-vcard{background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:14px;padding:12px;margin-bottom:10px}
-.za-vtop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-.za-vdate{font-family:var(--grotesk);font-weight:700;font-size:13px;color:var(--ink,#2c1208)}
-.za-vfile{font-family:var(--cond);font-size:9.5px;color:var(--stone,#a08060);margin-top:2px;word-break:break-all}
-.za-vact{display:flex;gap:5px;flex-shrink:0}
-.za-vcomment{font-family:var(--body);font-size:12.5px;color:var(--ink,#2c1208);margin-top:8px;white-space:pre-wrap;line-height:1.45}
-.za-atts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.za-thumb{display:block;width:72px;height:72px;border-radius:10px;overflow:hidden;border:1.5px solid var(--sand3,#d8c8b0);background:#fff}
-.za-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.za-badge{font-family:var(--grotesk);font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:var(--terra,#c05818);color:#fff;border-radius:20px;padding:2px 7px;margin-left:6px;vertical-align:middle}
-.za-det{margin-top:8px;font-family:var(--body);font-size:12px}
-.za-det summary{cursor:pointer;color:var(--stone,#a08060);font-family:var(--grotesk);font-size:11px;font-weight:700}
-.za-note{border-left:3px solid var(--terra,#c05818);padding:3px 0 3px 9px;margin-top:8px}
-.za-note-m{font-family:var(--cond);font-size:9.5px;color:var(--stone,#a08060)}
-.za-note-t{font-family:var(--body);font-size:12.5px;color:var(--ink,#2c1208);white-space:pre-wrap;line-height:1.4}
+/* Tag "laatste" — zelfde look als de week-tag op de zangpagina */
+.za-tag{
+  display:inline-block; background:var(--surf-sun,#FFD166); color:var(--surf-teal-dark,#12463C);
+  border:1.5px solid var(--brut-ink,#0a0a0a); border-radius:20px; padding:1px 8px; margin-left:8px;
+  box-shadow:1.5px 1.5px 0 var(--brut-ink,#0a0a0a); vertical-align:middle;
+  font-family:var(--grotesk); font-size:7.5px; font-weight:700; letter-spacing:1.3px; text-transform:uppercase;
+}
+.ds-ev-edit.za-danger{ color:var(--terra,#c05818) !important; }
 
-.za-ccat{background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:14px;padding:10px 12px;margin-bottom:10px}
-.za-ccat-h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:4px}
-.za-vrow{display:flex;gap:10px;align-items:center;padding:9px 2px;border-top:1px solid var(--sand2,#ece0d0);cursor:pointer;font-family:var(--body);font-size:13px;color:var(--ink,#2c1208)}
-.za-vrow-c{font-size:11px;color:var(--stone,#a08060);margin-top:1px}
-.za-circle{width:26px;height:26px;border-radius:50%;border:2px solid var(--brut-ink,#0a0a0a);background:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--grotesk);font-size:11px;font-weight:700;flex-shrink:0;color:#fff}
-.za-circle.on{background:var(--terra,#c05818)}
-.za-stickybar{position:sticky;bottom:-26px;margin:6px -16px -26px;padding:12px 16px 26px;background:var(--sand,#f5ede0);border-top:2px solid var(--brut-ink,#0a0a0a);display:flex;flex-direction:column;gap:8px}
-.za-count{font-family:var(--grotesk);font-size:11px;font-weight:700;color:var(--ink,#2c1208)}
+/* Formulieren (in dezelfde sheets en witte sectiekaartjes als de rest van de app) */
+.za-lbl{
+  font-family:var(--grotesk); font-size:8px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+  color:#a08060; margin:12px 0 6px;
+}
+.ds-section > .za-lbl:first-of-type{ margin-top:2px; }
+.za-input{ width:100%; box-sizing:border-box; padding:9px 13px; font-family:var(--body); font-size:14px; color:var(--ink,#2c1208); }
+.za-input.za-b{ font-family:var(--grotesk); font-size:13.5px; font-weight:700; }
+textarea.za-input{ resize:none; line-height:1.45; }
+.za-status{ font-family:var(--body); font-size:11.5px; margin-top:7px; word-break:break-word; }
+.za-hint{ font-family:var(--body); font-size:11.5px; color:#a08060; margin-top:10px; line-height:1.45; }
+.za-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.oh-chip.za-chipx{ display:inline-flex; align-items:center; gap:5px; text-decoration:none; max-width:100%; }
+.za-x{ color:var(--terra,#c05818); cursor:pointer; padding:0 2px; }
+.za-foot{ width:calc(100% - 36px); margin:10px 18px 0; }
+.za-none{ font-family:var(--body); font-size:12px; font-style:italic; color:var(--stone2); padding:4px 0; }
 
-.za-pl{background:#1a1410;color:#fff;border-top-color:var(--gold,#d4a030)}
-.za-pl-cnt{flex:1;font-family:var(--cond);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55)}
-.za-pl-now{text-align:center;padding:10px 4px 6px}
-.za-pl-title{font-family:var(--grotesk);font-size:19px;font-weight:700;color:#fff;line-height:1.2}
-.za-pl-meta{font-family:var(--cond);font-size:11px;color:rgba(255,255,255,.55);margin-top:4px}
-.za-pl-comment{font-family:var(--body);font-size:12px;color:rgba(255,255,255,.7);margin-top:8px;white-space:pre-wrap}
-.za-pl-seek{display:flex;align-items:center;gap:8px;margin:12px 0 4px;font-family:var(--cond);font-size:11px;color:rgba(255,255,255,.7)}
-.za-seek{flex:1;accent-color:var(--gold,#d4a030);height:28px}
-.za-pl-ctl{display:flex;justify-content:space-between;align-items:center;margin:6px 0 4px}
-.za-cb{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.8);background:transparent;color:#fff;font-size:15px;font-family:var(--grotesk);font-weight:700;cursor:pointer}
-.za-cb-main{width:58px;height:58px;background:var(--gold,#d4a030);border-color:var(--gold,#d4a030);color:#1a1410;font-size:22px}
-.za-pl-status{min-height:18px;text-align:center;font-family:var(--cond);font-size:11px;margin:4px 0 2px}
-.za-pl-sec{font-family:var(--grotesk);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold,#d4a030);margin:16px 0 8px}
-.za-pl-ta{font-size:13px;margin-bottom:8px}
-.za-pl-notes .za-note{border-left-color:var(--gold,#d4a030)}
-.za-pl-notes .za-note-m{color:rgba(255,255,255,.5)}
-.za-pl-notes .za-note-t{color:#fff}
-.za-plrow{display:flex;gap:10px;align-items:center;padding:9px 6px;border-top:1px solid rgba(255,255,255,.1);cursor:pointer}
-.za-plrow.on{background:rgba(212,160,48,.16);border-radius:10px}
-.za-plnum{width:22px;text-align:center;font-family:var(--grotesk);font-size:12px;font-weight:700;color:var(--gold,#d4a030);flex-shrink:0}
-.za-plt{font-family:var(--grotesk);font-size:13px;font-weight:700;color:#fff}
-.za-plm{font-family:var(--cond);font-size:10px;color:rgba(255,255,255,.5)}
+/* Versie-rijen in de categorie-sheet */
+.ds-ev-time{ line-height:1.25; }
+.za-vcomment{ font-family:var(--body); font-size:13px; color:var(--ink,#2c1208); margin-top:6px; line-height:1.45; white-space:pre-wrap; }
+.za-atts{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+.za-thumb{
+  display:block; width:64px; height:64px; overflow:hidden; background:#fff;
+  border:1.5px solid var(--brut-ink,#0a0a0a); border-radius:6px; box-shadow:1.5px 1.5px 0 var(--brut-ink,#0a0a0a);
+}
+.za-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+.za-det{ margin-top:8px; }
+.za-det summary{
+  cursor:pointer; font-family:var(--grotesk); font-size:8px; font-weight:700; letter-spacing:1.5px;
+  text-transform:uppercase; color:#a08060; padding:3px 0;
+}
+.za-det .ds-event-row{ padding:8px 2px !important; }
+.za-note-t{ font-family:var(--body); font-size:13px; color:var(--ink,#2c1208); line-height:1.4; white-space:pre-wrap; }
+
+/* Lijst samenstellen */
+.za-sec-h{ display:flex; justify-content:space-between; align-items:center; gap:8px; border-bottom:1px solid var(--sand3); padding-bottom:6px; margin-bottom:4px; }
+.za-sec-h .ds-section-lbl{ border:none !important; margin:0 !important; padding:0 !important; flex:1; min-width:0; }
+.za-pick{ display:flex; gap:12px; align-items:center; padding:10px 2px; border-bottom:1.5px solid var(--sand3); cursor:pointer; }
+.za-pick:last-child{ border-bottom:none; }
+.za-pick-d{ font-family:var(--cond); font-size:15px; font-weight:900; color:var(--ink,#2c1208); }
+.za-pick-c{ font-family:var(--body); font-size:11.5px; color:#a08060; margin-top:2px; line-height:1.35; }
+.za-circle{
+  width:28px; height:28px; border-radius:50%; flex-shrink:0; background:#fff; color:#fff;
+  border:1.5px solid var(--brut-ink,#0a0a0a); box-shadow:1.5px 1.5px 0 var(--brut-ink,#0a0a0a);
+  display:flex; align-items:center; justify-content:center; font-family:var(--grotesk); font-size:11px; font-weight:700;
+}
+.za-circle.on{ background:var(--surf-teal,#1F7A6C); }
+.za-stickybar{
+  position:sticky; bottom:-14px; margin:8px -18px -14px; padding:12px 18px 16px;
+  background:var(--cream,#e9f1e4); border-top:1.5px solid var(--brut-ink,#0a0a0a);
+  display:flex; flex-direction:column; gap:8px; z-index:2;
+}
+.za-count{ font-family:var(--grotesk); font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#a08060; }
+.za-inbar{ width:100% !important; margin:0 !important; }
+
+/* Speler — zelfde "Cali Surf"-songkaart als op de zangpagina */
+.ds-section.za-now{ background:var(--surf-mint,#cdf3e8) !important; }
+.za-now .ds-section-lbl{ color:var(--surf-teal-dark,#12463C); opacity:.75; border-bottom-color:rgba(18,70,60,.25); }
+.za-song{ font-family:var(--serif); font-style:italic; font-weight:700; font-size:24px; line-height:1.15; color:var(--surf-teal-dark,#12463C); margin:2px 0 5px; }
+.za-song-meta{ font-family:var(--body); font-size:12px; color:var(--surf-teal,#1F7A6C); }
+.za-song-comment{ font-family:var(--body); font-size:12.5px; color:var(--surf-teal-dark,#12463C); opacity:.85; margin-top:8px; line-height:1.45; white-space:pre-wrap; }
+.za-seekrow{ display:flex; align-items:center; gap:10px; margin:16px 0 12px; font-family:var(--grotesk); font-size:10px; font-weight:700; color:var(--surf-teal-dark,#12463C); }
+.za-seek{
+  -webkit-appearance:none; appearance:none; flex:1; height:10px !important; padding:0 !important; margin:0; outline:none; cursor:pointer;
+  border:1.5px solid var(--brut-ink,#0a0a0a) !important; border-radius:6px !important; box-shadow:none !important;
+  background:linear-gradient(90deg,var(--surf-teal,#1F7A6C) var(--val,0%),#fff var(--val,0%)) !important;
+}
+.za-seek::-webkit-slider-thumb{
+  -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background:var(--surf-sun,#FFD166);
+  border:1.5px solid var(--brut-ink,#0a0a0a); box-shadow:1.5px 1.5px 0 var(--brut-ink,#0a0a0a);
+}
+.za-seek::-moz-range-thumb{
+  width:20px; height:20px; border-radius:50%; background:var(--surf-sun,#FFD166);
+  border:1.5px solid var(--brut-ink,#0a0a0a); box-shadow:1.5px 1.5px 0 var(--brut-ink,#0a0a0a);
+}
+.za-ctl{ display:flex; justify-content:space-between; align-items:center; gap:6px; }
+.za-cb{
+  width:42px; height:42px; padding:0 !important; flex-shrink:0; font-size:14px !important; letter-spacing:0 !important;
+  border-radius:50% !important; border:1.5px solid var(--brut-ink,#0a0a0a) !important; box-shadow:1.5px 1.5px 0 var(--brut-ink,#0a0a0a) !important;
+  background:var(--surf-teal,#1F7A6C) !important; color:#fff; cursor:pointer;
+}
+.za-cb.w{ background:#fff !important; color:var(--brut-ink,#0a0a0a); font-size:11px !important; }
+.za-cb.main{
+  width:60px; height:60px; font-size:22px !important; color:var(--brut-ink,#0a0a0a);
+  background:var(--surf-sun,#FFD166) !important; box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a) !important;
+}
+.za-plstatus:empty{ display:none; }
+.za-plstatus{ text-align:center; margin-top:10px; font-family:var(--body); font-size:12px; color:var(--surf-teal,#1F7A6C); }
+.za-sub{ font-family:var(--grotesk); font-size:8px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#a08060; margin:14px 0 2px; }
+.za-plrow{ cursor:pointer; }
+.ds-ex-row.za-plrow.on{ background:#fff4cf !important; border-radius:6px !important; margin:0 -6px; padding:9px 6px !important; }
+.za-plbtn{ flex-shrink:0; }
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -3827,7 +3883,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v28/09/26 · 09:53</div>
+    <div class="oh-version-tag" id="ohVersionTag">v28/09/26 · 14:43</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -16758,6 +16814,11 @@ function zangarchSave(){ localStorage.setItem('wf_zangarch_songs', JSON.stringif
 // ── Hulpfuncties ──
 function zaEsc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function zaFmtDate(d){ if(!d) return ''; var x = new Date(d + 'T12:00:00'); return isNaN(x.getTime()) ? d : x.toLocaleDateString('nl-BE',{day:'numeric',month:'short',year:'numeric'}); }
+function zaFmtDateParts(d){
+  var x = new Date((d || '') + 'T12:00:00');
+  if(isNaN(x.getTime())) return { dm: d || '', y: '' };
+  return { dm: x.toLocaleDateString('nl-BE',{day:'numeric',month:'short'}), y: String(x.getFullYear()) };
+}
 function zaFmtTime(sec){ sec = Math.max(0, Math.floor(sec || 0)); var m = Math.floor(sec/60), s = sec % 60; return m + ':' + (s < 10 ? '0' : '') + s; }
 function zaFmtStamp(iso){ var d = new Date(iso); return isNaN(d.getTime()) ? '' : d.toLocaleString('nl-BE',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }
 function zaSongById(id){ return ZANGARCH_SONGS.find(function(s){ return s.id === id; }); }
@@ -16788,17 +16849,26 @@ function zaDeleteBlob(key){
 }
 function zaSetStatus(el, text, color){ if(!el) return; el.textContent = text; el.style.color = color || ''; }
 
-// ── Modal ──
-function zaOpenModal(html){
+// ── Sheet: exact dezelfde bottom-sheet als de rest van de app (.detail-sheet / .ds-*) ──
+function zaOpenSheet(kicker, title, bodyHtml, footerHtml){
   zaCloseModal();
   var wrap = document.createElement('div');
   wrap.id = 'zaModal';
-  wrap.className = 'za-backdrop';
+  wrap.className = 'detail-sheet-backdrop za-bd';
+  wrap.style.display = 'flex';
   wrap.onclick = function(e){ if(e.target === wrap) zaCloseModal(); };
-  wrap.innerHTML = '<div class="za-panel" id="zaPanel">' + html + '</div>';
+  wrap.innerHTML = '<div class="detail-sheet" id="zaPanel"><div class="ds-drag"></div>'
+    + '<div class="ds-header"><div class="ds-header-left"><div class="ds-kicker">' + zaEsc(kicker) + '</div>'
+    + '<div class="ds-title">' + zaEsc(title) + '</div></div>'
+    + '<button class="ds-close" title="Sluiten" onclick="zaCloseModal()"></button></div>'
+    + '<div class="ds-body" id="zaBody">' + bodyHtml + '</div>'
+    + (footerHtml || '') + '</div>';
   document.body.appendChild(wrap);
+  void wrap.offsetWidth;            // reflow, zodat de slide-up-animatie afspeelt
+  wrap.classList.add('open');
 }
 function zaCloseModal(){ var el = document.getElementById('zaModal'); if(el) el.remove(); }
+var ZA_FOOT_CLOSE = '<button class="ds-close-btn" onclick="zaCloseModal()">Sluiten</button>';
 
 // ═══════════════════════════════════════════════════════════════
 // HOOFDSCHERM
@@ -16809,25 +16879,28 @@ function renderZangArchTab(){
   var songs = zaSongsSorted();
   var withVer = songs.filter(function(s){ return (s.versions || []).length; });
   var dis = withVer.length ? '' : ' disabled';
-  var h = '<div class="za-wrap">'
-    + '<button class="za-btn za-btn-dark za-full" onclick="zaOpenNewCategory()">+ Nieuw nummer (categorie)</button>'
-    + '<button class="za-btn za-btn-terra za-full" onclick="zaPlayAllLatest()"' + dis + '>▶ Beluister alle laatste versies</button>'
-    + '<button class="za-btn za-full" onclick="zaOpenCompose()"' + dis + '>📋 Stel lijst samen</button>';
+  var h = '<div class="axxes-upload-box" onclick="zaOpenNewCategory()">'
+    + '<div class="aui">🎵</div><div class="aut">Nieuw nummer toevoegen</div>'
+    + '<div class="aus">Elk nummer is een categorie voor al je versies</div></div>'
+    + '<div class="za-btns">'
+    + '<button class="za-pagebtn za-teal" onclick="zaPlayAllLatest()"' + dis + '>▶ Beluister alle laatste versies</button>'
+    + '<button class="za-pagebtn za-sunbtn" onclick="zaOpenCompose()"' + dis + '>📋 Stel lijst samen</button></div>';
   if(!songs.length){
-    h += '<div class="za-empty">Nog geen nummers. Elk nummer is een categorie waarin je telkens nieuwe versies onderbrengt.</div>';
+    h += '<div class="axxes-empty">Nog geen nummers toegevoegd.<br>Tik hierboven op "Nieuw nummer toevoegen".</div>';
   } else {
+    h += '<div class="axxes-list-lbl">Nummers · ' + songs.length + '</div><div class="za-list">';
     songs.forEach(function(s){
       var vers = zaVersionsSorted(s);
       var latest = vers[0];
-      h += '<div class="za-card" onclick="zaOpenCategory(\'' + s.id + '\')">'
-        + '<div class="za-card-l"><div class="za-card-t">' + zaEsc(s.title) + '</div>'
-        + '<div class="za-card-m">' + zaEsc([s.uitvoerder, s.toonaard].filter(Boolean).join(' · ')) + '</div></div>'
-        + '<div class="za-card-r"><div class="za-card-n">' + vers.length + ' versie' + (vers.length === 1 ? '' : 's') + '</div>'
-        + (latest ? '<div class="za-card-d">laatste: ' + zaEsc(zaFmtDate(latest.date)) + '</div>' : '<div class="za-card-d">nog geen versie</div>')
-        + '</div></div>';
+      h += '<div class="oh-card za-cat" onclick="zaOpenCategory(\'' + s.id + '\')">'
+        + '<div class="oh-card-icon">🎵</div>'
+        + '<div class="oh-card-body"><div class="oh-card-label">' + zaEsc([s.uitvoerder, s.toonaard].filter(Boolean).join(' · ') || 'Nummer') + '</div>'
+        + '<div class="oh-card-title">' + zaEsc(s.title) + '</div>'
+        + '<div class="oh-card-sub">' + (latest ? 'Laatste: ' + zaEsc(zaFmtDate(latest.date)) : 'Nog geen versie') + '</div></div>'
+        + '<span class="oh-chip">' + vers.length + ' versie' + (vers.length === 1 ? '' : 's') + '</span></div>';
     });
+    h += '</div>';
   }
-  h += '</div>';
   c.innerHTML = h;
 }
 
@@ -16878,7 +16951,7 @@ function zaRenderAttList(){
   var el = document.getElementById('zaAttList');
   if(!el) return;
   el.innerHTML = zaForm.atts.map(function(a, i){
-    return '<span class="za-chip">' + notitiesFileIcon(a.type, a.name) + ' ' + zaEsc(a.name)
+    return '<span class="oh-chip za-chipx">' + notitiesFileIcon(a.type, a.name) + ' ' + zaEsc(a.name)
       + ' <b class="za-x" onclick="zaRemoveAtt(' + i + ')">✕</b></span>';
   }).join('');
 }
@@ -16886,13 +16959,13 @@ function zaRemoveAtt(i){ zaForm.atts.splice(i, 1); zaRenderAttList(); }
 
 function zaAudioSectionHtml(required){
   return '<div class="za-lbl">Audiobestand' + (required ? ' *' : '') + '</div>'
-    + '<button type="button" class="za-btn za-full" onclick="document.getElementById(\'zaAudioFile\').click()">🎙️ Kies audiobestand</button>'
+    + '<button type="button" class="ge-btn ge-btn-g za-big" onclick="document.getElementById(\'zaAudioFile\').click()">🎙 Kies audiobestand</button>'
     + '<input type="file" id="zaAudioFile" accept="' + ZA_AUDIO_ACCEPT + '" style="display:none" onchange="zaPickAudio(this)">'
     + '<div id="zaAudioStatus" class="za-status"></div>';
 }
 function zaAttSectionHtml(){
   return '<div class="za-lbl">Bijlagen bij het commentaar (bv. screenshots van notities)</div>'
-    + '<button type="button" class="za-btn za-full" onclick="document.getElementById(\'zaAttFile\').click()">📎 Bijlage toevoegen</button>'
+    + '<button type="button" class="ge-btn ge-btn-g za-big" onclick="document.getElementById(\'zaAttFile\').click()">📎 Bijlage toevoegen</button>'
     + '<input type="file" id="zaAttFile" multiple style="display:none" onchange="zaPickAtts(this)">'
     + '<div id="zaAttStatus" class="za-status"></div>'
     + '<div id="zaAttList" class="za-chips"></div>';
@@ -16926,21 +16999,18 @@ function zaCancelForm(songId){
 // ── Nieuw nummer (categorie) ──
 function zaOpenNewCategory(){
   zaFormReset();
-  zaOpenModal(
-    '<div class="za-h">Nieuw nummer</div>'
-    + '<div class="za-hint">Elk nummer is een categorie waarin je telkens nieuwe versies onderbrengt.</div>'
-    + '<div class="za-lbl">Titel *</div><input class="za-input" id="zaTitle" placeholder="bv. Stand by Me">'
+  zaOpenSheet('Zanglessen', 'Nieuw nummer',
+    '<div class="ds-section"><div class="ds-section-lbl">Nummer</div>'
+    + '<div class="za-lbl">Titel *</div><input class="za-input za-b" id="zaTitle" placeholder="bv. Stand by Me">'
     + '<div class="za-lbl">Uitvoerder</div><input class="za-input" id="zaArtist" placeholder="bv. Ben E. King">'
-    + '<div class="za-lbl">Toonaard</div><input class="za-input" id="zaKeyTone" placeholder="bv. C majeur">'
-    + '<div class="za-sep"></div>'
-    + '<div class="za-lbl" style="color:var(--ink)">Eerste versie (optioneel)</div>'
+    + '<div class="za-lbl">Toonaard</div><input class="za-input" id="zaKeyTone" placeholder="bv. C majeur"></div>'
+    + '<div class="ds-section"><div class="ds-section-lbl">Eerste versie (optioneel)</div>'
     + '<div class="za-lbl">Datum</div><input type="date" class="za-input" id="zaDate" value="' + dk(new Date()) + '">'
     + zaAudioSectionHtml(false)
     + '<div class="za-lbl">Commentaar</div><textarea class="za-input" id="zaComment" rows="3" placeholder="Wat viel op tijdens deze opname?"></textarea>'
-    + zaAttSectionHtml()
-    + '<div class="za-actions"><button class="za-btn za-btn-teal" onclick="zaSubmitNewCategory()">Bewaren</button>'
-    + '<button class="za-btn" onclick="zaCancelForm()">Annuleer</button></div>'
-  );
+    + zaAttSectionHtml() + '</div>',
+    '<button class="ge-btn ge-btn-r za-big za-foot" onclick="zaSubmitNewCategory()">Bewaren</button>'
+    + '<button class="ds-close-btn" onclick="zaCancelForm()">Annuleer</button>');
 }
 function zaSubmitNewCategory(){
   var title = zaVal('zaTitle').trim();
@@ -16962,15 +17032,15 @@ function zaSubmitNewCategory(){
 function zaOpenNewVersion(songId){
   var s = zaSongById(songId); if(!s) return;
   zaFormReset();
-  zaOpenModal(
-    '<div class="za-h">Nieuwe versie</div><div class="za-hint">' + zaEsc(s.title) + '</div>'
+  zaOpenSheet(s.title, 'Nieuwe versie',
+    '<div class="ds-section"><div class="ds-section-lbl">Opname</div>'
     + '<div class="za-lbl">Datum</div><input type="date" class="za-input" id="zaDate" value="' + dk(new Date()) + '">'
-    + zaAudioSectionHtml(true)
-    + '<div class="za-lbl">Commentaar</div><textarea class="za-input" id="zaComment" rows="3" placeholder="Wat viel op tijdens deze opname?"></textarea>'
-    + zaAttSectionHtml()
-    + '<div class="za-actions"><button class="za-btn za-btn-teal" onclick="zaSubmitNewVersion(\'' + songId + '\')">Bewaren</button>'
-    + '<button class="za-btn" onclick="zaCancelForm(\'' + songId + '\')">Annuleer</button></div>'
-  );
+    + zaAudioSectionHtml(true) + '</div>'
+    + '<div class="ds-section"><div class="ds-section-lbl">Commentaar</div>'
+    + '<textarea class="za-input" id="zaComment" rows="3" placeholder="Wat viel op tijdens deze opname?"></textarea>'
+    + zaAttSectionHtml() + '</div>',
+    '<button class="ge-btn ge-btn-r za-big za-foot" onclick="zaSubmitNewVersion(\'' + songId + '\')">Bewaren</button>'
+    + '<button class="ds-close-btn" onclick="zaCancelForm(\'' + songId + '\')">Annuleer</button>');
 }
 function zaSubmitNewVersion(songId){
   var s = zaSongById(songId); if(!s) return;
@@ -16987,15 +17057,15 @@ function zaSubmitNewVersion(songId){
 function zaOpenEditVersion(versionId){
   var f = zaFindVersion(versionId); if(!f) return;
   zaFormReset(f.version.attachments || []);
-  zaOpenModal(
-    '<div class="za-h">Versie wijzigen</div><div class="za-hint">' + zaEsc(f.song.title) + '</div>'
+  zaOpenSheet(f.song.title, 'Versie wijzigen',
+    '<div class="ds-section"><div class="ds-section-lbl">Versie</div>'
     + '<div class="za-lbl">Datum</div><input type="date" class="za-input" id="zaDate" value="' + zaEsc(f.version.date || dk(new Date())) + '">'
-    + '<div class="za-lbl">Commentaar</div><textarea class="za-input" id="zaComment" rows="4">' + zaEsc(f.version.comment || '') + '</textarea>'
-    + zaAttSectionHtml()
-    + '<div class="za-hint" style="margin-top:8px">Opname: ' + zaEsc(f.version.filename || '') + '. De audio zelf kan je niet vervangen — verwijder de versie en voeg ze opnieuw toe als dat nodig is.</div>'
-    + '<div class="za-actions"><button class="za-btn za-btn-teal" onclick="zaSubmitEditVersion(\'' + versionId + '\')">Opslaan</button>'
-    + '<button class="za-btn" onclick="zaCancelForm(\'' + f.song.id + '\')">Annuleer</button></div>'
-  );
+    + '<div class="za-hint">Opname: ' + zaEsc(f.version.filename || '') + '. De audio zelf kan je niet vervangen — verwijder de versie en voeg ze opnieuw toe als dat nodig is.</div></div>'
+    + '<div class="ds-section"><div class="ds-section-lbl">Commentaar</div>'
+    + '<textarea class="za-input" id="zaComment" rows="4">' + zaEsc(f.version.comment || '') + '</textarea>'
+    + zaAttSectionHtml() + '</div>',
+    '<button class="ge-btn ge-btn-r za-big za-foot" onclick="zaSubmitEditVersion(\'' + versionId + '\')">Opslaan</button>'
+    + '<button class="ds-close-btn" onclick="zaCancelForm(\'' + f.song.id + '\')">Annuleer</button>');
   zaRenderAttList();
 }
 function zaSubmitEditVersion(versionId){
@@ -17015,14 +17085,13 @@ function zaSubmitEditVersion(versionId){
 // ── Nummer (categorie) wijzigen ──
 function zaOpenEditCategory(songId){
   var s = zaSongById(songId); if(!s) return;
-  zaOpenModal(
-    '<div class="za-h">Nummer wijzigen</div>'
-    + '<div class="za-lbl">Titel *</div><input class="za-input" id="zaTitle" value="' + zaEsc(s.title) + '">'
+  zaOpenSheet('Zanglessen', 'Nummer wijzigen',
+    '<div class="ds-section"><div class="ds-section-lbl">Nummer</div>'
+    + '<div class="za-lbl">Titel *</div><input class="za-input za-b" id="zaTitle" value="' + zaEsc(s.title) + '">'
     + '<div class="za-lbl">Uitvoerder</div><input class="za-input" id="zaArtist" value="' + zaEsc(s.uitvoerder || '') + '">'
-    + '<div class="za-lbl">Toonaard</div><input class="za-input" id="zaKeyTone" value="' + zaEsc(s.toonaard || '') + '">'
-    + '<div class="za-actions"><button class="za-btn za-btn-teal" onclick="zaSubmitEditCategory(\'' + songId + '\')">Opslaan</button>'
-    + '<button class="za-btn" onclick="zaOpenCategory(\'' + songId + '\')">Annuleer</button></div>'
-  );
+    + '<div class="za-lbl">Toonaard</div><input class="za-input" id="zaKeyTone" value="' + zaEsc(s.toonaard || '') + '"></div>',
+    '<button class="ge-btn ge-btn-r za-big za-foot" onclick="zaSubmitEditCategory(\'' + songId + '\')">Opslaan</button>'
+    + '<button class="ds-close-btn" onclick="zaOpenCategory(\'' + songId + '\')">Annuleer</button>');
 }
 function zaSubmitEditCategory(songId){
   var s = zaSongById(songId); if(!s) return;
@@ -17068,47 +17137,54 @@ function zaAttHtml(a){
   if((a.type || '').indexOf('image') === 0){
     return '<a href="' + url + '" target="_blank" rel="noopener" class="za-thumb"><img src="' + url + '" alt="' + zaEsc(a.name) + '" loading="lazy"></a>';
   }
-  return '<a href="' + url + '" target="_blank" rel="noopener" class="za-chip">' + notitiesFileIcon(a.type, a.name) + ' ' + zaEsc(a.name) + '</a>';
+  return '<a href="' + url + '" target="_blank" rel="noopener" class="oh-chip za-chipx">' + notitiesFileIcon(a.type, a.name) + ' ' + zaEsc(a.name) + '</a>';
 }
 function zaNotesHtml(v, withDelete){
   var notes = (v.notes || []).slice().sort(function(a,b){ return (b.at || '').localeCompare(a.at || ''); });
   return notes.map(function(n){
-    return '<div class="za-note"><div class="za-note-m">' + zaEsc(zaFmtStamp(n.at)) + (n.pos != null ? ' · @' + zaFmtTime(n.pos) : '')
-      + (withDelete ? ' <b class="za-x" onclick="zaDeleteNote(\'' + v.id + '\',\'' + n.id + '\')">✕</b>' : '')
-      + '</div><div class="za-note-t">' + zaEsc(n.text) + '</div></div>';
+    return '<div class="ds-event-row za-noterow"><div class="ds-ev-bar"></div>'
+      + '<div class="ds-ev-time">' + (n.pos != null ? '@' + zaFmtTime(n.pos) : '') + '</div>'
+      + '<div class="ds-ev-info"><div class="za-note-t">' + zaEsc(n.text) + '</div>'
+      + '<div class="ds-ev-loc">' + zaEsc(zaFmtStamp(n.at))
+      + (withDelete ? ' <b class="za-x" onclick="zaDeleteNote(\'' + v.id + '\',\'' + n.id + '\')">✕</b>' : '') + '</div></div></div>';
   }).join('');
 }
 function zaOpenCategory(songId){
   var s = zaSongById(songId);
   if(!s){ zaCloseModal(); renderZangArchTab(); return; }
   var vers = zaVersionsSorted(s);
-  var h = '<div class="za-top"><div style="flex:1;min-width:0"><div class="za-h" style="margin:0">' + zaEsc(s.title) + '</div>'
-    + '<div class="za-hint" style="margin:2px 0 0">' + zaEsc([s.uitvoerder, s.toonaard].filter(Boolean).join(' · ') || 'Geen uitvoerder/toonaard ingevuld') + '</div></div>'
-    + '<button class="za-ic" title="Nummer wijzigen" onclick="zaOpenEditCategory(\'' + songId + '\')">✏️</button>'
-    + '<button class="za-ic" title="Nummer verwijderen" onclick="zaDeleteCategory(\'' + songId + '\')">🗑</button>'
-    + '<button class="za-ic" title="Sluiten" onclick="zaCloseModal()">✕</button></div>'
-    + '<div class="za-actions" style="margin:12px 0"><button class="za-btn za-btn-teal" onclick="zaOpenNewVersion(\'' + songId + '\')">+ Nieuwe versie</button>'
-    + (vers.length ? '<button class="za-btn" onclick="zaPlayVersion(\'' + vers[0].id + '\')">▶ Laatste versie</button>' : '') + '</div>';
-  if(!vers.length){
-    h += '<div class="za-empty">Nog geen versies. Voeg de eerste opname toe met "+ Nieuwe versie".</div>';
-  }
-  vers.forEach(function(v, i){
-    var atts = v.attachments || [];
-    var notes = v.notes || [];
-    h += '<div class="za-vcard">'
-      + '<div class="za-vtop"><div style="min-width:0"><div class="za-vdate">' + zaEsc(zaFmtDate(v.date)) + (i === 0 ? '<span class="za-badge">laatste</span>' : '') + '</div>'
-      + '<div class="za-vfile">' + zaEsc(v.filename || '') + (v.size ? ' · ' + notitiesFormatSize(v.size) : '') + '</div></div>'
-      + '<div class="za-vact"><button class="za-ic" title="Afspelen" onclick="zaPlayVersion(\'' + v.id + '\')">▶</button>'
-      + '<button class="za-ic" title="Wijzigen" onclick="zaOpenEditVersion(\'' + v.id + '\')">✏️</button>'
-      + '<button class="za-ic" title="Verwijderen" onclick="zaDeleteVersion(\'' + v.id + '\')">🗑</button></div></div>'
+  var chrono = (s.versions || []).slice().sort(function(a,b){
+    var c = (a.date || '').localeCompare(b.date || '');
+    return c !== 0 ? c : (zaVerTs(a) - zaVerTs(b));
+  });
+  var rows = vers.map(function(v, i){
+    var no = chrono.indexOf(v) + 1;
+    var d = zaFmtDateParts(v.date);
+    var atts = v.attachments || [], notes = v.notes || [];
+    return '<div class="ds-event-row"><div class="ds-ev-bar"></div>'
+      + '<div class="ds-ev-time">' + zaEsc(d.dm) + '<br>' + zaEsc(d.y) + '</div>'
+      + '<div class="ds-ev-info"><div class="ds-ev-title">Versie ' + no + (i === 0 ? '<span class="za-tag">laatste</span>' : '') + '</div>'
+      + '<div class="ds-ev-loc">🎙 ' + zaEsc(v.filename || '') + (v.size ? ' · ' + notitiesFormatSize(v.size) : '') + '</div>'
       + (v.comment ? '<div class="za-vcomment">' + zaEsc(v.comment) + '</div>' : '')
       + (atts.length ? '<div class="za-atts">' + atts.map(zaAttHtml).join('') + '</div>' : '')
       + (notes.length ? '<details class="za-det"><summary>📝 ' + notes.length + ' notitie' + (notes.length === 1 ? '' : 's') + '</summary>' + zaNotesHtml(v, false) + '</details>' : '')
-      + '</div>';
-  });
-  zaOpenModal(h);
+      + '<div class="ds-ev-actions">'
+      + '<button class="ds-ev-edit" onclick="zaPlayVersion(\'' + v.id + '\')">▶ Speel</button>'
+      + '<button class="ds-ev-edit" onclick="zaOpenEditVersion(\'' + v.id + '\')">✏ Wijzig</button>'
+      + '<button class="ds-ev-edit za-danger" onclick="zaDeleteVersion(\'' + v.id + '\')">🗑 Verwijder</button></div>'
+      + '</div></div>';
+  }).join('');
+  var body = '<div class="ds-section"><div class="ds-section-lbl">Nieuwe versie</div>'
+    + '<button class="ge-btn ge-btn-r za-big" onclick="zaOpenNewVersion(\'' + songId + '\')">+ Nieuwe versie</button>'
+    + (vers.length ? '<button class="ge-btn ge-btn-g za-big" style="margin-top:8px" onclick="zaPlayVersion(\'' + vers[0].id + '\')">▶ Speel laatste versie</button>' : '')
+    + '</div>'
+    + '<div class="ds-section"><div class="ds-section-lbl">Versies · ' + (vers.length || 'geen') + '</div>'
+    + (vers.length ? rows : '<div class="za-none">Nog geen versies. Voeg de eerste opname toe met "+ Nieuwe versie".</div>') + '</div>'
+    + '<div class="ds-section"><div class="ds-section-lbl">Nummer beheren</div><div class="ds-ev-actions" style="margin-top:0">'
+    + '<button class="ds-ev-edit" onclick="zaOpenEditCategory(\'' + songId + '\')">✏ Wijzig nummer</button>'
+    + '<button class="ds-ev-edit za-danger" onclick="zaDeleteCategory(\'' + songId + '\')">🗑 Verwijder nummer</button></div></div>';
+  zaOpenSheet([s.uitvoerder, s.toonaard].filter(Boolean).join(' · ') || 'Nummer', s.title, body, ZA_FOOT_CLOSE);
 }
-
 // ═══════════════════════════════════════════════════════════════
 // LIJST SAMENSTELLEN (bolletjes)
 // ═══════════════════════════════════════════════════════════════
@@ -17116,21 +17192,19 @@ var zaComposeSel = [];
 function zaOpenCompose(){
   zaComposeSel = [];
   var songs = zaSongsSorted().filter(function(s){ return (s.versions || []).length; });
-  var body = songs.map(function(s){
-    var vers = zaVersionsSorted(s);
-    return '<div class="za-ccat"><div class="za-ccat-h"><div style="min-width:0"><div class="za-card-t">' + zaEsc(s.title) + '</div>'
-      + '<div class="za-card-m">' + zaEsc([s.uitvoerder, s.toonaard].filter(Boolean).join(' · ')) + '</div></div>'
-      + '<button class="za-btn za-btn-sm" onclick="zaComposeLatest(\'' + s.id + '\')">laatste</button></div>'
-      + vers.map(function(v, i){
-          return '<div class="za-vrow" onclick="zaComposeToggle(\'' + v.id + '\')"><span class="za-circle" data-vid="' + v.id + '"></span>'
-            + '<div style="min-width:0"><b>' + zaEsc(zaFmtDate(v.date)) + '</b>' + (i === 0 ? '<span class="za-badge">laatste</span>' : '')
-            + (v.comment ? '<div class="za-vrow-c">' + zaEsc(v.comment.slice(0, 80)) + '</div>' : '') + '</div></div>';
-        }).join('')
-      + '</div>';
-  }).join('');
-  zaOpenModal('<div class="za-top"><div class="za-h" style="margin:0;flex:1">Stel lijst samen</div><button class="za-ic" onclick="zaCloseModal()">✕</button></div>'
-    + '<div class="za-hint">Tik op het bolletje naast de versies die je wil beluisteren. De volgorde waarin je aantikt is de afspeelvolgorde.</div>'
-    + body + '<div class="za-stickybar" id="zaComposeBar"></div>');
+  var body = '<div class="za-hint" style="margin:0 2px 12px">Tik op het bolletje naast de versies die je wil beluisteren. De volgorde waarin je aantikt is de afspeelvolgorde.</div>'
+    + songs.map(function(s){
+      var vers = zaVersionsSorted(s);
+      return '<div class="ds-section"><div class="za-sec-h"><div class="ds-section-lbl">' + zaEsc(s.title) + (s.uitvoerder ? ' · ' + zaEsc(s.uitvoerder) : '') + '</div>'
+        + '<button class="ds-ev-edit" onclick="zaComposeLatest(\'' + s.id + '\')">＋ Laatste</button></div>'
+        + vers.map(function(v, i){
+          return '<div class="za-pick" onclick="zaComposeToggle(\'' + v.id + '\')"><span class="za-circle" data-vid="' + v.id + '"></span>'
+            + '<div style="min-width:0"><div class="za-pick-d">' + zaEsc(zaFmtDate(v.date)) + (i === 0 ? '<span class="za-tag">laatste</span>' : '') + '</div>'
+            + (v.comment ? '<div class="za-pick-c">' + zaEsc(v.comment.slice(0, 90)) + '</div>' : '') + '</div></div>';
+        }).join('') + '</div>';
+    }).join('')
+    + '<div class="za-stickybar" id="zaComposeBar"></div>';
+  zaOpenSheet('Zanglessen', 'Lijst samenstellen', body, '');
   zaComposeRefresh();
 }
 function zaComposeToggle(vid){
@@ -17154,9 +17228,10 @@ function zaComposeRefresh(){
   }
   var bar = document.getElementById('zaComposeBar');
   if(bar){
-    bar.innerHTML = '<span class="za-count">' + zaComposeSel.length + ' geselecteerd</span>'
-      + '<div class="za-actions" style="margin:0"><button class="za-btn za-btn-teal" onclick="zaComposePlay()"' + (zaComposeSel.length ? '' : ' disabled') + '>▶ Bevestig &amp; speel af</button>'
-      + '<button class="za-btn" onclick="zaCloseModal()">Annuleer</button></div>';
+    var n = zaComposeSel.length;
+    bar.innerHTML = '<div class="za-count">' + n + ' geselecteerd</div>'
+      + '<button class="ge-btn ge-btn-r za-big" onclick="zaComposePlay()"' + (n ? '' : ' disabled') + '>▶ Bevestig &amp; speel af</button>'
+      + '<button class="ds-close-btn za-inbar" onclick="zaCloseModal()">Annuleer</button>';
   }
 }
 function zaComposePlay(){
@@ -17210,29 +17285,35 @@ function zaOpenPlayer(){
   zaClosePlayer(true);
   var wrap = document.createElement('div');
   wrap.id = 'zaPlayer';
-  wrap.className = 'za-backdrop';
-  wrap.innerHTML = '<div class="za-panel za-pl">'
-    + '<div class="za-top"><div class="za-pl-cnt" id="zaPlCnt"></div><button class="za-ic za-ic-w" title="Sluiten" onclick="zaClosePlayer()">✕</button></div>'
-    + '<div class="za-pl-now"><div class="za-pl-title" id="zaPlTitle"></div><div class="za-pl-meta" id="zaPlMeta"></div><div class="za-pl-comment" id="zaPlComment"></div></div>'
+  wrap.className = 'detail-sheet-backdrop za-bd';
+  wrap.style.display = 'flex';
+  wrap.innerHTML = '<div class="detail-sheet"><div class="ds-drag"></div>'
+    + '<div class="ds-header"><div class="ds-header-left"><div class="ds-kicker" id="zaPlCnt"></div><div class="ds-title">Nu aan het spelen</div></div>'
+    + '<button class="ds-close" title="Stoppen en sluiten" onclick="zaClosePlayer()"></button></div>'
+    + '<div class="ds-body">'
+    + '<div class="ds-section za-now"><div class="ds-section-lbl">🎵 Song</div>'
+    + '<div class="za-song" id="zaPlTitle"></div><div class="za-song-meta" id="zaPlMeta"></div><div class="za-song-comment" id="zaPlComment"></div>'
     + '<audio id="zaMedia" preload="auto" playsinline></audio>'
-    + '<div class="za-pl-seek"><span id="zaTimeCur">0:00</span>'
+    + '<div class="za-seekrow"><span id="zaTimeCur">0:00</span>'
     + '<input type="range" class="za-seek" id="zaSeek" min="0" max="100" step="1" value="0" oninput="zaSeekInput(this.value)" onchange="zaSeekCommit(this.value)">'
     + '<span id="zaTimeDur">0:00</span></div>'
-    + '<div class="za-pl-ctl">'
+    + '<div class="za-ctl">'
     + '<button class="za-cb" title="Vorig nummer" onclick="zaPrev()">⏮</button>'
-    + '<button class="za-cb" title="15 seconden terug" onclick="zaSkip(-15)">−15</button>'
-    + '<button class="za-cb za-cb-main" id="zaBtnPlay" title="Afspelen / pauzeren" onclick="zaToggle()">▶</button>'
-    + '<button class="za-cb" title="15 seconden verder" onclick="zaSkip(15)">+15</button>'
+    + '<button class="za-cb w" title="15 seconden terug" onclick="zaSkip(-15)">−15</button>'
+    + '<button class="za-cb main" id="zaBtnPlay" title="Afspelen / pauzeren" onclick="zaToggle()">▶</button>'
+    + '<button class="za-cb w" title="15 seconden verder" onclick="zaSkip(15)">+15</button>'
     + '<button class="za-cb" title="Volgend nummer" onclick="zaNext(false)">⏭</button>'
-    + '<button class="za-cb" title="Stop" onclick="zaStop()">⏹</button></div>'
-    + '<div class="za-pl-status" id="zaPlStatus"></div>'
-    + '<div class="za-pl-sec">Notitie bij dit nummer</div>'
-    + '<textarea class="za-input za-pl-ta" id="zaNoteText" rows="2" placeholder="Wat wil je onthouden? (wordt bewaard met datum en positie in het nummer)"></textarea>'
-    + '<button class="za-btn za-btn-terra za-full" onclick="zaAddNote()">＋ Notitie toevoegen</button>'
-    + '<div id="zaNotesList"></div>'
-    + '<div class="za-pl-sec">Playlist</div><div id="zaPlList"></div>'
-    + '</div>';
+    + '<button class="za-cb w" title="Stop" onclick="zaStop()">⏹</button></div>'
+    + '<div class="za-plstatus" id="zaPlStatus"></div></div>'
+    + '<div class="ds-section"><div class="ds-section-lbl">📝 Notitie bij dit nummer</div>'
+    + '<textarea class="za-input" id="zaNoteText" rows="2" placeholder="Wat wil je onthouden? (wordt bewaard met datum en positie in het nummer)"></textarea>'
+    + '<button class="ge-btn ge-btn-r za-big" style="margin-top:8px" onclick="zaAddNote()">＋ Notitie toevoegen</button>'
+    + '<div id="zaNotesList"></div></div>'
+    + '<div class="ds-section"><div class="ds-section-lbl" id="zaPlListLbl">Playlist</div><div id="zaPlList"></div></div>'
+    + '</div><button class="ds-close-btn" onclick="zaClosePlayer()">Stop &amp; sluit</button></div>';
   document.body.appendChild(wrap);
+  void wrap.offsetWidth;
+  wrap.classList.add('open');
   zaMedia = document.getElementById('zaMedia');
   zaMedia.addEventListener('timeupdate', zaOnTime);
   zaMedia.addEventListener('loadedmetadata', zaOnMeta);
@@ -17242,7 +17323,7 @@ function zaOpenPlayer(){
   zaMedia.addEventListener('pause', zaSyncPlayBtn);
   zaMedia.addEventListener('error', function(){
     if(zaMedia.src && zaMedia.src.indexOf('data:audio/wav') === 0) return;
-    zaSetStatus(document.getElementById('zaPlStatus'), '⚠️ Dit bestand kan niet afgespeeld worden op dit toestel.', '#ff9d7a');
+    zaSetStatus(document.getElementById('zaPlStatus'), '⚠️ Dit bestand kan niet afgespeeld worden op dit toestel.', '#c0392b');
   });
 }
 async function zaGetBlobUrl(v){
@@ -17261,11 +17342,11 @@ async function zaLoadTrack(i, autoplay){
   var tok = ++zaLoadTok;
   var f = zaCurrent();
   zaRenderPlayerMeta();
-  if(!f){ zaSetStatus(document.getElementById('zaPlStatus'), '⚠️ Deze versie bestaat niet meer.', '#ff9d7a'); return; }
+  if(!f){ zaSetStatus(document.getElementById('zaPlStatus'), '⚠️ Deze versie bestaat niet meer.', '#c0392b'); return; }
   zaLoading = true;
-  zaSetStatus(document.getElementById('zaPlStatus'), '⏳ Nummer laden…', 'rgba(255,255,255,.6)');
+  zaSetStatus(document.getElementById('zaPlStatus'), '⏳ Nummer laden…', '');
   var seek = document.getElementById('zaSeek');
-  if(seek){ seek.value = 0; }
+  if(seek){ seek.value = 0; zaSeekFill(seek); }
   var tc = document.getElementById('zaTimeCur'); if(tc) tc.textContent = '0:00';
   var td = document.getElementById('zaTimeDur'); if(td) td.textContent = '0:00';
   try {
@@ -17279,7 +17360,7 @@ async function zaLoadTrack(i, autoplay){
     zaSetMediaSession(f);
     if(autoplay){
       var p = zaMedia.play();
-      if(p && p.catch) p.catch(function(){ zaSetStatus(document.getElementById('zaPlStatus'), 'Tik op ▶ om te starten.', 'rgba(255,255,255,.6)'); });
+      if(p && p.catch) p.catch(function(){ zaSetStatus(document.getElementById('zaPlStatus'), 'Tik op ▶ om te starten.', ''); });
     }
     // volgende nummer alvast op de achtergrond laden voor een vlotte overgang
     var nq = zaQueue[i + 1];
@@ -17287,7 +17368,7 @@ async function zaLoadTrack(i, autoplay){
   } catch(e){
     if(tok !== zaLoadTok) return;
     zaLoading = false;
-    zaSetStatus(document.getElementById('zaPlStatus'), '⚠️ ' + e.message, '#ff9d7a');
+    zaSetStatus(document.getElementById('zaPlStatus'), '⚠️ ' + e.message, '#c0392b');
   }
 }
 function zaRenderPlayerMeta(){
@@ -17301,14 +17382,17 @@ function zaRenderPlayerMeta(){
     if(c) c.textContent = f.version.comment || '';
   }
   zaRenderPlayerNotes();
+  var lbl = document.getElementById('zaPlListLbl'); if(lbl) lbl.textContent = 'Playlist · ' + zaQueue.length;
   var list = document.getElementById('zaPlList');
   if(list){
     list.innerHTML = zaQueue.map(function(q, i){
       var ff = zaFindVersion(q.versionId);
       var on = i === zaIdx;
-      return '<div class="za-plrow' + (on ? ' on' : '') + '" onclick="zaJump(' + i + ')"><span class="za-plnum">' + (on ? '▶' : (i + 1)) + '</span>'
-        + '<div style="min-width:0"><div class="za-plt">' + zaEsc(ff ? ff.song.title : '(verwijderd)') + '</div>'
-        + '<div class="za-plm">' + zaEsc(ff ? zaFmtDate(ff.version.date) : '') + '</div></div></div>';
+      return '<div class="ds-ex-row za-plrow' + (on ? ' on' : '') + '" onclick="zaJump(' + i + ')">'
+        + '<div class="ds-ex-num">' + String(i + 1).padStart(2, '0') + '</div>'
+        + '<div class="ds-ex-info"><div class="ds-ex-name">' + zaEsc(ff ? ff.song.title : '(verwijderd)') + '</div>'
+        + '<div class="ds-ex-sets">' + zaEsc(ff ? (zaFmtDate(ff.version.date) + (ff.song.uitvoerder ? ' · ' + ff.song.uitvoerder : '')) : '') + '</div></div>'
+        + '<span class="ds-ev-edit za-plbtn">' + (on ? '▶ Nu' : 'Speel') + '</span></div>';
     }).join('');
   }
 }
@@ -17317,13 +17401,13 @@ function zaRenderPlayerNotes(){
   var f = zaCurrent();
   if(!el) return;
   var html = f ? zaNotesHtml(f.version, true) : '';
-  el.innerHTML = html ? '<div class="za-pl-sec">Eerdere notities bij deze versie</div><div class="za-pl-notes">' + html + '</div>' : '';
+  el.innerHTML = html ? '<div class="za-sub">Eerdere notities bij deze versie</div>' + html : '';
 }
 function zaOnTime(){
   if(!zaMedia || zaLoading || zaMedia.loop) return;
   var tc = document.getElementById('zaTimeCur'); if(tc) tc.textContent = zaFmtTime(zaMedia.currentTime);
   var seek = document.getElementById('zaSeek');
-  if(seek && !zaSeeking && zaMedia.duration && isFinite(zaMedia.duration)){ seek.max = Math.floor(zaMedia.duration); seek.value = Math.floor(zaMedia.currentTime); }
+  if(seek && !zaSeeking && zaMedia.duration && isFinite(zaMedia.duration)){ seek.max = Math.floor(zaMedia.duration); seek.value = Math.floor(zaMedia.currentTime); zaSeekFill(seek); }
 }
 function zaOnMeta(){
   if(!zaMedia || zaMedia.loop) return;
@@ -17346,7 +17430,8 @@ function zaSkip(sec){
   if(isFinite(d)) t = Math.min(t, Math.max(0, d - 0.1));
   zaMedia.currentTime = Math.max(0, t);
 }
-function zaSeekInput(v){ zaSeeking = true; var tc = document.getElementById('zaTimeCur'); if(tc) tc.textContent = zaFmtTime(Number(v)); }
+function zaSeekFill(seek){ var mx = Number(seek.max) || 1; seek.style.setProperty('--val', Math.max(0, Math.min(100, Number(seek.value) / mx * 100)) + '%'); }
+function zaSeekInput(v){ zaSeeking = true; var tc = document.getElementById('zaTimeCur'); if(tc) tc.textContent = zaFmtTime(Number(v)); var sk = document.getElementById('zaSeek'); if(sk) zaSeekFill(sk); }
 function zaSeekCommit(v){ if(zaMedia && !zaLoading) zaMedia.currentTime = Number(v); zaSeeking = false; }
 function zaPrev(){
   if(!zaMedia) return;
@@ -17357,14 +17442,14 @@ function zaNext(auto){
   if(zaIdx < zaQueue.length - 1){ zaLoadTrack(zaIdx + 1, true); return; }
   if(auto && zaMedia){
     zaMedia.pause();
-    zaSetStatus(document.getElementById('zaPlStatus'), '✓ Playlist afgelopen', 'rgba(255,255,255,.7)');
+    zaSetStatus(document.getElementById('zaPlStatus'), '✓ Playlist afgelopen', '');
   }
 }
 function zaStop(){
   if(!zaMedia) return;
   zaMedia.pause();
   try { zaMedia.currentTime = 0; } catch(e){}
-  zaSetStatus(document.getElementById('zaPlStatus'), 'Gestopt', 'rgba(255,255,255,.6)');
+  zaSetStatus(document.getElementById('zaPlStatus'), 'Gestopt', '');
 }
 function zaJump(i){ if(i !== zaIdx) zaLoadTrack(i, true); else if(zaMedia && zaMedia.paused) zaToggle(); }
 
