@@ -3646,6 +3646,90 @@ input, select, textarea{
   100%{ stroke-dashoffset:-700;opacity:0; }
 }
 .qt-skate-text{font-family:var(--cond);font-size:10.5px;font-weight:700;letter-spacing:1px;color:var(--stone2,#a08060);text-transform:uppercase;}
+
+/* ═══ ZANGLESSEN-ARCHIEF ═══ */
+.za-wrap{padding:14px;display:flex;flex-direction:column;gap:10px}
+.za-btn{font-family:var(--grotesk);font-size:11px;font-weight:700;letter-spacing:.3px;padding:11px 14px;border:2px solid var(--brut-ink,#0a0a0a);border-radius:12px;background:#fff;color:var(--brut-ink,#0a0a0a);cursor:pointer;box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a)}
+.za-btn:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--brut-ink,#0a0a0a)}
+.za-btn:disabled{opacity:.38;cursor:default;box-shadow:none}
+.za-btn-dark{background:var(--brut-ink,#0a0a0a);color:#fff}
+.za-btn-terra{background:var(--terra,#c05818);color:#fff}
+.za-btn-teal{background:var(--surf-teal,#1F7A6C);color:#fff}
+.za-btn-sm{padding:6px 10px;font-size:10px;border-radius:9px;border-width:1.5px;box-shadow:none;flex-shrink:0}
+.za-full{width:100%}
+.za-empty{text-align:center;padding:26px 16px;color:var(--stone2,#c0a880);font-family:var(--cond);font-size:11px;letter-spacing:.5px;line-height:1.5}
+.za-card{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;background:#fff;border:2px solid var(--brut-ink,#0a0a0a);border-radius:14px;box-shadow:3px 3px 0 var(--brut-ink,#0a0a0a);padding:12px 14px;cursor:pointer}
+.za-card-l{min-width:0;flex:1}
+.za-card-t{font-family:var(--grotesk);font-weight:700;font-size:14px;color:var(--ink,#2c1208)}
+.za-card-m{font-family:var(--cond);font-size:10px;color:var(--stone,#a08060);margin-top:2px}
+.za-card-r{text-align:right;flex-shrink:0}
+.za-card-n{font-family:var(--grotesk);font-size:10px;font-weight:700;color:var(--terra,#c05818)}
+.za-card-d{font-family:var(--cond);font-size:9px;color:var(--stone,#a08060);margin-top:2px}
+
+.za-backdrop{position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.78);display:flex;align-items:flex-end;justify-content:center}
+.za-panel{width:100%;max-width:430px;max-height:90vh;overflow-y:auto;background:var(--sand,#f5ede0);border-top:3px solid var(--brut-ink,#0a0a0a);border-radius:20px 20px 0 0;padding:18px 16px 26px;box-sizing:border-box;-webkit-overflow-scrolling:touch}
+.za-top{display:flex;align-items:center;gap:6px}
+.za-h{font-family:var(--cond);font-size:18px;font-weight:900;color:var(--brut-ink,#0a0a0a);margin-bottom:6px}
+.za-hint{font-family:var(--body);font-size:11.5px;color:var(--stone,#a08060);margin:0 0 10px;line-height:1.45}
+.za-lbl{font-family:var(--grotesk);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--stone,#a08060);margin:10px 0 5px}
+.za-input{width:100%;padding:10px 12px;border:1.5px solid var(--sand3,#d8c8b0);border-radius:10px;font-family:var(--body);font-size:14px;background:#fff;color:var(--ink,#2c1208);box-sizing:border-box}
+.za-sep{height:1px;background:var(--sand3,#d8c8b0);margin:16px 0 4px}
+.za-status{font-family:var(--cond);font-size:11px;min-height:16px;margin-top:6px;word-break:break-word}
+.za-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.za-actions .za-btn{flex:1;min-width:110px}
+.za-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.za-chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--body);font-size:11px;background:#fff;border:1.3px solid var(--sand3,#d8c8b0);border-radius:20px;padding:5px 10px;color:var(--ink,#2c1208);text-decoration:none;max-width:100%}
+.za-x{color:var(--terra,#c05818);cursor:pointer;padding:0 2px}
+.za-ic{background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:10px;width:36px;height:36px;font-size:15px;cursor:pointer;flex-shrink:0;color:var(--brut-ink,#0a0a0a)}
+.za-ic-w{background:transparent;border-color:rgba(255,255,255,.5);color:#fff}
+
+.za-vcard{background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:14px;padding:12px;margin-bottom:10px}
+.za-vtop{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+.za-vdate{font-family:var(--grotesk);font-weight:700;font-size:13px;color:var(--ink,#2c1208)}
+.za-vfile{font-family:var(--cond);font-size:9.5px;color:var(--stone,#a08060);margin-top:2px;word-break:break-all}
+.za-vact{display:flex;gap:5px;flex-shrink:0}
+.za-vcomment{font-family:var(--body);font-size:12.5px;color:var(--ink,#2c1208);margin-top:8px;white-space:pre-wrap;line-height:1.45}
+.za-atts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.za-thumb{display:block;width:72px;height:72px;border-radius:10px;overflow:hidden;border:1.5px solid var(--sand3,#d8c8b0);background:#fff}
+.za-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.za-badge{font-family:var(--grotesk);font-size:8px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:var(--terra,#c05818);color:#fff;border-radius:20px;padding:2px 7px;margin-left:6px;vertical-align:middle}
+.za-det{margin-top:8px;font-family:var(--body);font-size:12px}
+.za-det summary{cursor:pointer;color:var(--stone,#a08060);font-family:var(--grotesk);font-size:11px;font-weight:700}
+.za-note{border-left:3px solid var(--terra,#c05818);padding:3px 0 3px 9px;margin-top:8px}
+.za-note-m{font-family:var(--cond);font-size:9.5px;color:var(--stone,#a08060)}
+.za-note-t{font-family:var(--body);font-size:12.5px;color:var(--ink,#2c1208);white-space:pre-wrap;line-height:1.4}
+
+.za-ccat{background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:14px;padding:10px 12px;margin-bottom:10px}
+.za-ccat-h{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;margin-bottom:4px}
+.za-vrow{display:flex;gap:10px;align-items:center;padding:9px 2px;border-top:1px solid var(--sand2,#ece0d0);cursor:pointer;font-family:var(--body);font-size:13px;color:var(--ink,#2c1208)}
+.za-vrow-c{font-size:11px;color:var(--stone,#a08060);margin-top:1px}
+.za-circle{width:26px;height:26px;border-radius:50%;border:2px solid var(--brut-ink,#0a0a0a);background:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--grotesk);font-size:11px;font-weight:700;flex-shrink:0;color:#fff}
+.za-circle.on{background:var(--terra,#c05818)}
+.za-stickybar{position:sticky;bottom:-26px;margin:6px -16px -26px;padding:12px 16px 26px;background:var(--sand,#f5ede0);border-top:2px solid var(--brut-ink,#0a0a0a);display:flex;flex-direction:column;gap:8px}
+.za-count{font-family:var(--grotesk);font-size:11px;font-weight:700;color:var(--ink,#2c1208)}
+
+.za-pl{background:#1a1410;color:#fff;border-top-color:var(--gold,#d4a030)}
+.za-pl-cnt{flex:1;font-family:var(--cond);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55)}
+.za-pl-now{text-align:center;padding:10px 4px 6px}
+.za-pl-title{font-family:var(--grotesk);font-size:19px;font-weight:700;color:#fff;line-height:1.2}
+.za-pl-meta{font-family:var(--cond);font-size:11px;color:rgba(255,255,255,.55);margin-top:4px}
+.za-pl-comment{font-family:var(--body);font-size:12px;color:rgba(255,255,255,.7);margin-top:8px;white-space:pre-wrap}
+.za-pl-seek{display:flex;align-items:center;gap:8px;margin:12px 0 4px;font-family:var(--cond);font-size:11px;color:rgba(255,255,255,.7)}
+.za-seek{flex:1;accent-color:var(--gold,#d4a030);height:28px}
+.za-pl-ctl{display:flex;justify-content:space-between;align-items:center;margin:6px 0 4px}
+.za-cb{width:46px;height:46px;border-radius:50%;border:2px solid rgba(255,255,255,.8);background:transparent;color:#fff;font-size:15px;font-family:var(--grotesk);font-weight:700;cursor:pointer}
+.za-cb-main{width:58px;height:58px;background:var(--gold,#d4a030);border-color:var(--gold,#d4a030);color:#1a1410;font-size:22px}
+.za-pl-status{min-height:18px;text-align:center;font-family:var(--cond);font-size:11px;margin:4px 0 2px}
+.za-pl-sec{font-family:var(--grotesk);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold,#d4a030);margin:16px 0 8px}
+.za-pl-ta{font-size:13px;margin-bottom:8px}
+.za-pl-notes .za-note{border-left-color:var(--gold,#d4a030)}
+.za-pl-notes .za-note-m{color:rgba(255,255,255,.5)}
+.za-pl-notes .za-note-t{color:#fff}
+.za-plrow{display:flex;gap:10px;align-items:center;padding:9px 6px;border-top:1px solid rgba(255,255,255,.1);cursor:pointer}
+.za-plrow.on{background:rgba(212,160,48,.16);border-radius:10px}
+.za-plnum{width:22px;text-align:center;font-family:var(--grotesk);font-size:12px;font-weight:700;color:var(--gold,#d4a030);flex-shrink:0}
+.za-plt{font-family:var(--grotesk);font-size:13px;font-weight:700;color:#fff}
+.za-plm{font-family:var(--cond);font-size:10px;color:rgba(255,255,255,.5)}
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -3743,7 +3827,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v28/09/26 · 09:29</div>
+    <div class="oh-version-tag" id="ohVersionTag">v28/09/26 · 09:53</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -16654,318 +16738,684 @@ function vnClose() {
   if(m) m.classList.remove('open');
 }
 
-// ═══ ZANGLESSEN-ARCHIEF (Varia) — opgenomen nummers van repetities, met meerdere
-// versies per nummer, elk met eigen datum + commentaar. Audio wordt net als bij
-// notitie-bijlagen opgeslagen via Netlify Blobs (note-attachment.js) — geen nieuwe
-// Netlify-functie nodig, wel dezelfde grens van ~5 MB per opname.
-var ZANGARCH_SONGS = JSON.parse(localStorage.getItem('wf_zangarch_songs') || '[]');
+// ═══ ZANGLESSEN-ARCHIEF (Varia) — categorieën (= nummers) met versies ═══
+// Elk nummer is een CATEGORIE waarin je telkens nieuwe versies (opnames van
+// verschillende repetities) onderbrengt. Elke versie heeft een datum, een
+// commentaar met bijlagen (bv. screenshots van notities) en gehistoriseerde
+// notities die je tijdens het afspelen toevoegt. Audio en bijlagen staan in
+// Netlify Blobs (note-attachment.js), max. ~5 MB per bestand.
+//
+// Opslag (localStorage 'wf_zangarch_songs'):
+//   [{id,title,uitvoerder,toonaard,versions:[{id,createdAt,date,comment,
+//     key,filename,mimetype,size, attachments:[{key,name,type,size}],
+//     notes:[{id,at,pos,text}]}]}]
+// Oudere gegevens zonder attachments/notes blijven gewoon werken.
+var ZANGARCH_SONGS = (function(){
+  try { return JSON.parse(localStorage.getItem('wf_zangarch_songs') || '[]'); } catch(e){ return []; }
+})();
 function zangarchSave(){ localStorage.setItem('wf_zangarch_songs', JSON.stringify(ZANGARCH_SONGS)); }
 
-var zangarchPendingUpload = null;   // {key,filename,mimetype,size} van de laatst geüploade audio in het open formulier
-var zangarchPickerSelected = [];    // geselecteerde versie-id's in de versie-kiezer, in klikvolgorde
-var zangarchQueue = [];             // [{songId,versionId}] — huidige afspeel-wachtrij
-var zangarchQueueIndex = 0;
+// ── Hulpfuncties ──
+function zaEsc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function zaFmtDate(d){ if(!d) return ''; var x = new Date(d + 'T12:00:00'); return isNaN(x.getTime()) ? d : x.toLocaleDateString('nl-BE',{day:'numeric',month:'short',year:'numeric'}); }
+function zaFmtTime(sec){ sec = Math.max(0, Math.floor(sec || 0)); var m = Math.floor(sec/60), s = sec % 60; return m + ':' + (s < 10 ? '0' : '') + s; }
+function zaFmtStamp(iso){ var d = new Date(iso); return isNaN(d.getTime()) ? '' : d.toLocaleString('nl-BE',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}); }
+function zaSongById(id){ return ZANGARCH_SONGS.find(function(s){ return s.id === id; }); }
+function zaVerTs(v){ return v.createdAt || parseInt(String(v.id || '').replace(/\D/g,''), 10) || 0; }
+function zaVersionsSorted(song){
+  return (song.versions || []).slice().sort(function(a,b){
+    var c = (b.date || '').localeCompare(a.date || '');
+    return c !== 0 ? c : (zaVerTs(b) - zaVerTs(a));
+  });
+}
+function zaSongsSorted(){ return ZANGARCH_SONGS.slice().sort(function(a,b){ return (a.title || '').localeCompare(b.title || '', 'nl'); }); }
+function zaFindVersion(versionId){
+  for(var i = 0; i < ZANGARCH_SONGS.length; i++){
+    var vs = ZANGARCH_SONGS[i].versions || [];
+    for(var j = 0; j < vs.length; j++){ if(vs[j].id === versionId) return { song: ZANGARCH_SONGS[i], version: vs[j] }; }
+  }
+  return null;
+}
+function zaGuessMime(filename, mime){
+  if(mime && mime !== 'application/octet-stream') return mime;
+  var ext = String(filename || '').split('.').pop().toLowerCase();
+  var map = { mp3:'audio/mpeg', mpga:'audio/mpeg', m4a:'audio/mp4', mp4a:'audio/mp4', aac:'audio/aac', wav:'audio/wav', ogg:'audio/ogg', oga:'audio/ogg', opus:'audio/ogg', flac:'audio/flac', weba:'audio/webm', aif:'audio/aiff', aiff:'audio/aiff', amr:'audio/amr', wma:'audio/x-ms-wma', caf:'audio/x-caf' };
+  return map[ext] || 'audio/mpeg';
+}
+function zaDeleteBlob(key){
+  if(!key) return;
+  try { fetch('/.netlify/functions/note-attachment?key=' + encodeURIComponent(key), { method: 'DELETE' }).catch(function(){}); } catch(e){}
+}
+function zaSetStatus(el, text, color){ if(!el) return; el.textContent = text; el.style.color = color || ''; }
 
+// ── Modal ──
+function zaOpenModal(html){
+  zaCloseModal();
+  var wrap = document.createElement('div');
+  wrap.id = 'zaModal';
+  wrap.className = 'za-backdrop';
+  wrap.onclick = function(e){ if(e.target === wrap) zaCloseModal(); };
+  wrap.innerHTML = '<div class="za-panel" id="zaPanel">' + html + '</div>';
+  document.body.appendChild(wrap);
+}
+function zaCloseModal(){ var el = document.getElementById('zaModal'); if(el) el.remove(); }
+
+// ═══════════════════════════════════════════════════════════════
+// HOOFDSCHERM
+// ═══════════════════════════════════════════════════════════════
 function renderZangArchTab(){
   var c = document.getElementById('zangarchContent');
   if(!c) return;
-  var h = '<div style="padding:14px 14px 6px">'
-    + '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">'
-    + '<button class="gn-add-btn" onclick="zangarchOpenNewSongForm()">+ Nieuw nummer</button>'
-    + '<button class="gn-add-btn" style="background:#3a8acc" onclick="zangarchOpenExistingSongPicker()">+ Bestaand nummer</button>'
-    + '</div>'
-    + '<button onclick="zangarchPlayAllLatest()" style="width:100%;background:var(--terra);color:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;letter-spacing:.5px;padding:11px;cursor:pointer;margin-bottom:14px"'+(ZANGARCH_SONGS.length?'':' disabled')+'>▶ Beluister alle laatste versies</button>'
-    + '</div>';
-
-  if(!ZANGARCH_SONGS.length){
-    h += '<div style="text-align:center;padding:40px 20px;color:var(--stone2);font-family:var(--cond);font-size:11px;letter-spacing:1px">Nog geen nummers opgenomen.</div>';
+  var songs = zaSongsSorted();
+  var withVer = songs.filter(function(s){ return (s.versions || []).length; });
+  var dis = withVer.length ? '' : ' disabled';
+  var h = '<div class="za-wrap">'
+    + '<button class="za-btn za-btn-dark za-full" onclick="zaOpenNewCategory()">+ Nieuw nummer (categorie)</button>'
+    + '<button class="za-btn za-btn-terra za-full" onclick="zaPlayAllLatest()"' + dis + '>▶ Beluister alle laatste versies</button>'
+    + '<button class="za-btn za-full" onclick="zaOpenCompose()"' + dis + '>📋 Stel lijst samen</button>';
+  if(!songs.length){
+    h += '<div class="za-empty">Nog geen nummers. Elk nummer is een categorie waarin je telkens nieuwe versies onderbrengt.</div>';
   } else {
-    h += '<div style="padding:0 14px 14px">';
-    ZANGARCH_SONGS.forEach(function(song){
-      var versions = (song.versions||[]).slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
-      var latest = versions[0];
-      h += '<div class="gn-card" style="cursor:pointer;margin-bottom:10px" onclick="zangarchOpenVersionPicker(\''+song.id+'\')">'
-        + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
-        + '<div style="flex:1;min-width:0">'
-        + '<div style="font-family:var(--grotesk);font-weight:700;font-size:14px;color:#2c1208">'+(song.title||'').replace(/</g,'&lt;')+'</div>'
-        + '<div style="font-family:var(--cond);font-size:10px;color:var(--stone2);margin-top:2px">'+[song.uitvoerder,song.toonaard].filter(Boolean).join(' · ').replace(/</g,'&lt;')+'</div>'
-        + '</div>'
-        + '<div style="text-align:right;flex-shrink:0">'
-        + '<div style="font-family:var(--grotesk);font-size:10px;font-weight:700;color:var(--terra)">'+versions.length+' versie'+(versions.length===1?'':'s')+'</div>'
-        + (latest ? '<div style="font-family:var(--cond);font-size:9px;color:var(--stone2)">laatste: '+latest.date+'</div>' : '')
-        + '</div>'
-        + '</div>'
-        + '</div>';
+    songs.forEach(function(s){
+      var vers = zaVersionsSorted(s);
+      var latest = vers[0];
+      h += '<div class="za-card" onclick="zaOpenCategory(\'' + s.id + '\')">'
+        + '<div class="za-card-l"><div class="za-card-t">' + zaEsc(s.title) + '</div>'
+        + '<div class="za-card-m">' + zaEsc([s.uitvoerder, s.toonaard].filter(Boolean).join(' · ')) + '</div></div>'
+        + '<div class="za-card-r"><div class="za-card-n">' + vers.length + ' versie' + (vers.length === 1 ? '' : 's') + '</div>'
+        + (latest ? '<div class="za-card-d">laatste: ' + zaEsc(zaFmtDate(latest.date)) + '</div>' : '<div class="za-card-d">nog geen versie</div>')
+        + '</div></div>';
     });
-    h += '</div>';
   }
+  h += '</div>';
   c.innerHTML = h;
 }
 
-function zangarchCloseModal(){
-  var el = document.getElementById('zangarchModal');
-  if(el) el.remove();
+// ═══════════════════════════════════════════════════════════════
+// FORMULIEREN (nieuw nummer / nieuwe versie / wijzigen)
+// ═══════════════════════════════════════════════════════════════
+var zaForm = { audio: null, atts: [], busy: 0, error: '', newKeys: [], origKeys: [] };
+function zaFormReset(atts){
+  var a = (atts || []).slice();
+  zaForm = { audio: null, atts: a, busy: 0, error: '', newKeys: [], origKeys: a.map(function(x){ return x.key; }) };
 }
+var ZA_AUDIO_ACCEPT = 'audio/*,.mp3,.wav,.m4a,.aac,.ogg,.oga,.flac,.wma,.aiff,.aif,.opus,.amr,.mpga,.mpeg,.mp4a,.weba,.caf';
 
-// ── Nieuw nummer toevoegen (titel + uitvoerder + toonaard + eerste versie) ──
-function zangarchOpenNewSongForm(){
-  zangarchPendingUpload = null; zangarchUploadBusy = false; zangarchUploadError = '';
-  var html = ''
-    + '<div id="zangarchModal" style="position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.75);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)zangarchCloseModal()">'
-    + '<div style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:16px;box-shadow:4px 4px 0 var(--brut-ink,#0a0a0a);max-width:380px;width:100%;padding:22px 20px;max-height:85vh;overflow-y:auto">'
-    + '<div style="font-family:var(--cond);font-size:17px;font-weight:900;color:var(--brut-ink,#0a0a0a);margin-bottom:14px">Nieuw nummer toevoegen</div>'
-    + '<input class="gn-add-title" id="zaTitle" placeholder="Titel" style="margin-bottom:8px">'
-    + '<input class="gn-add-title" id="zaUitvoerder" placeholder="Uitvoerder" style="margin-bottom:8px;font-weight:500">'
-    + '<input class="gn-add-title" id="zaToonaard" placeholder="Toonaard (bv. C majeur)" style="margin-bottom:8px;font-weight:500">'
-    + '<input type="date" class="gn-add-date" id="zaDate" style="width:100%;margin-bottom:8px;box-sizing:border-box" value="'+dk(new Date())+'">'
-    + '<button type="button" class="gn-filter-btn" onclick="document.getElementById(\'zaFile\').click()" style="width:100%;margin-bottom:6px">🎙️ Kies audiobestand</button>'
-    + '<input type="file" id="zaFile" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.oga,.flac,.wma,.aiff,.aif,.opus,.amr,.mpga,.mpeg,.mp4a,.weba,.caf" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus\')">'
-    + '<div id="zaFileStatus" style="font-family:var(--cond);font-size:9px;color:var(--stone2);min-height:14px;margin-bottom:8px"></div>'
-    + '<textarea class="gn-edit-area" id="zaComment" placeholder="Commentaar bij deze opname (optioneel)" style="margin-bottom:12px"></textarea>'
-    + '<div style="display:flex;gap:8px">'
-    + '<button onclick="zangarchSubmitNewSong()" style="flex:1;background:var(--surf-teal,#1F7A6C);color:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px;cursor:pointer">Bewaren</button>'
-    + '<button onclick="zangarchCloseModal()" style="background:none;border:1.5px solid var(--sand3);color:var(--stone2);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px 16px;cursor:pointer">Annuleer</button>'
-    + '</div>'
-    + '</div></div>';
-  document.body.insertAdjacentHTML('beforeend', html);
-}
-var zangarchUploadBusy = false;
-var zangarchUploadError = '';
-function zangarchHandleFile(input, statusId){
-  var statusEl = document.getElementById(statusId);
-  var file = input.files && input.files[0];
-  if(!file) return;
-  zangarchPendingUpload = null;
-  zangarchUploadError = '';
-  zangarchUploadBusy = true;
-  if(statusEl){ statusEl.style.color = 'var(--stone2)'; statusEl.style.fontSize = '10px'; statusEl.textContent = '⏳ ' + file.name + ' uploaden...'; }
-  notitiesUploadFile(file).then(function(result){
-    zangarchUploadBusy = false;
-    zangarchPendingUpload = result;
-    if(statusEl){ statusEl.style.color = 'var(--green,#4a7a30)'; statusEl.style.fontSize = '11px'; statusEl.textContent = '✅ ' + file.name + ' (' + notitiesFormatSize(result.size) + ')'; }
+function zaPickAudio(input){
+  var f = input.files && input.files[0];
+  if(!f) return;
+  var st = document.getElementById('zaAudioStatus');
+  zaForm.audio = null; zaForm.error = ''; zaForm.busy++;
+  zaSetStatus(st, '⏳ ' + f.name + ' uploaden...', '#a08060');
+  notitiesUploadFile(f).then(function(r){
+    zaForm.busy--; zaForm.audio = r; zaForm.newKeys.push(r.key);
+    zaSetStatus(document.getElementById('zaAudioStatus'), '✅ ' + f.name + ' (' + notitiesFormatSize(r.size) + ')', '#4a7a30');
   }).catch(function(e){
-    zangarchUploadBusy = false;
-    zangarchUploadError = e.message;
-    if(statusEl){ statusEl.style.color = '#c0392b'; statusEl.style.fontSize = '11px'; statusEl.textContent = '⚠️ ' + e.message; }
+    zaForm.busy--; zaForm.error = e.message;
+    zaSetStatus(document.getElementById('zaAudioStatus'), '⚠️ ' + e.message, '#c0392b');
+  });
+  input.value = '';
+}
+function zaPickAtts(input){
+  var files = [].slice.call(input.files || []);
+  if(!files.length) return;
+  input.value = '';
+  files.forEach(function(f){
+    zaForm.busy++;
+    zaSetStatus(document.getElementById('zaAttStatus'), '⏳ ' + f.name + ' uploaden...', '#a08060');
+    notitiesUploadFile(f).then(function(r){
+      zaForm.busy--; zaForm.newKeys.push(r.key);
+      zaForm.atts.push({ key: r.key, name: r.filename, type: r.mimetype, size: r.size });
+      zaSetStatus(document.getElementById('zaAttStatus'), '', '');
+      zaRenderAttList();
+    }).catch(function(e){
+      zaForm.busy--;
+      zaSetStatus(document.getElementById('zaAttStatus'), '⚠️ ' + f.name + ': ' + e.message, '#c0392b');
+    });
   });
 }
-// Controle vóór bewaren: onderscheidt "nog niet gekozen", "upload bezig" en "upload mislukt"
-function zangarchCheckUpload(){
-  if(zangarchUploadBusy){ alert('De upload is nog bezig — wacht tot je een ✅ bij het bestand ziet.'); return false; }
-  if(!zangarchPendingUpload){
-    alert(zangarchUploadError ? ('Upload mislukt: ' + zangarchUploadError) : 'Kies eerst een audiobestand.');
+function zaRenderAttList(){
+  var el = document.getElementById('zaAttList');
+  if(!el) return;
+  el.innerHTML = zaForm.atts.map(function(a, i){
+    return '<span class="za-chip">' + notitiesFileIcon(a.type, a.name) + ' ' + zaEsc(a.name)
+      + ' <b class="za-x" onclick="zaRemoveAtt(' + i + ')">✕</b></span>';
+  }).join('');
+}
+function zaRemoveAtt(i){ zaForm.atts.splice(i, 1); zaRenderAttList(); }
+
+function zaAudioSectionHtml(required){
+  return '<div class="za-lbl">Audiobestand' + (required ? ' *' : '') + '</div>'
+    + '<button type="button" class="za-btn za-full" onclick="document.getElementById(\'zaAudioFile\').click()">🎙️ Kies audiobestand</button>'
+    + '<input type="file" id="zaAudioFile" accept="' + ZA_AUDIO_ACCEPT + '" style="display:none" onchange="zaPickAudio(this)">'
+    + '<div id="zaAudioStatus" class="za-status"></div>';
+}
+function zaAttSectionHtml(){
+  return '<div class="za-lbl">Bijlagen bij het commentaar (bv. screenshots van notities)</div>'
+    + '<button type="button" class="za-btn za-full" onclick="document.getElementById(\'zaAttFile\').click()">📎 Bijlage toevoegen</button>'
+    + '<input type="file" id="zaAttFile" multiple style="display:none" onchange="zaPickAtts(this)">'
+    + '<div id="zaAttStatus" class="za-status"></div>'
+    + '<div id="zaAttList" class="za-chips"></div>';
+}
+function zaCheckUploads(requireAudio){
+  if(zaForm.busy > 0){ alert('Er loopt nog een upload — wacht tot de ⏳ verdwenen is.'); return false; }
+  if(requireAudio && !zaForm.audio){
+    alert(zaForm.error ? ('Upload mislukt: ' + zaForm.error) : 'Kies eerst een audiobestand.');
     return false;
   }
   return true;
 }
-function zangarchSubmitNewSong(){
-  var title = ((document.getElementById('zaTitle')||{}).value || '').trim();
-  var uitvoerder = ((document.getElementById('zaUitvoerder')||{}).value || '').trim();
-  var toonaard = ((document.getElementById('zaToonaard')||{}).value || '').trim();
-  var date = (document.getElementById('zaDate')||{}).value || dk(new Date());
-  var comment = ((document.getElementById('zaComment')||{}).value || '').trim();
+function zaVal(id){ var el = document.getElementById(id); return el ? el.value : ''; }
+function zaBuildVersion(){
+  var now = Date.now();
+  return {
+    id: 'zver_' + now, createdAt: now,
+    date: zaVal('zaDate') || dk(new Date()),
+    comment: zaVal('zaComment').trim(),
+    key: zaForm.audio.key, filename: zaForm.audio.filename, mimetype: zaForm.audio.mimetype, size: zaForm.audio.size,
+    attachments: zaForm.atts.slice(), notes: []
+  };
+}
+// Annuleren: bestanden die tijdens dit formulier al geüpload werden, weer opruimen
+function zaCancelForm(songId){
+  zaForm.newKeys.forEach(zaDeleteBlob);
+  zaForm.newKeys = [];
+  if(songId && zaSongById(songId)) zaOpenCategory(songId); else zaCloseModal();
+}
+
+// ── Nieuw nummer (categorie) ──
+function zaOpenNewCategory(){
+  zaFormReset();
+  zaOpenModal(
+    '<div class="za-h">Nieuw nummer</div>'
+    + '<div class="za-hint">Elk nummer is een categorie waarin je telkens nieuwe versies onderbrengt.</div>'
+    + '<div class="za-lbl">Titel *</div><input class="za-input" id="zaTitle" placeholder="bv. Stand by Me">'
+    + '<div class="za-lbl">Uitvoerder</div><input class="za-input" id="zaArtist" placeholder="bv. Ben E. King">'
+    + '<div class="za-lbl">Toonaard</div><input class="za-input" id="zaKeyTone" placeholder="bv. C majeur">'
+    + '<div class="za-sep"></div>'
+    + '<div class="za-lbl" style="color:var(--ink)">Eerste versie (optioneel)</div>'
+    + '<div class="za-lbl">Datum</div><input type="date" class="za-input" id="zaDate" value="' + dk(new Date()) + '">'
+    + zaAudioSectionHtml(false)
+    + '<div class="za-lbl">Commentaar</div><textarea class="za-input" id="zaComment" rows="3" placeholder="Wat viel op tijdens deze opname?"></textarea>'
+    + zaAttSectionHtml()
+    + '<div class="za-actions"><button class="za-btn za-btn-teal" onclick="zaSubmitNewCategory()">Bewaren</button>'
+    + '<button class="za-btn" onclick="zaCancelForm()">Annuleer</button></div>'
+  );
+}
+function zaSubmitNewCategory(){
+  var title = zaVal('zaTitle').trim();
   if(!title){ alert('Geef een titel op.'); return; }
-  if(!zangarchCheckUpload()) return;
-  ZANGARCH_SONGS.push({
-    id: 'zsong_' + Date.now(),
-    title: title, uitvoerder: uitvoerder, toonaard: toonaard,
-    versions: [{
-      id: 'zver_' + Date.now(), date: date, comment: comment,
-      key: zangarchPendingUpload.key, filename: zangarchPendingUpload.filename,
-      mimetype: zangarchPendingUpload.mimetype, size: zangarchPendingUpload.size
-    }]
-  });
+  if(zaForm.busy > 0){ alert('Er loopt nog een upload — wacht tot de ⏳ verdwenen is.'); return; }
+  var hasExtra = zaVal('zaComment').trim() || zaForm.atts.length;
+  if(!zaForm.audio && zaForm.error){ alert('Upload mislukt: ' + zaForm.error); return; }
+  if(!zaForm.audio && hasExtra){ alert('Een versie heeft een audiobestand nodig. Kies er een, of maak het commentaar/de bijlagen leeg.'); return; }
+  var song = { id: 'zsong_' + Date.now(), title: title, uitvoerder: zaVal('zaArtist').trim(), toonaard: zaVal('zaKeyTone').trim(), versions: [] };
+  if(zaForm.audio) song.versions.push(zaBuildVersion());
+  ZANGARCH_SONGS.push(song);
   zangarchSave();
-  zangarchCloseModal();
+  zaForm.newKeys = [];
+  renderZangArchTab();
+  zaOpenCategory(song.id);
+}
+
+// ── Nieuwe versie ──
+function zaOpenNewVersion(songId){
+  var s = zaSongById(songId); if(!s) return;
+  zaFormReset();
+  zaOpenModal(
+    '<div class="za-h">Nieuwe versie</div><div class="za-hint">' + zaEsc(s.title) + '</div>'
+    + '<div class="za-lbl">Datum</div><input type="date" class="za-input" id="zaDate" value="' + dk(new Date()) + '">'
+    + zaAudioSectionHtml(true)
+    + '<div class="za-lbl">Commentaar</div><textarea class="za-input" id="zaComment" rows="3" placeholder="Wat viel op tijdens deze opname?"></textarea>'
+    + zaAttSectionHtml()
+    + '<div class="za-actions"><button class="za-btn za-btn-teal" onclick="zaSubmitNewVersion(\'' + songId + '\')">Bewaren</button>'
+    + '<button class="za-btn" onclick="zaCancelForm(\'' + songId + '\')">Annuleer</button></div>'
+  );
+}
+function zaSubmitNewVersion(songId){
+  var s = zaSongById(songId); if(!s) return;
+  if(!zaCheckUploads(true)) return;
+  s.versions = s.versions || [];
+  s.versions.push(zaBuildVersion());
+  zangarchSave();
+  zaForm.newKeys = [];
+  renderZangArchTab();
+  zaOpenCategory(songId);
+}
+
+// ── Versie wijzigen (datum, commentaar, bijlagen) ──
+function zaOpenEditVersion(versionId){
+  var f = zaFindVersion(versionId); if(!f) return;
+  zaFormReset(f.version.attachments || []);
+  zaOpenModal(
+    '<div class="za-h">Versie wijzigen</div><div class="za-hint">' + zaEsc(f.song.title) + '</div>'
+    + '<div class="za-lbl">Datum</div><input type="date" class="za-input" id="zaDate" value="' + zaEsc(f.version.date || dk(new Date())) + '">'
+    + '<div class="za-lbl">Commentaar</div><textarea class="za-input" id="zaComment" rows="4">' + zaEsc(f.version.comment || '') + '</textarea>'
+    + zaAttSectionHtml()
+    + '<div class="za-hint" style="margin-top:8px">Opname: ' + zaEsc(f.version.filename || '') + '. De audio zelf kan je niet vervangen — verwijder de versie en voeg ze opnieuw toe als dat nodig is.</div>'
+    + '<div class="za-actions"><button class="za-btn za-btn-teal" onclick="zaSubmitEditVersion(\'' + versionId + '\')">Opslaan</button>'
+    + '<button class="za-btn" onclick="zaCancelForm(\'' + f.song.id + '\')">Annuleer</button></div>'
+  );
+  zaRenderAttList();
+}
+function zaSubmitEditVersion(versionId){
+  var f = zaFindVersion(versionId); if(!f) return;
+  if(!zaCheckUploads(false)) return;
+  var keepKeys = zaForm.atts.map(function(a){ return a.key; });
+  zaForm.origKeys.forEach(function(k){ if(keepKeys.indexOf(k) === -1) zaDeleteBlob(k); });
+  f.version.date = zaVal('zaDate') || f.version.date;
+  f.version.comment = zaVal('zaComment').trim();
+  f.version.attachments = zaForm.atts.slice();
+  zangarchSave();
+  zaForm.newKeys = [];
+  renderZangArchTab();
+  zaOpenCategory(f.song.id);
+}
+
+// ── Nummer (categorie) wijzigen ──
+function zaOpenEditCategory(songId){
+  var s = zaSongById(songId); if(!s) return;
+  zaOpenModal(
+    '<div class="za-h">Nummer wijzigen</div>'
+    + '<div class="za-lbl">Titel *</div><input class="za-input" id="zaTitle" value="' + zaEsc(s.title) + '">'
+    + '<div class="za-lbl">Uitvoerder</div><input class="za-input" id="zaArtist" value="' + zaEsc(s.uitvoerder || '') + '">'
+    + '<div class="za-lbl">Toonaard</div><input class="za-input" id="zaKeyTone" value="' + zaEsc(s.toonaard || '') + '">'
+    + '<div class="za-actions"><button class="za-btn za-btn-teal" onclick="zaSubmitEditCategory(\'' + songId + '\')">Opslaan</button>'
+    + '<button class="za-btn" onclick="zaOpenCategory(\'' + songId + '\')">Annuleer</button></div>'
+  );
+}
+function zaSubmitEditCategory(songId){
+  var s = zaSongById(songId); if(!s) return;
+  var title = zaVal('zaTitle').trim();
+  if(!title){ alert('Geef een titel op.'); return; }
+  s.title = title; s.uitvoerder = zaVal('zaArtist').trim(); s.toonaard = zaVal('zaKeyTone').trim();
+  zangarchSave();
+  renderZangArchTab();
+  zaOpenCategory(songId);
+}
+
+// ── Verwijderen ──
+function zaVersionBlobKeys(v){
+  var keys = [v.key];
+  (v.attachments || []).forEach(function(a){ keys.push(a.key); });
+  return keys.filter(Boolean);
+}
+function zaDeleteVersion(versionId){
+  var f = zaFindVersion(versionId); if(!f) return;
+  if(!confirm('Deze versie (' + zaFmtDate(f.version.date) + ') verwijderen, inclusief bijlagen en notities?')) return;
+  zaVersionBlobKeys(f.version).forEach(zaDeleteBlob);
+  f.song.versions = (f.song.versions || []).filter(function(v){ return v.id !== versionId; });
+  zangarchSave();
+  renderZangArchTab();
+  zaOpenCategory(f.song.id);
+}
+function zaDeleteCategory(songId){
+  var s = zaSongById(songId); if(!s) return;
+  var n = (s.versions || []).length;
+  if(!confirm('"' + s.title + '" verwijderen met al zijn ' + n + ' versie' + (n === 1 ? '' : 's') + ', bijlagen en notities?')) return;
+  (s.versions || []).forEach(function(v){ zaVersionBlobKeys(v).forEach(zaDeleteBlob); });
+  ZANGARCH_SONGS = ZANGARCH_SONGS.filter(function(x){ return x.id !== songId; });
+  zangarchSave();
+  zaCloseModal();
   renderZangArchTab();
 }
 
-// ── Bestaand nummer: eerst kiezen welk, dan enkel datum + bestand + commentaar ──
-function zangarchOpenExistingSongPicker(){
-  if(!ZANGARCH_SONGS.length){ alert('Er zijn nog geen nummers om een versie aan toe te voegen.'); return; }
-  var rows = ZANGARCH_SONGS.map(function(s){
-    return '<div onclick="zangarchOpenAddVersionForm(\''+s.id+'\')" style="padding:11px 4px;border-bottom:1px solid rgba(0,0,0,.06);cursor:pointer;font-family:var(--body);font-size:13px;color:#2c1208">'
-      + (s.title||'').replace(/</g,'&lt;') + (s.uitvoerder?' <span style="color:var(--stone2);font-size:11px">— '+s.uitvoerder.replace(/</g,'&lt;')+'</span>':'')
+// ═══════════════════════════════════════════════════════════════
+// CATEGORIE-DETAIL: alle versies van één nummer
+// ═══════════════════════════════════════════════════════════════
+function zaAttHtml(a){
+  var url = '/.netlify/functions/note-attachment?key=' + encodeURIComponent(a.key);
+  if((a.type || '').indexOf('image') === 0){
+    return '<a href="' + url + '" target="_blank" rel="noopener" class="za-thumb"><img src="' + url + '" alt="' + zaEsc(a.name) + '" loading="lazy"></a>';
+  }
+  return '<a href="' + url + '" target="_blank" rel="noopener" class="za-chip">' + notitiesFileIcon(a.type, a.name) + ' ' + zaEsc(a.name) + '</a>';
+}
+function zaNotesHtml(v, withDelete){
+  var notes = (v.notes || []).slice().sort(function(a,b){ return (b.at || '').localeCompare(a.at || ''); });
+  return notes.map(function(n){
+    return '<div class="za-note"><div class="za-note-m">' + zaEsc(zaFmtStamp(n.at)) + (n.pos != null ? ' · @' + zaFmtTime(n.pos) : '')
+      + (withDelete ? ' <b class="za-x" onclick="zaDeleteNote(\'' + v.id + '\',\'' + n.id + '\')">✕</b>' : '')
+      + '</div><div class="za-note-t">' + zaEsc(n.text) + '</div></div>';
+  }).join('');
+}
+function zaOpenCategory(songId){
+  var s = zaSongById(songId);
+  if(!s){ zaCloseModal(); renderZangArchTab(); return; }
+  var vers = zaVersionsSorted(s);
+  var h = '<div class="za-top"><div style="flex:1;min-width:0"><div class="za-h" style="margin:0">' + zaEsc(s.title) + '</div>'
+    + '<div class="za-hint" style="margin:2px 0 0">' + zaEsc([s.uitvoerder, s.toonaard].filter(Boolean).join(' · ') || 'Geen uitvoerder/toonaard ingevuld') + '</div></div>'
+    + '<button class="za-ic" title="Nummer wijzigen" onclick="zaOpenEditCategory(\'' + songId + '\')">✏️</button>'
+    + '<button class="za-ic" title="Nummer verwijderen" onclick="zaDeleteCategory(\'' + songId + '\')">🗑</button>'
+    + '<button class="za-ic" title="Sluiten" onclick="zaCloseModal()">✕</button></div>'
+    + '<div class="za-actions" style="margin:12px 0"><button class="za-btn za-btn-teal" onclick="zaOpenNewVersion(\'' + songId + '\')">+ Nieuwe versie</button>'
+    + (vers.length ? '<button class="za-btn" onclick="zaPlayVersion(\'' + vers[0].id + '\')">▶ Laatste versie</button>' : '') + '</div>';
+  if(!vers.length){
+    h += '<div class="za-empty">Nog geen versies. Voeg de eerste opname toe met "+ Nieuwe versie".</div>';
+  }
+  vers.forEach(function(v, i){
+    var atts = v.attachments || [];
+    var notes = v.notes || [];
+    h += '<div class="za-vcard">'
+      + '<div class="za-vtop"><div style="min-width:0"><div class="za-vdate">' + zaEsc(zaFmtDate(v.date)) + (i === 0 ? '<span class="za-badge">laatste</span>' : '') + '</div>'
+      + '<div class="za-vfile">' + zaEsc(v.filename || '') + (v.size ? ' · ' + notitiesFormatSize(v.size) : '') + '</div></div>'
+      + '<div class="za-vact"><button class="za-ic" title="Afspelen" onclick="zaPlayVersion(\'' + v.id + '\')">▶</button>'
+      + '<button class="za-ic" title="Wijzigen" onclick="zaOpenEditVersion(\'' + v.id + '\')">✏️</button>'
+      + '<button class="za-ic" title="Verwijderen" onclick="zaDeleteVersion(\'' + v.id + '\')">🗑</button></div></div>'
+      + (v.comment ? '<div class="za-vcomment">' + zaEsc(v.comment) + '</div>' : '')
+      + (atts.length ? '<div class="za-atts">' + atts.map(zaAttHtml).join('') + '</div>' : '')
+      + (notes.length ? '<details class="za-det"><summary>📝 ' + notes.length + ' notitie' + (notes.length === 1 ? '' : 's') + '</summary>' + zaNotesHtml(v, false) + '</details>' : '')
+      + '</div>';
+  });
+  zaOpenModal(h);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// LIJST SAMENSTELLEN (bolletjes)
+// ═══════════════════════════════════════════════════════════════
+var zaComposeSel = [];
+function zaOpenCompose(){
+  zaComposeSel = [];
+  var songs = zaSongsSorted().filter(function(s){ return (s.versions || []).length; });
+  var body = songs.map(function(s){
+    var vers = zaVersionsSorted(s);
+    return '<div class="za-ccat"><div class="za-ccat-h"><div style="min-width:0"><div class="za-card-t">' + zaEsc(s.title) + '</div>'
+      + '<div class="za-card-m">' + zaEsc([s.uitvoerder, s.toonaard].filter(Boolean).join(' · ')) + '</div></div>'
+      + '<button class="za-btn za-btn-sm" onclick="zaComposeLatest(\'' + s.id + '\')">laatste</button></div>'
+      + vers.map(function(v, i){
+          return '<div class="za-vrow" onclick="zaComposeToggle(\'' + v.id + '\')"><span class="za-circle" data-vid="' + v.id + '"></span>'
+            + '<div style="min-width:0"><b>' + zaEsc(zaFmtDate(v.date)) + '</b>' + (i === 0 ? '<span class="za-badge">laatste</span>' : '')
+            + (v.comment ? '<div class="za-vrow-c">' + zaEsc(v.comment.slice(0, 80)) + '</div>' : '') + '</div></div>';
+        }).join('')
       + '</div>';
   }).join('');
-  var html = ''
-    + '<div id="zangarchModal" style="position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.75);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)zangarchCloseModal()">'
-    + '<div style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:16px;box-shadow:4px 4px 0 var(--brut-ink,#0a0a0a);max-width:380px;width:100%;padding:22px 20px;max-height:80vh;display:flex;flex-direction:column">'
-    + '<div style="font-family:var(--cond);font-size:17px;font-weight:900;color:var(--brut-ink,#0a0a0a);margin-bottom:12px">Welk nummer krijgt een nieuwe versie?</div>'
-    + '<div style="overflow-y:auto;flex:1">'+rows+'</div>'
-    + '<button onclick="zangarchCloseModal()" style="margin-top:14px;background:none;border:1.5px solid var(--sand3);color:var(--stone2);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px;cursor:pointer">Annuleer</button>'
-    + '</div></div>';
-  document.body.insertAdjacentHTML('beforeend', html);
+  zaOpenModal('<div class="za-top"><div class="za-h" style="margin:0;flex:1">Stel lijst samen</div><button class="za-ic" onclick="zaCloseModal()">✕</button></div>'
+    + '<div class="za-hint">Tik op het bolletje naast de versies die je wil beluisteren. De volgorde waarin je aantikt is de afspeelvolgorde.</div>'
+    + body + '<div class="za-stickybar" id="zaComposeBar"></div>');
+  zaComposeRefresh();
 }
-function zangarchOpenAddVersionForm(songId){
-  zangarchCloseModal();
-  zangarchPendingUpload = null; zangarchUploadBusy = false; zangarchUploadError = '';
-  var song = ZANGARCH_SONGS.find(function(s){ return s.id===songId; });
-  if(!song) return;
-  var html = ''
-    + '<div id="zangarchModal" style="position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.75);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)zangarchCloseModal()">'
-    + '<div style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:16px;box-shadow:4px 4px 0 var(--brut-ink,#0a0a0a);max-width:380px;width:100%;padding:22px 20px;max-height:85vh;overflow-y:auto">'
-    + '<div style="font-family:var(--cond);font-size:17px;font-weight:900;color:var(--brut-ink,#0a0a0a);margin-bottom:4px">Nieuwe versie</div>'
-    + '<div style="font-family:var(--body);font-size:12px;color:var(--stone2);margin-bottom:14px">'+(song.title||'').replace(/</g,'&lt;')+'</div>'
-    + '<input type="date" class="gn-add-date" id="zaDate2" style="width:100%;margin-bottom:8px;box-sizing:border-box" value="'+dk(new Date())+'">'
-    + '<button type="button" class="gn-filter-btn" onclick="document.getElementById(\'zaFile2\').click()" style="width:100%;margin-bottom:6px">🎙️ Kies audiobestand</button>'
-    + '<input type="file" id="zaFile2" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.oga,.flac,.wma,.aiff,.aif,.opus,.amr,.mpga,.mpeg,.mp4a,.weba,.caf" style="display:none" onchange="zangarchHandleFile(this,\'zaFileStatus2\')">'
-    + '<div id="zaFileStatus2" style="font-family:var(--cond);font-size:9px;color:var(--stone2);min-height:14px;margin-bottom:8px"></div>'
-    + '<textarea class="gn-edit-area" id="zaComment2" placeholder="Commentaar bij deze opname (optioneel)" style="margin-bottom:12px"></textarea>'
-    + '<div style="display:flex;gap:8px">'
-    + '<button onclick="zangarchSubmitNewVersion(\''+song.id+'\')" style="flex:1;background:var(--surf-teal,#1F7A6C);color:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px;cursor:pointer">Bewaren</button>'
-    + '<button onclick="zangarchCloseModal()" style="background:none;border:1.5px solid var(--sand3);color:var(--stone2);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px 16px;cursor:pointer">Annuleer</button>'
-    + '</div>'
-    + '</div></div>';
-  document.body.insertAdjacentHTML('beforeend', html);
+function zaComposeToggle(vid){
+  var i = zaComposeSel.indexOf(vid);
+  if(i > -1) zaComposeSel.splice(i, 1); else zaComposeSel.push(vid);
+  zaComposeRefresh();
 }
-function zangarchSubmitNewVersion(songId){
-  var song = ZANGARCH_SONGS.find(function(s){ return s.id===songId; });
-  if(!song) return;
-  var date = (document.getElementById('zaDate2')||{}).value || dk(new Date());
-  var comment = ((document.getElementById('zaComment2')||{}).value || '').trim();
-  if(!zangarchCheckUpload()) return;
-  song.versions = song.versions || [];
-  song.versions.push({
-    id: 'zver_' + Date.now(), date: date, comment: comment,
-    key: zangarchPendingUpload.key, filename: zangarchPendingUpload.filename,
-    mimetype: zangarchPendingUpload.mimetype, size: zangarchPendingUpload.size
-  });
-  zangarchSave();
-  zangarchCloseModal();
-  renderZangArchTab();
+function zaComposeLatest(songId){
+  var s = zaSongById(songId); if(!s) return;
+  var v = zaVersionsSorted(s)[0]; if(!v) return;
+  if(zaComposeSel.indexOf(v.id) === -1) zaComposeSel.push(v.id);
+  zaComposeRefresh();
 }
-
-// ── Versie-kiezer per nummer (categorie) — meerdere versies selecteerbaar, in klikvolgorde ──
-function zangarchOpenVersionPicker(songId){
-  var song = ZANGARCH_SONGS.find(function(s){ return s.id===songId; });
-  if(!song) return;
-  zangarchPickerSelected = [];
-  var versions = (song.versions||[]).slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
-  var rows = versions.map(function(v){
-    return '<label style="display:flex;align-items:flex-start;gap:9px;padding:9px 2px;border-bottom:1px solid rgba(0,0,0,.06);cursor:pointer">'
-      + '<input type="checkbox" value="'+v.id+'" onchange="zangarchTogglePickerVersion(\''+v.id+'\',this.checked)" style="width:17px;height:17px;flex-shrink:0;margin-top:2px;accent-color:var(--surf-teal,#1F7A6C)">'
-      + '<div style="flex:1"><div style="font-family:var(--grotesk);font-size:12.5px;font-weight:700;color:#2c1208">'+v.date+'</div>'
-      + (v.comment ? '<div style="font-family:var(--body);font-size:11px;color:var(--stone2);margin-top:1px">'+v.comment.replace(/</g,'&lt;')+'</div>' : '')
-      + '</div>'
-      + '<button type="button" onclick="event.preventDefault();event.stopPropagation();zangarchPlaySingle(\''+song.id+'\',\''+v.id+'\')" style="background:none;border:1.3px solid var(--sand3);border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;flex-shrink:0">▶</button>'
-      + '</label>';
-  }).join('');
-  var html = ''
-    + '<div id="zangarchModal" style="position:fixed;inset:0;z-index:9600;background:rgba(10,8,4,.75);display:flex;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)zangarchCloseModal()">'
-    + '<div style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:16px;box-shadow:4px 4px 0 var(--brut-ink,#0a0a0a);max-width:380px;width:100%;padding:22px 20px;max-height:82vh;display:flex;flex-direction:column">'
-    + '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:2px">'
-    + '<div style="flex:1;font-family:var(--cond);font-size:17px;font-weight:900;color:var(--brut-ink,#0a0a0a)">'+(song.title||'').replace(/</g,'&lt;')+'</div>'
-    + '<button type="button" onclick="zangarchDeleteSong(\''+song.id+'\')" title="Volledig nummer verwijderen" style="background:none;border:none;color:var(--terra);font-size:14px;cursor:pointer;flex-shrink:0">🗑</button>'
-    + '</div>'
-    + '<div style="font-family:var(--body);font-size:11px;color:var(--stone2);margin-bottom:12px">Kies welke versie(s) je wil beluisteren — in de volgorde die je aanvinkt.</div>'
-    + '<div style="overflow-y:auto;flex:1">'+rows+'</div>'
-    + '<button onclick="zangarchPlaySelected(\''+song.id+'\')" style="width:100%;margin-top:12px;background:var(--surf-teal,#1F7A6C);color:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);border-radius:12px;font-family:var(--grotesk);font-size:11px;font-weight:700;padding:11px;cursor:pointer">▶ Afspelen</button>'
-    + '</div></div>';
-  document.body.insertAdjacentHTML('beforeend', html);
+function zaComposeRefresh(){
+  var nodes = document.querySelectorAll('#zaModal .za-circle');
+  for(var k = 0; k < nodes.length; k++){
+    var el = nodes[k];
+    var i = zaComposeSel.indexOf(el.getAttribute('data-vid'));
+    if(i > -1){ el.classList.add('on'); el.textContent = String(i + 1); }
+    else { el.classList.remove('on'); el.textContent = ''; }
+  }
+  var bar = document.getElementById('zaComposeBar');
+  if(bar){
+    bar.innerHTML = '<span class="za-count">' + zaComposeSel.length + ' geselecteerd</span>'
+      + '<div class="za-actions" style="margin:0"><button class="za-btn za-btn-teal" onclick="zaComposePlay()"' + (zaComposeSel.length ? '' : ' disabled') + '>▶ Bevestig &amp; speel af</button>'
+      + '<button class="za-btn" onclick="zaCloseModal()">Annuleer</button></div>';
+  }
 }
-function zangarchTogglePickerVersion(id, checked){
-  var i = zangarchPickerSelected.indexOf(id);
-  if(checked && i===-1) zangarchPickerSelected.push(id);
-  else if(!checked && i>-1) zangarchPickerSelected.splice(i,1);
-}
-function zangarchPlaySelected(songId){
-  if(!zangarchPickerSelected.length){ alert('Kies eerst minstens één versie.'); return; }
-  var queue = zangarchPickerSelected.map(function(vid){ return { songId: songId, versionId: vid }; });
-  zangarchCloseModal();
-  zangarchStartQueue(queue);
-}
-function zangarchPlaySingle(songId, versionId){
-  zangarchCloseModal();
-  zangarchStartQueue([{ songId: songId, versionId: versionId }]);
-}
-function zangarchDeleteSong(songId){
-  if(!confirm('Dit hele nummer met al zijn versies verwijderen?')) return;
-  ZANGARCH_SONGS = ZANGARCH_SONGS.filter(function(s){ return s.id!==songId; });
-  zangarchSave();
-  zangarchCloseModal();
-  renderZangArchTab();
-}
-
-// ── "Beluister alle laatste versies" — wachtrij van de nieuwste versie per nummer ──
-function zangarchPlayAllLatest(){
-  if(!ZANGARCH_SONGS.length) return;
-  var queue = ZANGARCH_SONGS.map(function(song){
-    var versions = (song.versions||[]).slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
-    return versions.length ? { songId: song.id, versionId: versions[0].id } : null;
+function zaComposePlay(){
+  var queue = zaComposeSel.map(function(vid){
+    var f = zaFindVersion(vid);
+    return f ? { songId: f.song.id, versionId: vid } : null;
   }).filter(Boolean);
-  zangarchStartQueue(queue);
+  if(!queue.length) return;
+  zaCloseModal();
+  zaStartQueue(queue);
+}
+function zaPlayAllLatest(){
+  var queue = [];
+  zaSongsSorted().forEach(function(s){
+    var v = zaVersionsSorted(s)[0];
+    if(v) queue.push({ songId: s.id, versionId: v.id });
+  });
+  if(!queue.length) return;
+  zaStartQueue(queue);
+}
+function zaPlayVersion(versionId){
+  var f = zaFindVersion(versionId); if(!f) return;
+  zaCloseModal();
+  zaStartQueue([{ songId: f.song.id, versionId: versionId }]);
 }
 
-// ── Afspeel-engine: wachtrij van {songId,versionId}, speelt na elkaar af ──
-function zangarchFindVersion(songId, versionId){
-  var song = ZANGARCH_SONGS.find(function(s){ return s.id===songId; });
-  if(!song) return null;
-  var v = (song.versions||[]).find(function(v){ return v.id===versionId; });
-  return v ? { song: song, version: v } : null;
+// ═══════════════════════════════════════════════════════════════
+// PLAYLIST-OVERLAY (speler)
+// ═══════════════════════════════════════════════════════════════
+var zaQueue = [], zaIdx = 0, zaMedia = null, zaSeeking = false, zaLoadTok = 0, zaLoading = false;
+var zaBlobCache = {};
+// Minieme stille WAV: wordt binnen de aanraking gestart om de speler te "ontgrendelen"
+// (iPhones laten anders geen automatisch doorspelen toe na een netwerkaanvraag).
+var ZA_SILENT = 'data:audio/wav;base64,UklGRiYAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQIAAAAAAA==';
+
+function zaCurrent(){
+  var q = zaQueue[zaIdx];
+  return q ? zaFindVersion(q.versionId) : null;
 }
-function zangarchStartQueue(queue){
+function zaStartQueue(queue){
   if(!queue || !queue.length) return;
-  zangarchQueue = queue;
-  zangarchQueueIndex = 0;
-  zangarchOpenPlayerModal();
+  zaQueue = queue; zaIdx = 0;
+  zaOpenPlayer();
+  // Synchroon binnen de aanraking: speler ontgrendelen
+  if(zaMedia){
+    try { zaMedia.loop = true; zaMedia.src = ZA_SILENT; var p = zaMedia.play(); if(p && p.catch) p.catch(function(){}); } catch(e){}
+  }
+  zaLoadTrack(0, true);
 }
-function zangarchOpenPlayerModal(){
-  var html = ''
-    + '<div id="zangarchPlayerModal" class="photo-modal-backdrop open" onclick="if(event.target===this)zangarchClosePlayer()">'
-    + '<div class="photo-modal" style="max-width:380px;background:#1a1410;padding:0">'
-    + '<button class="photo-modal-close" onclick="zangarchClosePlayer()">✕</button>'
-    + '<div style="padding:34px 22px 26px;text-align:center">'
-    + '<div id="zaPlayerLabel" style="font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:6px"></div>'
-    + '<div id="zaPlayerTitle" style="font-family:var(--grotesk);font-size:16px;font-weight:700;color:#fff;margin-bottom:4px"></div>'
-    + '<div id="zaPlayerMeta" style="font-family:var(--cond);font-size:10px;color:rgba(255,255,255,.5);margin-bottom:4px"></div>'
-    + '<div id="zaPlayerComment" style="font-family:var(--body);font-size:11px;color:rgba(255,255,255,.65);margin-bottom:14px"></div>'
-    + '<div id="zaPlayerMediaWrap"></div>'
-    + '</div></div></div>';
-  document.body.insertAdjacentHTML('beforeend', html);
-  zangarchLoadCurrentInPlayer();
+function zaOpenPlayer(){
+  zaClosePlayer(true);
+  var wrap = document.createElement('div');
+  wrap.id = 'zaPlayer';
+  wrap.className = 'za-backdrop';
+  wrap.innerHTML = '<div class="za-panel za-pl">'
+    + '<div class="za-top"><div class="za-pl-cnt" id="zaPlCnt"></div><button class="za-ic za-ic-w" title="Sluiten" onclick="zaClosePlayer()">✕</button></div>'
+    + '<div class="za-pl-now"><div class="za-pl-title" id="zaPlTitle"></div><div class="za-pl-meta" id="zaPlMeta"></div><div class="za-pl-comment" id="zaPlComment"></div></div>'
+    + '<audio id="zaMedia" preload="auto" playsinline></audio>'
+    + '<div class="za-pl-seek"><span id="zaTimeCur">0:00</span>'
+    + '<input type="range" class="za-seek" id="zaSeek" min="0" max="100" step="1" value="0" oninput="zaSeekInput(this.value)" onchange="zaSeekCommit(this.value)">'
+    + '<span id="zaTimeDur">0:00</span></div>'
+    + '<div class="za-pl-ctl">'
+    + '<button class="za-cb" title="Vorig nummer" onclick="zaPrev()">⏮</button>'
+    + '<button class="za-cb" title="15 seconden terug" onclick="zaSkip(-15)">−15</button>'
+    + '<button class="za-cb za-cb-main" id="zaBtnPlay" title="Afspelen / pauzeren" onclick="zaToggle()">▶</button>'
+    + '<button class="za-cb" title="15 seconden verder" onclick="zaSkip(15)">+15</button>'
+    + '<button class="za-cb" title="Volgend nummer" onclick="zaNext(false)">⏭</button>'
+    + '<button class="za-cb" title="Stop" onclick="zaStop()">⏹</button></div>'
+    + '<div class="za-pl-status" id="zaPlStatus"></div>'
+    + '<div class="za-pl-sec">Notitie bij dit nummer</div>'
+    + '<textarea class="za-input za-pl-ta" id="zaNoteText" rows="2" placeholder="Wat wil je onthouden? (wordt bewaard met datum en positie in het nummer)"></textarea>'
+    + '<button class="za-btn za-btn-terra za-full" onclick="zaAddNote()">＋ Notitie toevoegen</button>'
+    + '<div id="zaNotesList"></div>'
+    + '<div class="za-pl-sec">Playlist</div><div id="zaPlList"></div>'
+    + '</div>';
+  document.body.appendChild(wrap);
+  zaMedia = document.getElementById('zaMedia');
+  zaMedia.addEventListener('timeupdate', zaOnTime);
+  zaMedia.addEventListener('loadedmetadata', zaOnMeta);
+  zaMedia.addEventListener('durationchange', zaOnMeta);
+  zaMedia.addEventListener('ended', function(){ if(!zaMedia.loop) zaNext(true); });
+  zaMedia.addEventListener('play', zaSyncPlayBtn);
+  zaMedia.addEventListener('pause', zaSyncPlayBtn);
+  zaMedia.addEventListener('error', function(){
+    if(zaMedia.src && zaMedia.src.indexOf('data:audio/wav') === 0) return;
+    zaSetStatus(document.getElementById('zaPlStatus'), '⚠️ Dit bestand kan niet afgespeeld worden op dit toestel.', '#ff9d7a');
+  });
 }
-function zangarchLoadCurrentInPlayer(){
-  var item = zangarchQueue[zangarchQueueIndex];
-  if(!item) { zangarchClosePlayer(); return; }
-  var found = zangarchFindVersion(item.songId, item.versionId);
-  if(!found) { zangarchQueueNext(); return; }
-  var labelEl = document.getElementById('zaPlayerLabel');
-  var titleEl = document.getElementById('zaPlayerTitle');
-  var metaEl = document.getElementById('zaPlayerMeta');
-  var commentEl = document.getElementById('zaPlayerComment');
-  var mediaWrap = document.getElementById('zaPlayerMediaWrap');
-  if(labelEl) labelEl.textContent = zangarchQueue.length>1 ? ('Nummer ' + (zangarchQueueIndex+1) + ' van ' + zangarchQueue.length) : '';
-  if(titleEl) titleEl.textContent = found.song.title;
-  if(metaEl) metaEl.textContent = [found.song.uitvoerder, found.song.toonaard, found.version.date].filter(Boolean).join(' · ');
-  if(commentEl) commentEl.textContent = found.version.comment || '';
-  if(mediaWrap) {
-    var isVideo = found.version.mimetype && found.version.mimetype.indexOf('video') === 0;
-    var src = '/.netlify/functions/note-attachment?key=' + encodeURIComponent(found.version.key);
-    mediaWrap.innerHTML = isVideo
-      ? '<video id="zaPlayerAudio" controls autoplay style="width:100%;max-height:220px;border-radius:10px" src="'+src+'" onended="zangarchQueueNext()"></video>'
-      : '<audio id="zaPlayerAudio" controls autoplay style="width:100%" src="'+src+'" onended="zangarchQueueNext()"></audio>';
-    var mediaEl = document.getElementById('zaPlayerAudio');
-    if(mediaEl) { var p = mediaEl.play(); if(p && p.catch) p.catch(function(){}); }
+async function zaGetBlobUrl(v){
+  if(zaBlobCache[v.key]) return zaBlobCache[v.key];
+  var res = await fetch('/.netlify/functions/note-attachment?key=' + encodeURIComponent(v.key));
+  if(!res.ok) throw new Error('bestand niet gevonden (' + res.status + ')');
+  var buf = await res.arrayBuffer();
+  var url = URL.createObjectURL(new Blob([buf], { type: zaGuessMime(v.filename, v.mimetype) }));
+  zaBlobCache[v.key] = url;
+  return url;
+}
+async function zaLoadTrack(i, autoplay){
+  var q = zaQueue[i];
+  if(!q || !zaMedia) return;
+  zaIdx = i;
+  var tok = ++zaLoadTok;
+  var f = zaCurrent();
+  zaRenderPlayerMeta();
+  if(!f){ zaSetStatus(document.getElementById('zaPlStatus'), '⚠️ Deze versie bestaat niet meer.', '#ff9d7a'); return; }
+  zaLoading = true;
+  zaSetStatus(document.getElementById('zaPlStatus'), '⏳ Nummer laden…', 'rgba(255,255,255,.6)');
+  var seek = document.getElementById('zaSeek');
+  if(seek){ seek.value = 0; }
+  var tc = document.getElementById('zaTimeCur'); if(tc) tc.textContent = '0:00';
+  var td = document.getElementById('zaTimeDur'); if(td) td.textContent = '0:00';
+  try {
+    var url = await zaGetBlobUrl(f.version);
+    if(tok !== zaLoadTok || !zaMedia) return;
+    zaMedia.loop = false;
+    zaMedia.src = url;
+    zaMedia.load();
+    zaLoading = false;
+    zaSetStatus(document.getElementById('zaPlStatus'), '', '');
+    zaSetMediaSession(f);
+    if(autoplay){
+      var p = zaMedia.play();
+      if(p && p.catch) p.catch(function(){ zaSetStatus(document.getElementById('zaPlStatus'), 'Tik op ▶ om te starten.', 'rgba(255,255,255,.6)'); });
+    }
+    // volgende nummer alvast op de achtergrond laden voor een vlotte overgang
+    var nq = zaQueue[i + 1];
+    if(nq){ var nf = zaFindVersion(nq.versionId); if(nf) zaGetBlobUrl(nf.version).catch(function(){}); }
+  } catch(e){
+    if(tok !== zaLoadTok) return;
+    zaLoading = false;
+    zaSetStatus(document.getElementById('zaPlStatus'), '⚠️ ' + e.message, '#ff9d7a');
   }
 }
-function zangarchQueueNext(){
-  if(zangarchQueueIndex < zangarchQueue.length - 1) {
-    zangarchQueueIndex++;
-    zangarchLoadCurrentInPlayer();
-  } else {
-    zangarchClosePlayer();
+function zaRenderPlayerMeta(){
+  var f = zaCurrent();
+  var cnt = document.getElementById('zaPlCnt');
+  if(cnt) cnt.textContent = 'Playlist · ' + (zaIdx + 1) + ' van ' + zaQueue.length;
+  var t = document.getElementById('zaPlTitle'), m = document.getElementById('zaPlMeta'), c = document.getElementById('zaPlComment');
+  if(f){
+    if(t) t.textContent = f.song.title;
+    if(m) m.textContent = [f.song.uitvoerder, f.song.toonaard, 'versie van ' + zaFmtDate(f.version.date)].filter(Boolean).join(' · ');
+    if(c) c.textContent = f.version.comment || '';
+  }
+  zaRenderPlayerNotes();
+  var list = document.getElementById('zaPlList');
+  if(list){
+    list.innerHTML = zaQueue.map(function(q, i){
+      var ff = zaFindVersion(q.versionId);
+      var on = i === zaIdx;
+      return '<div class="za-plrow' + (on ? ' on' : '') + '" onclick="zaJump(' + i + ')"><span class="za-plnum">' + (on ? '▶' : (i + 1)) + '</span>'
+        + '<div style="min-width:0"><div class="za-plt">' + zaEsc(ff ? ff.song.title : '(verwijderd)') + '</div>'
+        + '<div class="za-plm">' + zaEsc(ff ? zaFmtDate(ff.version.date) : '') + '</div></div></div>';
+    }).join('');
   }
 }
-function zangarchClosePlayer(){
-  var el = document.getElementById('zangarchPlayerModal');
-  if(el) {
-    var audioEl = document.getElementById('zaPlayerAudio');
-    if(audioEl) { try { audioEl.pause(); } catch(e){} }
-    el.remove();
+function zaRenderPlayerNotes(){
+  var el = document.getElementById('zaNotesList');
+  var f = zaCurrent();
+  if(!el) return;
+  var html = f ? zaNotesHtml(f.version, true) : '';
+  el.innerHTML = html ? '<div class="za-pl-sec">Eerdere notities bij deze versie</div><div class="za-pl-notes">' + html + '</div>' : '';
+}
+function zaOnTime(){
+  if(!zaMedia || zaLoading || zaMedia.loop) return;
+  var tc = document.getElementById('zaTimeCur'); if(tc) tc.textContent = zaFmtTime(zaMedia.currentTime);
+  var seek = document.getElementById('zaSeek');
+  if(seek && !zaSeeking && zaMedia.duration && isFinite(zaMedia.duration)){ seek.max = Math.floor(zaMedia.duration); seek.value = Math.floor(zaMedia.currentTime); }
+}
+function zaOnMeta(){
+  if(!zaMedia || zaMedia.loop) return;
+  var d = zaMedia.duration;
+  var td = document.getElementById('zaTimeDur'); if(td) td.textContent = isFinite(d) ? zaFmtTime(d) : '0:00';
+  var seek = document.getElementById('zaSeek'); if(seek && isFinite(d)) seek.max = Math.floor(d);
+}
+function zaSyncPlayBtn(){
+  var b = document.getElementById('zaBtnPlay');
+  if(b && zaMedia) b.textContent = zaMedia.paused ? '▶' : '⏸';
+}
+function zaToggle(){
+  if(!zaMedia || zaLoading) return;
+  if(zaMedia.paused){ var p = zaMedia.play(); if(p && p.catch) p.catch(function(){}); } else { zaMedia.pause(); }
+}
+function zaSkip(sec){
+  if(!zaMedia || zaLoading) return;
+  var d = zaMedia.duration;
+  var t = (zaMedia.currentTime || 0) + sec;
+  if(isFinite(d)) t = Math.min(t, Math.max(0, d - 0.1));
+  zaMedia.currentTime = Math.max(0, t);
+}
+function zaSeekInput(v){ zaSeeking = true; var tc = document.getElementById('zaTimeCur'); if(tc) tc.textContent = zaFmtTime(Number(v)); }
+function zaSeekCommit(v){ if(zaMedia && !zaLoading) zaMedia.currentTime = Number(v); zaSeeking = false; }
+function zaPrev(){
+  if(!zaMedia) return;
+  if((zaMedia.currentTime || 0) > 3 || zaIdx === 0){ zaMedia.currentTime = 0; return; }
+  zaLoadTrack(zaIdx - 1, true);
+}
+function zaNext(auto){
+  if(zaIdx < zaQueue.length - 1){ zaLoadTrack(zaIdx + 1, true); return; }
+  if(auto && zaMedia){
+    zaMedia.pause();
+    zaSetStatus(document.getElementById('zaPlStatus'), '✓ Playlist afgelopen', 'rgba(255,255,255,.7)');
   }
-  zangarchQueue = [];
-  zangarchQueueIndex = 0;
+}
+function zaStop(){
+  if(!zaMedia) return;
+  zaMedia.pause();
+  try { zaMedia.currentTime = 0; } catch(e){}
+  zaSetStatus(document.getElementById('zaPlStatus'), 'Gestopt', 'rgba(255,255,255,.6)');
+}
+function zaJump(i){ if(i !== zaIdx) zaLoadTrack(i, true); else if(zaMedia && zaMedia.paused) zaToggle(); }
+
+function zaAddNote(){
+  var ta = document.getElementById('zaNoteText');
+  var f = zaCurrent();
+  if(!ta || !f) return;
+  var text = ta.value.trim();
+  if(!text){ alert('Typ eerst een notitie.'); return; }
+  f.version.notes = f.version.notes || [];
+  f.version.notes.push({ id: 'zn_' + Date.now(), at: new Date().toISOString(), pos: Math.floor((zaMedia && !zaLoading && isFinite(zaMedia.currentTime)) ? zaMedia.currentTime : 0), text: text });
+  zangarchSave();
+  ta.value = '';
+  zaRenderPlayerNotes();
+}
+function zaDeleteNote(versionId, noteId){
+  var f = zaFindVersion(versionId); if(!f) return;
+  if(!confirm('Deze notitie verwijderen?')) return;
+  f.version.notes = (f.version.notes || []).filter(function(n){ return n.id !== noteId; });
+  zangarchSave();
+  zaRenderPlayerNotes();
+}
+function zaSetMediaSession(f){
+  try { if(typeof setMediaSessionMetadata === 'function') setMediaSessionMetadata(f.song.title, f.song.uitvoerder || 'QualityTime Zanglessen', 'Versie ' + zaFmtDate(f.version.date)); } catch(e){}
+  if(!('mediaSession' in navigator)) return;
+  try {
+    var ms = navigator.mediaSession;
+    ms.setActionHandler('play', function(){ if(zaMedia) zaMedia.play(); });
+    ms.setActionHandler('pause', function(){ if(zaMedia) zaMedia.pause(); });
+    ms.setActionHandler('previoustrack', zaPrev);
+    ms.setActionHandler('nexttrack', function(){ zaNext(false); });
+    ms.setActionHandler('seekbackward', function(){ zaSkip(-15); });
+    ms.setActionHandler('seekforward', function(){ zaSkip(15); });
+  } catch(e){}
+}
+function zaClosePlayer(keepBlobs){
+  zaLoadTok++;
+  if(zaMedia){ try { zaMedia.pause(); zaMedia.removeAttribute('src'); zaMedia.load(); } catch(e){} }
+  var el = document.getElementById('zaPlayer'); if(el) el.remove();
+  zaMedia = null; zaLoading = false; zaSeeking = false;
+  if(!keepBlobs){
+    Object.keys(zaBlobCache).forEach(function(k){ try { URL.revokeObjectURL(zaBlobCache[k]); } catch(e){} });
+    zaBlobCache = {};
+    zaQueue = []; zaIdx = 0;
+    try {
+      if('mediaSession' in navigator){
+        ['play','pause','previoustrack','nexttrack','seekbackward','seekforward'].forEach(function(a){ navigator.mediaSession.setActionHandler(a, null); });
+        navigator.mediaSession.metadata = null;
+      }
+    } catch(e){}
+  }
 }
 
 // ═══ AXXES — opnames & transcripties ═══
