@@ -113,19 +113,22 @@ async function sendPush(filters, title, body, tagId) {
     console.error('ONESIGNAL_REST_API_KEY ontbreekt — kan geen push versturen.');
     return { skipped: true, reason: 'no-api-key' };
   }
+  // filters === 'ALL_SUBSCRIBED' is een speciaal signaal: stuur naar alle
+  // geabonneerde toestellen via OneSignal's eigen "Subscribed Users"-segment,
+  // i.p.v. via een tag-filter. Gebruikt voor de afspraak-herinneringen hieronder,
+  // omdat er geen bestaande tag is die "wil je afspraak-herinneringen" aangeeft
+  // (de training/maaltijd-tags hierboven bestaan al wél in de app zelf — dit is
+  // bewust een apart mechanisme, geen gok naar een niet-bestaande tag).
+  const payload = { app_id: ONESIGNAL_APP_ID, headings: { en: title, nl: title }, contents: { en: body, nl: body }, web_push_topic: tagId };
+  if (filters === 'ALL_SUBSCRIBED') payload.included_segments = ['Subscribed Users'];
+  else payload.filters = filters;
   const res = await fetch(ONESIGNAL_API, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json; charset=utf-8',
       'Authorization': `Key ${ONESIGNAL_REST_API_KEY}`
     },
-    body: JSON.stringify({
-      app_id: ONESIGNAL_APP_ID,
-      filters,
-      headings: { en: title, nl: title },
-      contents: { en: body, nl: body },
-      web_push_topic: tagId
-    })
+    body: JSON.stringify(payload)
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {
@@ -237,6 +240,52 @@ export default async (req) => {
       ));
     }
   }
+
+  // ── 7. Eigen (lokale) afspraken — melding OP het tijdstip van de afspraak zelf ──
+  // Gebruikt event-reminders.js (Netlify Blobs) i.p.v. OneSignal-tags, want dit
+  // zijn individuele, eenmalige tijdstippen per afspraak, geen vast dagelijks
+  // tijdstip zoals training/maaltijd. Bij "hele dag" afspraken is de herinnering
+  // altijd om 08:00 geregistreerd (gebeurt al bij het opslaan in de app zelf).
+  let reminderItems = [];
+  try {
+    const siteUrl = new URL(req.url).origin;
+    const rRes = await fetch(siteUrl + '/.netlify/functions/event-reminders');
+    if (rRes.ok) { const rJson = await rRes.json(); reminderItems = (rJson && rJson.items) || []; }
+  } catch (e) { console.error('event-reminders ophalen mislukt:', e.message); }
+
+  const todaysReminders = reminderItems.filter(r => r.date === dateStr);
+  const reminderPromises = [];
+
+  todaysReminders.forEach(r => {
+    if (r.done) return; // al afgevinkt — geen melding meer nodig
+    if (roundToQuarterHour(r.time) !== currentTime) return;
+    reminderPromises.push(sendPush(
+      'ALL_SUBSCRIBED',
+      '📅 ' + r.title,
+      r.urgent ? '☢️ Urgent — deze afspraak begint nu.' : 'Deze afspraak begint nu.',
+      'event-' + r.id
+    ));
+  });
+
+  const reminderResults = await Promise.all(reminderPromises);
+  results.push(...reminderResults);
+
+  // ── 8. Urgente afspraken die om 23:00 nog steeds niet zijn afgevinkt ──
+  if (currentTime === '23:00') {
+    const escalationPromises = [];
+    const stillOpen = todaysReminders.filter(r => r.urgent && !r.done);
+    stillOpen.forEach(r => {
+      escalationPromises.push(sendPush(
+        'ALL_SUBSCRIBED',
+        '☢️ Nog niet afgewerkt: ' + r.title,
+        'Deze afspraak stond als urgent gemarkeerd en is nog niet afgevinkt.',
+        'event-escalatie-' + r.id
+      ));
+    });
+    const escalationResults = await Promise.all(escalationPromises);
+    results.push(...escalationResults);
+  }
+
 
   return new Response(JSON.stringify({ ok: true, dateStr, currentTime, dow, results }), {
     headers: { 'Content-Type': 'application/json' }
