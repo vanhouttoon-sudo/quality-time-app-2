@@ -2296,6 +2296,8 @@ input, select, textarea{
 .oh-agenda-dot{width:4px;height:4px;border-radius:50%;background:var(--sand3,#d8c8b0);transition:.2s;}
 .oh-agenda-dot.active{background:var(--terra,#c05818);width:10px;border-radius:3px;}
 .oh-agenda-check{position:absolute;right:8px;bottom:8px;width:22px;height:22px;border-radius:50%;background:var(--green,#4a7a30);border:1.5px solid var(--brut-ink,#0a0a0a);display:none;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:900;box-shadow:1px 1px 0 var(--brut-ink,#0a0a0a);z-index:4;}
+.oh-agenda-urgent{position:absolute;left:8px;top:8px;width:24px;height:24px;border-radius:50%;background:#fff;border:1.5px solid var(--terra,#c05818);display:none;align-items:center;justify-content:center;font-size:14px;box-shadow:1px 1px 0 var(--brut-ink,#0a0a0a);z-index:4;animation:ohUrgentPulse 1.4s infinite;}
+@keyframes ohUrgentPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
 
 /* "Tinder-stijl" swipe-animatie tussen afspraken: de huidige afspraak glijdt
    naar links weg met een lichte kanteling (geen bladzijde-omslag, geen witte
@@ -3883,7 +3885,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v28/09/26 · 14:43</div>
+    <div class="oh-version-tag" id="ohVersionTag">v1/10/26 · 09:14</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -3960,6 +3962,7 @@ function qtSkateLoaderHtml(text){
           <div class="oh-card oh-card-sm" id="ohCardAgenda" onclick="openDetailSheet('agenda')" style="position:relative;z-index:3">
             <div class="oh-deco-icon" style="top:10px;right:10px"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
             <div class="oh-agenda-check" id="ohAgendaCheck">✓</div>
+            <div class="oh-agenda-urgent" id="ohAgendaUrgent">☢️</div>
             <div class="oh-card-icon" style="background:#e9f1e4">🗓</div>
             <div class="oh-card-body">
               <div class="oh-card-label">Agenda</div>
@@ -5012,7 +5015,7 @@ function qtSkateLoaderHtml(text){
       <div id="evTimeRow" style="display:flex;gap:10px;margin-bottom:11px">
         <div style="flex:1">
           <div class="ev-label">Van</div>
-          <input class="ev-input" id="evStart" type="time" value="09:00">
+          <input class="ev-input" id="evStart" type="time" value="09:00" onchange="evSyncEndTime(this.value)">
         </div>
         <div style="flex:1">
           <div class="ev-label">Tot</div>
@@ -5411,7 +5414,7 @@ function qtSkateLoaderHtml(text){
       <div id="evTimeRow" style="display:flex;gap:10px;margin-bottom:11px">
         <div style="flex:1">
           <div class="ev-label">Van</div>
-          <input class="ev-input" id="evStart" type="time" value="09:00">
+          <input class="ev-input" id="evStart" type="time" value="09:00" onchange="evSyncEndTime(this.value)">
         </div>
         <div style="flex:1">
           <div class="ev-label">Tot</div>
@@ -7047,6 +7050,11 @@ function toggleEvVoorWie(btn) {
   window._eventModalIsKids = kidsSelected;
 }
 
+function evSyncEndTime(startVal) {
+  var endEl = document.getElementById('evEnd');
+  if(endEl) endEl.value = startVal;
+}
+
 function saveEvent() {
   const title = document.getElementById('evTitle').value.trim();
   if(!title) { document.getElementById('evTitle').focus(); return; }
@@ -7093,6 +7101,7 @@ function saveEvent() {
   } else {
     saveLocalEvents();
     if(isGcalConnected()) syncEventToGcal(eventModalDate, ev.id);
+    syncEventReminder(eventModalDate, ev); // herinnering op het tijdstip van de afspraak zelf
   }
 
   // Notificatie sturen aan betrokkenen
@@ -7143,6 +7152,7 @@ function deleteEvent() {
   localEvents[eventModalDate] = (localEvents[eventModalDate]||[]).filter(e=>e.id!==eventModalEditId);
   if(localEvents[eventModalDate].length === 0) delete localEvents[eventModalDate];
   saveLocalEvents();
+  deleteEventReminder(eventModalDate, eventModalEditId);
   closeEventModal();
   renderCalendar();
   if(dk(new Date()) === eventModalDate) renderToday();
@@ -7617,6 +7627,8 @@ function toggleAgendaEventDoneByKey(dateStr, evKey) {
   if(AGENDA_DONE[evKey]) delete AGENDA_DONE[evKey];
   else AGENDA_DONE[evKey] = true;
   localStorage.setItem('wf_agenda_done', JSON.stringify(AGENDA_DONE));
+  var localEv = findLocalEventByKey(dateStr, evKey);
+  if(localEv) syncEventReminder(dateStr, localEv);
   if(typeof renderTodayPage === 'function') renderTodayPage();
   openDetailSheet('agenda', dateStr);
 }
@@ -7632,6 +7644,62 @@ function toggleAgendaEventDoneByKey(dateStr, evKey) {
 var AGENDA_HIDDEN = (function(){
   try { return JSON.parse(localStorage.getItem('wf_agenda_hidden') || '{}'); } catch(e){ return {}; }
 })();
+
+// ── PRIORITEIT / "NUCLEAIR" TEKEN ──
+// Los van afvinken: een afspraak kan als urgent gemarkeerd worden. Zolang ze
+// urgent EN niet afgevinkt is, komt ze als eerste te staan (tegel + lijsten),
+// en om 23:00 stuurt de achtergrondfunctie een extra herinnering als ze dan
+// nog steeds niet is afgevinkt.
+var AGENDA_URGENT = (function(){
+  try { return JSON.parse(localStorage.getItem('wf_agenda_urgent') || '{}'); } catch(e){ return {}; }
+})();
+function isAgendaEventUrgent(dateStr, ev) {
+  return !!AGENDA_URGENT[agendaEventKey(dateStr, ev)];
+}
+function findLocalEventByKey(dateStr, evKey) {
+  return (localEvents[dateStr] || []).find(function(e){ return agendaEventKey(dateStr, e) === evKey; }) || null;
+}
+function toggleAgendaEventUrgentByKey(dateStr, evKey) {
+  if(AGENDA_URGENT[evKey]) delete AGENDA_URGENT[evKey];
+  else AGENDA_URGENT[evKey] = true;
+  localStorage.setItem('wf_agenda_urgent', JSON.stringify(AGENDA_URGENT));
+  var localEv = findLocalEventByKey(dateStr, evKey);
+  if(localEv) syncEventReminder(dateStr, localEv); // enkel eigen afspraken hebben een server-kant herinnering
+  if(typeof renderTodayPage === 'function') renderTodayPage();
+  openDetailSheet('agenda', dateStr);
+}
+// Sorteersleutel voor afspraaklijsten/tegels: urgent + nog niet afgevinkt
+// gaat altijd vooraan, dan hele-dag-afspraken, dan op starttijd.
+function agendaSortKey(dateStr, ev) {
+  var pinned = isAgendaEventUrgent(dateStr, ev) && !isAgendaEventDone(dateStr, ev);
+  return (pinned ? '0' : '1') + (ev.allDay ? '0' : '1') + (ev.start || '');
+}
+
+// ── ECHTE HERINNERING OP HET TIJDSTIP VAN DE AFSPRAAK ZELF ──
+// Enkel voor eigen (lokale) afspraken: die hebben een stabiel ID waarmee we
+// een herinnering kunnen bijhouden op de server (Netlify Blobs, via
+// event-reminders.js), die de achtergrondfunctie elke 15 min checkt. Een
+// afspraak uit een ICS/Google-feed heeft geen stabiel eigen ID en krijgt dus
+// (nog) geen exacte, op-tijdstip geplande melding.
+function syncEventReminder(dateStr, ev) {
+  if(!ev || !ev.id) return;
+  var payload = {
+    id: dateStr + '_' + ev.id,
+    date: dateStr,
+    time: ev.allDay ? '08:00' : (ev.start || '09:00'),
+    title: ev.title || 'Afspraak',
+    urgent: isAgendaEventUrgent(dateStr, ev),
+    done: isAgendaEventDone(dateStr, ev)
+  };
+  fetch('/.netlify/functions/event-reminders', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+  }).catch(function(){});
+}
+function deleteEventReminder(dateStr, evId) {
+  if(!evId) return;
+  fetch('/.netlify/functions/event-reminders?id=' + encodeURIComponent(dateStr + '_' + evId), { method: 'DELETE' }).catch(function(){});
+}
+
 async function deleteAgendaEvent(dateStr, evKey, evSrc, evId, evGcalId) {
   if(!confirm('Deze afspraak verwijderen?')) return;
   if(evSrc === 'local' && evId) {
@@ -7640,6 +7708,7 @@ async function deleteAgendaEvent(dateStr, evKey, evSrc, evId, evGcalId) {
     localEvents[dateStr] = (localEvents[dateStr]||[]).filter(function(e){ return e.id!==evId; });
     if(localEvents[dateStr].length === 0) delete localEvents[dateStr];
     saveLocalEvents();
+    deleteEventReminder(dateStr, evId);
   } else if(evGcalId && isGcalConnected()) {
     try { await deleteGcalEvent(evGcalId); } catch(e){}
     icsCache[dateStr] = (icsCache[dateStr]||[]).filter(function(e){ return e.gcalId !== evGcalId; });
@@ -7652,6 +7721,7 @@ async function deleteAgendaEvent(dateStr, evKey, evSrc, evId, evGcalId) {
   if(typeof renderCalendar === 'function') renderCalendar();
   openDetailSheet('agenda', dateStr);
 }
+
 
 // ── GET EVENTS FOR A DATE ──
 function getAgendaForDate(dateStr) {
@@ -9152,7 +9222,7 @@ function updateGcalBadge() {
   var localEvs = getLocalEventsForDate(key);
   var icsEvs   = getAgendaForDate(key);
   var allEvs   = localEvs.concat(icsEvs).filter(function(ev){ return ev && ev.title; });
-  allEvs.sort(function(a,b){ return (a.start||'').localeCompare(b.start||''); });
+  allEvs.sort(function(a,b){ return agendaSortKey(key,a).localeCompare(agendaSortKey(key,b)); });
   if(allEvs.length > 0) {
     var next = allEvs[0];
     var time = next.allDay ? 'Hele dag' : (next.start || '');
@@ -13127,12 +13197,15 @@ function renderOhAgendaStack(allEvs){
   var agendaTitle = document.getElementById('ohAgendaTitle');
   var agendaSub   = document.getElementById('ohAgendaSub');
   var checkEl     = document.getElementById('ohAgendaCheck');
+  var urgentEl    = document.getElementById('ohAgendaUrgent');
 
   if(agendaTitle) agendaTitle.textContent = ev.title || 'Afspraak';
   if(agendaSub)   agendaSub.textContent   = ev.allDay ? 'Hele dag' : (ev.start || '');
   // Groen vinkje enkel als PRECIES deze afspraak is afgevinkt — swipe je naar
-  // een andere, niet-afgevinkte afspraak, dan verdwijnt het weer.
+  // een andere, niet-afgevinkte afspraak, dan verdwijnt het weer. Zelfde
+  // principe voor het urgentie-teken.
   if(checkEl) checkEl.style.display = isAgendaEventDone(ohAgendaStackKey, ev) ? 'flex' : 'none';
+  if(urgentEl) urgentEl.style.display = (isAgendaEventUrgent(ohAgendaStackKey, ev) && !isAgendaEventDone(ohAgendaStackKey, ev)) ? 'flex' : 'none';
   // Iets sterker tegen de klok in gedraaid dan de standaard -0.4deg, zodat de
   // spookkopieën erachter wat meer ademruimte krijgen i.p.v. bijna recht eronder.
   if(agendaCard)  agendaCard.style.transform = 'rotate(-2.2deg)';
@@ -13315,7 +13388,7 @@ function renderTodayPage() {
   var icsEvs   = getAgendaForDate(key);
   var allEvs = localEvs.concat(icsEvs.filter(function(e){
     return !localEvs.find(function(l){ return l.title===e.title && l.start===e.start; });
-  })).sort(function(a,b){ return (a.start||'').localeCompare(b.start||''); });
+  })).sort(function(a,b){ return agendaSortKey(key,a).localeCompare(agendaSortKey(key,b)); });
 
   if(allEvs.length > 1) {
     if(ohAgendaStackKey !== key) { ohAgendaStackIdx = 0; ohAgendaStackKey = key; }
@@ -13323,16 +13396,19 @@ function renderTodayPage() {
   } else {
     resetOhAgendaTileStack();
     var checkElSimple = document.getElementById('ohAgendaCheck');
+    var urgentElSimple = document.getElementById('ohAgendaUrgent');
     if(agendaTitle) {
       if(allEvs.length > 0) {
         var first = allEvs[0];
         agendaTitle.textContent = first.title;
         if(agendaSub) agendaSub.textContent = (first.allDay ? 'Hele dag' : first.start);
         if(checkElSimple) checkElSimple.style.display = isAgendaEventDone(key, first) ? 'flex' : 'none';
+        if(urgentElSimple) urgentElSimple.style.display = (isAgendaEventUrgent(key, first) && !isAgendaEventDone(key, first)) ? 'flex' : 'none';
       } else {
         agendaTitle.textContent = isGcalConnected() ? 'Geen afspraken' : 'Koppel kalender';
         if(agendaSub) agendaSub.textContent = '';
         if(checkElSimple) checkElSimple.style.display = 'none';
+        if(urgentElSimple) urgentElSimple.style.display = 'none';
       }
     }
   }
@@ -13457,7 +13533,7 @@ function openDetailSheet(kind, overrideDate) {
     const allEvs = [
       ...localEvs.map(ev=>({...ev,src:'local'})),
       ...icsEvs.filter(ev=>!localEvs.find(l=>l.title===ev.title&&l.start===ev.start)).map(ev=>({...ev,src:'ics'}))
-    ].sort((a,b)=>{if(a.allDay)return -1;if(b.allDay)return 1;return(a.start||'').localeCompare(b.start||'');});
+    ].sort((a,b)=>agendaSortKey(key,a).localeCompare(agendaSortKey(key,b)));
 
     body.innerHTML = `
       <div class="ds-section">
@@ -13469,12 +13545,13 @@ function openDetailSheet(kind, overrideDate) {
             <div class="ds-ev-bar"></div>
             <div class="ds-ev-time">${ev.allDay?'Hele dag':(ev.start+(ev.end?'–'+ev.end:''))}</div>
             <div class="ds-ev-info">
-              <div class="ds-ev-title">${ev.title}${isAgendaEventDone(key,ev)?' <span style="color:var(--green,#4a7a30)">✓</span>':''}</div>
+              <div class="ds-ev-title">${isAgendaEventUrgent(key,ev)&&!isAgendaEventDone(key,ev)?'☢️ ':''}${ev.title}${isAgendaEventDone(key,ev)?' <span style="color:var(--green,#4a7a30)">✓</span>':''}</div>
               ${(ev.location ? '<div class="ds-ev-loc">📍 ' + ev.location + '</div>' : '')}
               ${(ev.notes ? '<div class="ds-ev-notes">' + ev.notes + '</div>' : '')}
               ${ev.src==='local'&&ev.synced?'<div class="ds-ev-synced">✓ Google Kalender</div>':''}
               <div class="ds-ev-actions">
                 <button class="ds-ev-edit" onclick="toggleAgendaEventDoneByKey('${key}','${agendaEventKey(key,ev).replace(/'/g,"\\'")}')" style="${isAgendaEventDone(key,ev)?'background:var(--green,#4a7a30);color:#fff;border-color:var(--green,#4a7a30)':''}">${isAgendaEventDone(key,ev)?'✓ Afgevinkt':'✓ Afvinken'}</button>
+                <button class="ds-ev-edit" onclick="toggleAgendaEventUrgentByKey('${key}','${agendaEventKey(key,ev).replace(/'/g,"\\'")}')" style="${isAgendaEventUrgent(key,ev)?'background:var(--terra,#c05818);color:#fff;border-color:var(--terra,#c05818)':''}">${isAgendaEventUrgent(key,ev)?'☢️ Urgent':'☢️ Markeer urgent'}</button>
                 ${(ev.src==='local' ? '<button class="ds-ev-edit" onclick="openEventModal(\'' + key + '\',\'' + ev.id + '\')">✏ Bewerk</button>' : '')}
                 <button class="ds-ev-edit" style="border-color:var(--terra,#c05818);color:var(--terra,#c05818)" onclick="deleteAgendaEvent('${key}','${agendaEventKey(key,ev).replace(/'/g,"\\'")}','${ev.src||''}','${ev.id||''}','${ev.gcalId||''}')">🗑 Verwijder</button>
               </div>
