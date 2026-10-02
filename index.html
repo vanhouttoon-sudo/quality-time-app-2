@@ -319,6 +319,8 @@ body{font-family:var(--body);font-size:14px;color:var(--ink);}
 .cal-cell.empty{background:transparent;cursor:default;border:none;box-shadow:none;}
 .cal-cell.has{border:2px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);}
 .cal-cell.multi{border-radius:50% !important;}
+.cal-cell.star-day{border:none !important;box-shadow:none !important;background:transparent !important;}
+.cal-star-svg{position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);filter:drop-shadow(1.5px 1.5px 0 var(--brut-ink,#0a0a0a));z-index:0;}
 .cal-cell.multi .cal-num{color:#fff;}
 .cal-cell.multi .cal-dot{background:rgba(255,255,255,.7) !important;}
 .cal-cell.today{background:var(--green) !important;border:2px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);}
@@ -3885,7 +3887,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v1/10/26 · 09:14</div>
+    <div class="oh-version-tag" id="ohVersionTag">v2/10/26 · 09:24</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -6947,8 +6949,18 @@ function saveLocalEvents() {
   localStorage.setItem('wf_events', JSON.stringify(localEvents));
 }
 
-function getLocalEventsForDate(dateStr) {
-  return (localEvents[dateStr] || []).sort((a,b) => {
+// Zanglessen-sessies worden door syncZangPlanToAgenda() als een gewoon
+// localEvents-item gezet (nodig voor de oudere meldingslogica), maar horen
+// NIET mee te tellen als "afspraak" op de homepage-tegel, de kalenderster
+// of het dagpaneel — enkel in hun eigen Zanglessen-tegel. Herkenbaar aan
+// een id dat met "zang_" begint, of het veld zangDate.
+function isZangSyncedEvent(ev) {
+  return !!(ev && (ev.zangDate || (ev.id && String(ev.id).indexOf('zang_') === 0)));
+}
+function getLocalEventsForDate(dateStr, excludeZang) {
+  var list = localEvents[dateStr] || [];
+  if(excludeZang) list = list.filter(function(ev){ return !isZangSyncedEvent(ev); });
+  return list.sort((a,b) => {
     if(a.allDay) return -1;
     if(b.allDay) return 1;
     return (a.start||'').localeCompare(b.start||'');
@@ -9219,7 +9231,7 @@ function updateGcalBadge() {
   // Show next upcoming event or Google Calendar connection status
   var today = new Date(); today.setHours(0,0,0,0);
   var key = dk(today);
-  var localEvs = getLocalEventsForDate(key);
+  var localEvs = getLocalEventsForDate(key, true);
   var icsEvs   = getAgendaForDate(key);
   var allEvs   = localEvs.concat(icsEvs).filter(function(ev){ return ev && ev.title; });
   allEvs.sort(function(a,b){ return agendaSortKey(key,a).localeCompare(agendaSortKey(key,b)); });
@@ -13384,7 +13396,7 @@ function renderTodayPage() {
   // ── Agenda card ──
   var agendaTitle = document.getElementById('ohAgendaTitle');
   var agendaSub   = document.getElementById('ohAgendaSub');
-  var localEvs = getLocalEventsForDate(key);
+  var localEvs = getLocalEventsForDate(key, true);
   var icsEvs   = getAgendaForDate(key);
   var allEvs = localEvs.concat(icsEvs.filter(function(e){
     return !localEvs.find(function(l){ return l.title===e.title && l.start===e.start; });
@@ -13528,7 +13540,7 @@ function openDetailSheet(kind, overrideDate) {
   if(kind === 'agenda') {
     kicker.textContent = date.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'}).toUpperCase();
     title.textContent  = 'Afspraken';
-    const localEvs = getLocalEventsForDate(key);
+    const localEvs = getLocalEventsForDate(key, true);
     const icsEvs   = getAgendaForDate(key);
     const allEvs = [
       ...localEvs.map(ev=>({...ev,src:'local'})),
@@ -14240,7 +14252,7 @@ function renderCalendar() {
     el.className=`cal-cell ${tc}${isT?' today':''}${isSel?' selected':''}${isPast&&!isT?' past':''}${verblijfClass}`;
     const hasNotes=notesData[key]&&notesData[key].length>0;
     const waste=getWasteForDate(key);
-    const hasEigenAgenda=(icsCache[key]&&icsCache[key].length>0)||(localEvents[key]&&localEvents[key].length>0);
+    const hasEigenAgenda=(icsCache[key]&&icsCache[key].length>0)||(localEvents[key]&&localEvents[key].some(function(ev){return !isZangSyncedEvent(ev);}));
     const hasKidsAgenda=kidsEvents[key]&&kidsEvents[key].length>0;
     var showEigen=calFilters.indexOf('toon')>=0||calFilters.indexOf('all')>=0;
     var showKids=calFilters.indexOf('janne')>=0||calFilters.indexOf('cyriel')>=0||calFilters.indexOf('kids')>=0||calFilters.indexOf('all')>=0;
@@ -14263,7 +14275,8 @@ function renderCalendar() {
     // (rand + blokschaduw). De vulkleur volgt het type activiteit; dagen zonder
     // iets gepland krijgen een neutrale lichte kaart i.p.v. een onzichtbare rand.
     // Bij twee items: kleuren gescheiden door een diagonaal. Bij drie of meer: een bolletje i.p.v. een vierkant.
-    // Zangles wordt bewust niet meegenomen — die staan enkel nog in het dagpaneel zelf.
+    // Zangles wordt bewust niet meegenomen — die staan enkel nog in het dagpaneel zelf,
+    // en telt ook bewust niet mee voor de ster hieronder.
     var cellColors = [];
     if(type === 'train') cellColors.push('#fff7cf');               // geel = training
     if(type.indexOf('run') === 0) cellColors.push('#e2fbfb');      // blauw = lopen
@@ -14272,22 +14285,53 @@ function renderCalendar() {
     if(showKids && hasKidsAgenda) cellColors.push('#ffe4ef');       // roos = kinderafspraak
     if(wasteIcons) cellColors.push('#dceefa');                      // lichtblauw = afvalophaling
     if((!isKidsOnlyView && hasNotes) || hasAfwijking || hasAdhocWissel) cellColors.push('#fbe9c6'); // amber = notitie/afwijking
-    if(!isT) {
-      el.classList.add('has');
-      if(cellColors.length === 0) {
-        el.style.background = 'var(--cream)';
-      } else if(cellColors.length === 1) {
-        el.style.background = cellColors[0];
-      } else if(cellColors.length === 2) {
-        el.classList.add('split');
-        el.style.background = 'linear-gradient(135deg, '+cellColors[0]+' 50%, '+cellColors[1]+' 50%)';
+
+    // Ster i.p.v. gewone cel: enkel bij een eigen afspraak, kinderafspraak of
+    // notitie — nooit enkel voor training/loop/rust/afval. "Vandaag" behoudt
+    // bewust zijn eigen groene markering, ook als het toevallig ook zo'n dag is.
+    var starColors = [];
+    if(showEigen && hasEigenAgenda) starColors.push('#9ed98a');
+    if(showKids && hasKidsAgenda) starColors.push('#ffb8d4');
+    if(!isKidsOnlyView && hasNotes) starColors.push('#f0c060');
+    var isStarDay = !isT && starColors.length > 0;
+
+    if(isStarDay) {
+      el.classList.add('star-day');
+      var starFill, starDefs = '';
+      if(starColors.length === 1) {
+        starFill = starColors[0];
+      } else if(starColors.length === 2) {
+        var gradId = 'calStarGrad'+d;
+        starFill = 'url(#'+gradId+')';
+        starDefs = '<defs><linearGradient id="'+gradId+'" x1="0" y1="0" x2="1" y2="1">'
+          + '<stop offset="50%" stop-color="'+starColors[0]+'"/><stop offset="50%" stop-color="'+starColors[1]+'"/></linearGradient></defs>';
       } else {
-        el.classList.add('multi');
-        el.style.background = 'var(--terra)';
+        starFill = 'var(--terra,#c05818)';
       }
+      el.innerHTML = '<svg viewBox="0 0 54 50" class="cal-star-svg">'+starDefs
+        + '<polygon points="27,2 33,19 51,19 36,30 41,48 27,37 13,48 18,30 3,19 21,19" fill="'+starFill+'" stroke="#0a0a0a" stroke-width="2.6" stroke-linejoin="round"/>'
+        + '</svg>'
+        + '<div class="cal-num" style="position:relative">'+d+'</div>'
+        + (starColors.length>2?'':'<div class="cal-dot" style="position:relative"></div>')
+        + '<div class="cal-badges" style="position:relative">'+wasteIcons+'</div>'+adhocAlert;
+    } else {
+      if(!isT) {
+        el.classList.add('has');
+        if(cellColors.length === 0) {
+          el.style.background = 'var(--cream)';
+        } else if(cellColors.length === 1) {
+          el.style.background = cellColors[0];
+        } else if(cellColors.length === 2) {
+          el.classList.add('split');
+          el.style.background = 'linear-gradient(135deg, '+cellColors[0]+' 50%, '+cellColors[1]+' 50%)';
+        } else {
+          el.classList.add('multi');
+          el.style.background = 'var(--terra)';
+        }
+      }
+      el.innerHTML=`<div class="cal-num">${d}</div><div class="cal-dot"></div><div class="cal-badges">${wasteIcons}</div>${adhocAlert}`;
     }
 
-    el.innerHTML=`<div class="cal-num">${d}</div><div class="cal-dot"></div><div class="cal-badges">${wasteIcons}</div>${adhocAlert}`;
     el.onclick=()=>{selDay=date;renderCalendar();renderDayPanel(date);};
     grid.appendChild(el);
   }
@@ -14325,6 +14369,99 @@ function dp2ShowGrid() {
   var grid = document.getElementById('dp2TileGrid');
   if(grid) grid.style.display = 'grid';
 }
+// ── Dagpaneel: swipebare afspraken-kaart(stapel), zelfde gevoel als de
+// homepage-tegel. Bouwt enkel HTML; dpBindAgendaSwipe() koppelt nadien de
+// swipe-afhandeling, telkens opnieuw na elke renderDayPanel() (het dagpaneel
+// wordt elke keer volledig herbouwd, dus geen "al gekoppeld"-vlag nodig). ──
+var dpAgendaStackEvs = [];
+var dpAgendaStackIdx = 0;
+var dpAgendaStackKey = null;
+function dpAgendaCardHtml(dateStr, allEvs) {
+  if(dpAgendaStackKey !== dateStr) { dpAgendaStackIdx = 0; dpAgendaStackKey = dateStr; }
+  if(!allEvs.length) {
+    var emptyMsg = calFilters.indexOf('kids')>=0 ? 'Geen kinderafspraken' : (isGcalConnected()?'Geen afspraken':'Koppel kalender');
+    return '<div class="dp2-empty">'+emptyMsg+'</div>';
+  }
+  if(allEvs.length === 1) {
+    var ev = allEvs[0];
+    var safeEv = JSON.stringify(ev).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+    var kindsBadge = ev.isKidsEvent ? '<span style="font-size:9px;background:rgba(232,117,64,.15);color:#e87540;font-family:var(--cond);font-weight:700;padding:1px 5px;border-radius:8px;margin-left:4px;letter-spacing:.5px">'+(ev.kind||'👨‍👩‍👧')+'</span>' : '';
+    return '<div class="oh-card oh-card-sm" style="position:relative;cursor:pointer;margin-bottom:4px" data-ev="'+safeEv+'" onclick="dp2OpenEvent(this)">'
+      + (isAgendaEventDone(dateStr,ev)?'<div class="oh-agenda-check" style="display:flex">✓</div>':'')
+      + ((isAgendaEventUrgent(dateStr,ev)&&!isAgendaEventDone(dateStr,ev))?'<div class="oh-agenda-urgent" style="display:flex">☢️</div>':'')
+      + '<div class="oh-card-icon" style="background:#e9f1e4">📅</div>'
+      + '<div class="oh-card-body"><div class="oh-card-label">Agenda</div>'
+      + '<div class="oh-card-title">'+ev.title+kindsBadge+'</div>'
+      + '<div class="oh-card-sub">'+(ev.allDay?'Hele dag':(ev.start||''))+'</div></div></div>';
+  }
+  // 2+ afspraken: dezelfde kaartenstapel met spookkaarten + swipe als de homepage
+  dpAgendaStackEvs = allEvs;
+  if(dpAgendaStackIdx >= allEvs.length) dpAgendaStackIdx = 0;
+  var cur = allEvs[dpAgendaStackIdx];
+  return '<div class="oh-agenda-tile-stack" id="dpAgendaTileStack" style="margin-bottom:4px">'
+    + '<div class="oh-agenda-ghost" id="dpAgendaGhost1" style="border:1.2px solid rgba(10,10,10,.55);transform:translate(3.5px,4.5px) rotate(1.8deg);z-index:2;opacity:.88"><div class="oh-agenda-ghost-icon">📅</div></div>'
+    + (allEvs.length>2?'<div class="oh-agenda-ghost" id="dpAgendaGhost2" style="border:1px solid rgba(10,10,10,.3);transform:translate(7px,9px) rotate(3.5deg);z-index:1;opacity:.7"><div class="oh-agenda-ghost-icon">📅</div></div>':'')
+    + '<div class="oh-card oh-card-sm" id="dpCardAgenda" style="position:relative;z-index:3;transform:rotate(-2.2deg);cursor:pointer" onclick="dpAgendaCardTap()">'
+    + '<div class="oh-agenda-check" id="dpAgendaCheck" style="display:'+(isAgendaEventDone(dateStr,cur)?'flex':'none')+'">✓</div>'
+    + '<div class="oh-agenda-urgent" id="dpAgendaUrgent" style="display:'+((isAgendaEventUrgent(dateStr,cur)&&!isAgendaEventDone(dateStr,cur))?'flex':'none')+'">☢️</div>'
+    + '<div class="oh-card-icon" style="background:#e9f1e4">📅</div>'
+    + '<div class="oh-card-body"><div class="oh-card-label">Agenda</div>'
+    + '<div class="oh-card-title" id="dpAgendaTitle">'+cur.title+'</div>'
+    + '<div class="oh-card-sub" id="dpAgendaSub">'+(cur.allDay?'Hele dag':(cur.start||''))+'</div>'
+    + '<div class="oh-agenda-dots" id="dpAgendaDots" style="display:flex">'+allEvs.map(function(_,i){return '<div class="oh-agenda-dot'+(i===dpAgendaStackIdx?' active':'')+'"></div>';}).join('')+'</div>'
+    + '</div></div></div>';
+}
+function dpAgendaCardTap(){
+  var ev = dpAgendaStackEvs[dpAgendaStackIdx];
+  if(ev) openEventDetail(ev);
+}
+function dpAgendaSwipeToNext(){
+  var card = document.getElementById('dpCardAgenda');
+  if(!card || dpAgendaStackEvs.length < 2) return;
+  if(card.classList.contains('oh-swipe-out')) return;
+  card.classList.add('oh-swipe-out');
+  setTimeout(function(){
+    dpAgendaStackIdx = (dpAgendaStackIdx + 1) % dpAgendaStackEvs.length;
+    var ev = dpAgendaStackEvs[dpAgendaStackIdx];
+    var titleEl = document.getElementById('dpAgendaTitle');
+    var subEl = document.getElementById('dpAgendaSub');
+    var dotsEl = document.getElementById('dpAgendaDots');
+    var checkEl = document.getElementById('dpAgendaCheck');
+    var urgentEl = document.getElementById('dpAgendaUrgent');
+    if(titleEl) titleEl.textContent = ev.title;
+    if(subEl) subEl.textContent = ev.allDay ? 'Hele dag' : (ev.start || '');
+    if(dotsEl) dotsEl.innerHTML = dpAgendaStackEvs.map(function(_,i){ return '<div class="oh-agenda-dot'+(i===dpAgendaStackIdx?' active':'')+'"></div>'; }).join('');
+    if(checkEl) checkEl.style.display = isAgendaEventDone(dpAgendaStackKey, ev) ? 'flex' : 'none';
+    if(urgentEl) urgentEl.style.display = (isAgendaEventUrgent(dpAgendaStackKey, ev) && !isAgendaEventDone(dpAgendaStackKey, ev)) ? 'flex' : 'none';
+    card.classList.remove('oh-swipe-out');
+    card.style.transition = 'none';
+    card.style.transform = 'translateX(40px) rotate(5deg)';
+    card.style.opacity = '0';
+    void card.offsetWidth;
+    card.style.transition = '';
+    card.style.transform = 'rotate(-2.2deg)';
+    card.style.opacity = '1';
+  }, 380);
+}
+function dpBindAgendaSwipe(){
+  var stackWrap = document.getElementById('dpAgendaTileStack');
+  if(!stackWrap) return;
+  var startX = null, swiped = false;
+  var onStart = function(e){ startX = (e.touches?e.touches[0].clientX:e.clientX); swiped = false; };
+  var onEnd = function(e){
+    if(startX===null) return;
+    var endX = (e.changedTouches?e.changedTouches[0].clientX:e.clientX);
+    var dx = endX - startX;
+    if(dx < -30 && dpAgendaStackEvs.length > 1) { swiped = true; dpAgendaSwipeToNext(); }
+    startX = null;
+  };
+  stackWrap.addEventListener('touchstart', onStart, {passive:true});
+  stackWrap.addEventListener('touchend', onEnd);
+  stackWrap.addEventListener('mousedown', onStart);
+  stackWrap.addEventListener('mouseup', onEnd);
+  stackWrap.addEventListener('click', function(e){ if(swiped){ e.stopPropagation(); swiped=false; } }, true);
+}
+
 function renderDayPanel(date) {
   var panel = document.getElementById('dayPanel');
   if(!panel) return;
@@ -14485,7 +14622,7 @@ function renderDayPanel(date) {
   }
 
   // ── Agenda ──
-  var localEvs = getLocalEventsForDate(key);
+  var localEvs = getLocalEventsForDate(key, true);
   var icsEvs   = getAgendaForDate(key);
   var kidsEvs  = (kidsEvents[key] || []).map(function(ev){ return Object.assign({}, ev, {isKidsEvent:true}); });
 
@@ -14502,21 +14639,10 @@ function renderDayPanel(date) {
   }
   allEvs.sort(function(a,b){return (a.start||'').localeCompare(b.start||'');});
 
-  var agendaInner = '';
-  allEvs.forEach(function(ev){
-    var safeEv = JSON.stringify(ev).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-    var kindsBadge = ev.isKidsEvent ? '<span style="font-size:9px;background:rgba(232,117,64,.15);color:#e87540;font-family:var(--cond);font-weight:700;padding:1px 5px;border-radius:8px;margin-left:4px;letter-spacing:.5px">'+(ev.kind||'👨‍👩‍👧')+'</span>' : '';
-    var voorWieBadge = (ev.voorWie && ev.voorWie.length > 0) ? '<span style="font-size:9px;background:#e9f1e4;color:#a08060;font-family:var(--grotesk);font-weight:600;padding:1px 6px;border-radius:8px;margin-left:4px">'+ev.voorWie.map(function(n){return n.charAt(0).toUpperCase()+n.slice(1);}).join(', ')+'</span>' : '';
-    var accentColor = ev.isKidsEvent ? '#e87540' : 'var(--ocean2)';
-    agendaInner += '<div class="dp2-ev" data-ev="'+safeEv+'" onclick="dp2OpenEvent(this)" style="border-left:3px solid '+accentColor+'">'
-      + '<div class="dp2-ev-time">'+(ev.allDay?'◈':(ev.start||'◈'))+'</div>'
-      + '<div class="dp2-ev-title">'+ev.title+kindsBadge+'</div>'
-      + '<div class="dp2-ev-arr">›</div></div>';
-  });
-  if(!allEvs.length) {
-    var emptyMsg = calFilters.indexOf('kids')>=0 ? 'Geen kinderafspraken' : (isGcalConnected()?'Geen afspraken':'Koppel kalender');
-    agendaInner = '<div class="dp2-empty">'+emptyMsg+'</div>';
-  }
+  // Afspraken bij 2+ op deze dag: swipebare kaartenstapel, zelfde gevoel als
+  // de homepage-tegel (dpAgendaCardHtml, gedefinieerd vóór renderDayPanel).
+  // Bij 0 of 1 afspraak: lege melding resp. één platte kaart.
+  var agendaInner = dpAgendaCardHtml(key, allEvs);
   agendaInner += '<button class="dp2-add-btn" data-k="'+key+'" onclick="dp2AddEvent(this)">+ Afspraak</button>';
   if(calFilters.indexOf('kids')>=0||calFilters.indexOf('all')>=0||calFilters.indexOf('janne')>=0||calFilters.indexOf('cyriel')>=0) {
     agendaInner += '<button class="dp2-add-btn" data-k="'+key+'" onclick="dp2AddKidsEvent(this)" style="background:rgba(232,117,64,.1);color:#e87540;border-color:#e87540">+ Kinderafspraak</button>';
@@ -14587,7 +14713,7 @@ function renderDayPanel(date) {
     html += '<div class="dp2-tile-grid" id="dp2TileGrid">'
       + '<div class="dp2-tile" id="dp2WeerTile_'+key+'" style="display:none" onclick="dp2ShowDetail(\'weer\')"><div class="dp2-tile-ic">🌤️</div><div class="dp2-tile-lbl">Weer</div><div class="dp2-tile-sub" id="dp2WeerSub_'+key+'">—</div></div>'
       + dp2Tile('maaltijd','🍽️','Maaltijd', dinnerName)
-      + (agendaCount>0 ? dp2Tile('agenda','📅','Agenda', agendaSub) : '')
+      + dp2Tile('agenda','📅','Agenda', agendaSub)
       + dp2Tile('training','💪','Training', trainSub)
       + (dailyPl ? dp2Tile('muziek','🎵','Muziek', musicSub) : '')
       + (noteCount>0 ? dp2Tile('notities','📝','Notities', noteSub) : '')
@@ -14596,7 +14722,7 @@ function renderDayPanel(date) {
 
     html += dp2DetailPanel('weer', '🌤️ Weerbericht', '<div id="dp2weather_'+key+'"></div>');
     html += dp2DetailPanel('maaltijd', '🍽️ ' + dinnerName, mealInner);
-    if(agendaCount>0) html += dp2DetailPanel('agenda', '📅 Agenda', agendaInner);
+    html += dp2DetailPanel('agenda', '📅 Agenda', agendaInner);
     html += dp2DetailPanel('training', '💪 Training', trainInner);
     if(dailyPl) html += dp2DetailPanel('muziek', '🎵 Muziek', musicInner, true);
     if(noteCount>0) html += dp2DetailPanel('notities', '📝 Notities', noteInner);
@@ -14606,6 +14732,7 @@ function renderDayPanel(date) {
   panel.innerHTML = html;
 
   // Post-render
+  dpBindAgendaSwipe();
   var imgEl = document.getElementById('dp2img_'+key);
   if(imgEl) setDinnerPhoto(imgEl, dinnerName, dinner && dinner.link, dinner && dinner.recipe && dinner.recipe.ing);
   dp2LoadWeatherTile(key);
