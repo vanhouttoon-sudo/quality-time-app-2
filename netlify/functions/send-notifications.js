@@ -270,8 +270,8 @@ export default async (req) => {
   const reminderResults = await Promise.all(reminderPromises);
   results.push(...reminderResults);
 
-  // ── 8. Urgente afspraken die om 23:00 nog steeds niet zijn afgevinkt ──
-  if (currentTime === '23:00') {
+  // ── 8. Urgente afspraken die om 21:00 nog steeds niet zijn afgevinkt ──
+  if (currentTime === '21:00') {
     const escalationPromises = [];
     const stillOpen = todaysReminders.filter(r => r.urgent && !r.done);
     stillOpen.forEach(r => {
