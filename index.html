@@ -3887,7 +3887,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v2/10/26 · 09:24</div>
+    <div class="oh-version-tag" id="ohVersionTag">v2/10/26 · 16:36</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -6957,6 +6957,13 @@ function saveLocalEvents() {
 function isZangSyncedEvent(ev) {
   return !!(ev && (ev.zangDate || (ev.id && String(ev.id).indexOf('zang_') === 0)));
 }
+// Herkent ook zangles-items die via Google Kalender zijn teruggelezen (dus
+// géén zangDate/zang_-ID meer hebben, enkel nog titel+tekst) — nodig omdat
+// "Sync alle afspraken" deze ooit naar Google pushte vóór bovenstaande fix.
+var ZANG_TITLE_PREFIX = '🎤 Zangles — ';
+function isZangTitledEvent(ev) {
+  return !!(ev && typeof ev.title === 'string' && ev.title.indexOf(ZANG_TITLE_PREFIX) === 0);
+}
 function getLocalEventsForDate(dateStr, excludeZang) {
   var list = localEvents[dateStr] || [];
   if(excludeZang) list = list.filter(function(ev){ return !isZangSyncedEvent(ev); });
@@ -7421,6 +7428,10 @@ async function syncAllToGcal() {
   let count = 0;
   for(const dateStr of Object.keys(localEvents)) {
     for(const ev of localEvents[dateStr]) {
+      // Zangles-items blijven bewust lokaal — die mogen nooit naar Google
+      // gesynct worden, anders komen ze via de leesrichting terug als
+      // gewone agenda-items (precies het lek dat dit voorkomt).
+      if(isZangSyncedEvent(ev)) continue;
       if(!ev.synced) { await syncEventToGcal(dateStr, ev.id); count++; }
     }
   }
@@ -7738,6 +7749,11 @@ async function deleteAgendaEvent(dateStr, evKey, evSrc, evId, evGcalId) {
 // ── GET EVENTS FOR A DATE ──
 function getAgendaForDate(dateStr) {
   return (icsCache[dateStr] || []).filter(function(ev){
+    // Zangles-items die ooit (vóór de fix in syncAllToGcal) naar Google
+    // gepusht werden en via de leesrichting terugkomen, horen hier nooit
+    // getoond te worden — overal waar deze functie gebruikt wordt is dat
+    // puur weergave aan de gebruiker, nooit iets waar zangles bij hoort.
+    if(isZangTitledEvent(ev)) return false;
     return !AGENDA_HIDDEN[agendaEventKey(dateStr, ev)];
   }).sort((a,b) => {
     if(a.allDay) return -1;
@@ -14252,7 +14268,7 @@ function renderCalendar() {
     el.className=`cal-cell ${tc}${isT?' today':''}${isSel?' selected':''}${isPast&&!isT?' past':''}${verblijfClass}`;
     const hasNotes=notesData[key]&&notesData[key].length>0;
     const waste=getWasteForDate(key);
-    const hasEigenAgenda=(icsCache[key]&&icsCache[key].length>0)||(localEvents[key]&&localEvents[key].some(function(ev){return !isZangSyncedEvent(ev);}));
+    const hasEigenAgenda=(icsCache[key]&&icsCache[key].some(function(ev){return !isZangTitledEvent(ev);}))||(localEvents[key]&&localEvents[key].some(function(ev){return !isZangSyncedEvent(ev);}));
     const hasKidsAgenda=kidsEvents[key]&&kidsEvents[key].length>0;
     var showEigen=calFilters.indexOf('toon')>=0||calFilters.indexOf('all')>=0;
     var showKids=calFilters.indexOf('janne')>=0||calFilters.indexOf('cyriel')>=0||calFilters.indexOf('kids')>=0||calFilters.indexOf('all')>=0;
