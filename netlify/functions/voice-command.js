@@ -45,7 +45,7 @@ async function understand(text, nowIso, key) {
     'Reken relatieve data ("morgen", "overmorgen", "vrijdag", "volgende week maandag") om naar YYYY-MM-DD; ' +
     'een weekdag zonder meer = eerstvolgende die dag in de toekomst. Tijden naar 24u HH:MM ("2 uur \'s middags" = 14:00, "half drie" = 14:30 of 02:30 naar context, "19u30" = 19:30). ' +
     'Antwoord met ENKEL een JSON-object met deze velden:\n' +
-    '{"action":"create|shift|delete|urgent|query|note|unknown",' +
+    '{"action":"create|shift|delete|urgent|done|done_all|query|note|training|waste|zang|unknown",' +
     '"title":"korte nette titel met hoofdletter (bij create)",' +
     '"date":"YYYY-MM-DD (create: datum afspraak; query: datum waarover gevraagd wordt)",' +
     '"start":"HH:MM of leeg","allDay":true/false,' +
@@ -54,11 +54,13 @@ async function understand(text, nowIso, key) {
     '"targetDate":"YYYY-MM-DD van die bestaande afspraak indien genoemd, anders leeg",' +
     '"newDate":"YYYY-MM-DD waarheen verschuiven (shift); leeg = één dag later",' +
     '"newStart":"HH:MM nieuwe tijd bij shift indien genoemd, anders leeg",' +
+    '"undo":"true als de afspraak juist NIET meer afgevinkt moet zijn (done), anders false",' +
+    '"scope":"week of day (waste: vraag over een hele week of één dag)",' +
     '"noteText":"inhoud van de notitie (note)",' +
     '"noteTitle":"korte titel notitie (note)"}\n' +
-    'Acties: create = afspraak aanmaken; shift = afspraak verplaatsen/uitstellen; delete = afspraak verwijderen; ' +
+    'Acties: create = afspraak aanmaken; shift = afspraak verplaatsen/uitstellen ("verplaats naar morgen" = newDate is morgen, "een dag uitstellen" = newDate leeg); delete = afspraak verwijderen; ' +
     'urgent = afspraak als nucleair/urgent/belangrijk markeren; query = vragen wat er op de agenda staat; ' +
-    'note = notitie toevoegen; unknown = niet begrepen. Zonder datum bij create: vandaag. Zonder tijd en niet expliciet "hele dag": allDay=false en start leeg.';
+    'note = notitie toevoegen; done = afspraak/taak afvinken ("vink tandarts af", "tandarts is gedaan"); done_all = alle afspraken van een dag afvinken (date); training = vragen wat de training van een dag is (date); waste = vragen welk afval buiten moet / opgehaald wordt (scope week als er over "deze week"/"volgende week" gevraagd wordt, date = een dag in die week, anders vandaag); zang = zangles openen/activeren; unknown = niet begrepen. Zonder datum bij create: vandaag. Zonder tijd en niet expliciet "hele dag": allDay=false en start leeg.';
 
   const r = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
