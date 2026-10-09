@@ -321,6 +321,13 @@ body{font-family:var(--body);font-size:14px;color:var(--ink);}
 .cal-cell.multi{border-radius:50% !important;}
 .cal-cell.star-day{border:none !important;box-shadow:none !important;background:transparent !important;}
 .cal-star-svg{position:absolute;inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px);filter:drop-shadow(1.5px 1.5px 0 var(--brut-ink,#0a0a0a));z-index:0;}
+/* Cijfer in het hart van de ster (de ster zelf zit ~55% van boven), donker en
+   iets kleiner zodat het ook bij twee cijfers binnen de ster past. De
+   afvalpictogrammen staan vast onderaan, zodat ze het cijfer niet omhoog duwen. */
+.cal-cell.star-day .cal-num{position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);font-size:13px;font-weight:800 !important;color:var(--brut-ink,#0a0a0a) !important;line-height:1;z-index:2;white-space:nowrap;}
+.cal-cell.star-day .cal-badges{position:absolute;left:0;right:0;bottom:-4px;margin:0;flex-wrap:nowrap;gap:1px;z-index:3;}
+.cal-cell.star-day .cal-badge{width:12px;height:12px;font-size:7px;}
+.cal-cell.star-day .cal-dot{display:none;}
 .cal-cell.multi .cal-num{color:#fff;}
 .cal-cell.multi .cal-dot{background:rgba(255,255,255,.7) !important;}
 .cal-cell.today{background:var(--green) !important;border:2px solid var(--brut-ink,#0a0a0a);box-shadow:2px 2px 0 var(--brut-ink,#0a0a0a);}
@@ -2300,6 +2307,9 @@ input, select, textarea{
 .oh-agenda-check{position:absolute;right:8px;bottom:8px;width:22px;height:22px;border-radius:50%;background:var(--green,#4a7a30);border:1.5px solid var(--brut-ink,#0a0a0a);display:none;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:900;box-shadow:1px 1px 0 var(--brut-ink,#0a0a0a);z-index:4;}
 .oh-agenda-urgent{position:absolute;left:8px;top:8px;width:24px;height:24px;border-radius:50%;background:#fff;border:1.5px solid var(--terra,#c05818);display:none;align-items:center;justify-content:center;font-size:14px;box-shadow:1px 1px 0 var(--brut-ink,#0a0a0a);z-index:4;animation:ohUrgentPulse 1.4s infinite;}
 @keyframes ohUrgentPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
+.oh-swipe-stamp{position:absolute;top:30px;z-index:5;font-family:var(--grotesk,sans-serif);font-weight:900;font-size:22px;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border:4px solid;border-radius:8px;opacity:0;pointer-events:none;background:rgba(255,255,255,.6);white-space:nowrap;}
+.oh-swipe-stamp.l{left:16px;color:#c05818;border-color:#c05818;transform:rotate(-14deg);}
+.oh-swipe-stamp.r{right:16px;color:#1F7A6C;border-color:#1F7A6C;transform:rotate(14deg);}
 
 /* "Tinder-stijl" swipe-animatie tussen afspraken: de huidige afspraak glijdt
    naar links weg met een lichte kanteling (geen bladzijde-omslag, geen witte
@@ -3790,6 +3800,31 @@ textarea.za-input{ resize:none; line-height:1.45; }
 .za-plrow{ cursor:pointer; }
 .ds-ex-row.za-plrow.on{ background:#fff4cf !important; border-radius:6px !important; margin:0 -6px; padding:9px 6px !important; }
 .za-plbtn{ flex-shrink:0; }
+/* ── SPRAAKOPDRACHTEN ── */
+.vc-fab{position:fixed;right:16px;bottom:22px;width:58px;height:58px;border-radius:50%;background:var(--brut-yellow);border:3px solid var(--brut-ink);box-shadow:4px 4px 0 var(--brut-ink);font-size:26px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:800;padding:0;-webkit-tap-highlight-color:transparent}
+.vc-fab:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--brut-ink)}
+.vc-overlay{position:fixed;inset:0;background:rgba(10,10,10,.55);z-index:4200;display:none;align-items:flex-end;justify-content:center}
+.vc-overlay.open{display:flex}
+.vc-sheet{width:100%;max-width:480px;background:var(--brut-bg);border:3px solid var(--brut-ink);border-bottom:none;border-radius:18px 18px 0 0;box-shadow:0 -5px 0 var(--brut-ink);padding:20px 18px calc(22px + env(safe-area-inset-bottom,0px));position:relative;max-height:88vh;overflow-y:auto}
+.vc-close{position:absolute;top:12px;right:12px;width:34px;height:34px;border:3px solid var(--brut-ink);background:#fff;border-radius:50%;font-weight:800;font-size:14px;cursor:pointer;box-shadow:2px 2px 0 var(--brut-ink)}
+.vc-kicker{font-family:var(--grotesk);font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--surf-teal-dark)}
+.vc-mic{width:92px;height:92px;border-radius:50%;margin:14px auto 10px;display:flex;align-items:center;justify-content:center;font-size:40px;background:var(--brut-yellow);border:3px solid var(--brut-ink);box-shadow:5px 5px 0 var(--brut-ink);cursor:pointer}
+.vc-mic.rec{background:var(--surf-coral);animation:vcPulse 1s ease-in-out infinite}
+@keyframes vcPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.vc-status{font-family:var(--grotesk);font-size:15px;font-weight:700;text-align:center;color:var(--brut-ink);min-height:22px;line-height:1.4}
+.vc-transcript{font-family:var(--body);font-size:13px;font-style:italic;text-align:center;color:#555;min-height:18px;margin-top:6px}
+.vc-card{margin-top:14px;background:var(--brut-surf);border:3px solid var(--brut-ink);border-radius:12px;box-shadow:4px 4px 0 var(--brut-ink);padding:14px}
+.vc-card-act{font-family:var(--grotesk);font-size:10px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--surf-teal-dark)}
+.vc-card-title{font-family:var(--grotesk);font-size:19px;font-weight:800;margin:4px 0 2px;color:var(--brut-ink)}
+.vc-card-meta{font-family:var(--body);font-size:13px;color:var(--brut-ink)}
+.vc-btns{display:flex;gap:10px;margin-top:14px}
+.vc-btn{flex:1;padding:12px;border:3px solid var(--brut-ink);border-radius:10px;font-family:var(--grotesk);font-weight:800;font-size:13px;cursor:pointer;box-shadow:3px 3px 0 var(--brut-ink);background:#fff}
+.vc-btn.ok{background:var(--brut-yellow)}
+.vc-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--brut-ink)}
+.vc-type{display:flex;gap:8px;margin-top:16px}
+.vc-type input{flex:1;min-width:0;padding:10px 12px;border:3px solid var(--brut-ink);border-radius:10px;font-family:var(--body);font-size:14px;background:#fff}
+.vc-type button{padding:0 14px;border:3px solid var(--brut-ink);border-radius:10px;background:var(--brut-cyan);font-weight:800;cursor:pointer;box-shadow:3px 3px 0 var(--brut-ink)}
+.vc-hint{font-family:var(--body);font-size:11px;color:#666;text-align:center;margin-top:12px;line-height:1.5}
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -3887,7 +3922,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v2/10/26 · 16:36</div>
+    <div class="oh-version-tag" id="ohVersionTag">v9/10/26 · 08:22</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -5146,6 +5181,23 @@ function qtSkateLoaderHtml(text){
       <div id="vnTranscriptPreview" style="font-family:var(--cond);font-size:11px;color:rgba(255,255,255,.5);margin-top:14px;min-height:16px"></div>
       <button id="vnDoneBtn" onclick="vnManualStop && vnManualStop()" style="display:none;margin-top:18px;padding:11px 20px;border-radius:10px;border:none;background:var(--gold,#d4a030);color:#1a1410;font-family:var(--grotesk);font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer">✓ Ik ben klaar</button>
     </div>
+  </div>
+</div>
+<!-- SPRAAKOPDRACHTEN -->
+<button class="vc-fab" id="vcFab" onclick="vcOpen(false)" aria-label="Spraakopdracht">🎤</button>
+<div class="vc-overlay" id="vcOverlay" onclick="if(event.target===this)vcClose()">
+  <div class="vc-sheet">
+    <button class="vc-close" onclick="vcClose()">✕</button>
+    <div class="vc-kicker">Spraakopdracht</div>
+    <div class="vc-mic" id="vcMic" onclick="vcMicTap()">🎤</div>
+    <div class="vc-status" id="vcStatus">Tik op de microfoon en spreek</div>
+    <div class="vc-transcript" id="vcTranscript"></div>
+    <div id="vcResult"></div>
+    <div class="vc-type">
+      <input id="vcText" type="text" placeholder="of typ je opdracht…" onkeydown="if(event.key==='Enter')vcSubmitText()">
+      <button onclick="vcSubmitText()">➤</button>
+    </div>
+    <div class="vc-hint">Bv. “afspraak morgen om 14 uur tandarts” · “schuif tandarts naar vrijdag” · “zet tandarts op nucleair” · “verwijder tandarts” · “vink tandarts af” · “wat staat er vandaag?” · “wat is mijn training?” · “welk afval deze week?” · “open zangles” · “notitie: bel de loodgieter”</div>
   </div>
 </div>
 <!-- PHOTO COMPARE MODAL -->
@@ -7721,6 +7773,42 @@ function syncEventReminder(dateStr, ev) {
 function deleteEventReminder(dateStr, evId) {
   if(!evId) return;
   fetch('/.netlify/functions/event-reminders?id=' + encodeURIComponent(dateStr + '_' + evId), { method: 'DELETE' }).catch(function(){});
+}
+
+// Verplaatst een eigen afspraak één dag vooruit (zelfde tijdstip), met
+// Google-sync, de herinnering en het afgevinkt/urgent-statuut mee.
+function shiftEventToNextDay(dateStr, evId) {
+  var ev = (localEvents[dateStr] || []).find(function(e){ return e.id === evId; });
+  if(!ev) return;
+  var nextDate = new Date(dateStr + 'T12:00:00');
+  nextDate.setDate(nextDate.getDate() + 1);
+  var nextKey = dk(nextDate);
+
+  var oldAgKey = agendaEventKey(dateStr, ev);
+  var wasDone = !!AGENDA_DONE[oldAgKey];
+  var wasUrgent = !!AGENDA_URGENT[oldAgKey];
+  delete AGENDA_DONE[oldAgKey];
+  delete AGENDA_URGENT[oldAgKey];
+
+  localEvents[dateStr] = (localEvents[dateStr] || []).filter(function(e){ return e.id !== evId; });
+  if(localEvents[dateStr].length === 0) delete localEvents[dateStr];
+  if(!localEvents[nextKey]) localEvents[nextKey] = [];
+  localEvents[nextKey].push(ev);
+  saveLocalEvents();
+
+  var newAgKey = agendaEventKey(nextKey, ev);
+  if(wasDone) AGENDA_DONE[newAgKey] = true;
+  if(wasUrgent) AGENDA_URGENT[newAgKey] = true;
+  localStorage.setItem('wf_agenda_done', JSON.stringify(AGENDA_DONE));
+  localStorage.setItem('wf_agenda_urgent', JSON.stringify(AGENDA_URGENT));
+
+  if(ev.gcalId && isGcalConnected()) { try { syncEventToGcal(nextKey, ev.id); } catch(e){} }
+  deleteEventReminder(dateStr, evId);
+  syncEventReminder(nextKey, ev);
+
+  if(typeof renderTodayPage === 'function') renderTodayPage();
+  if(typeof renderCalendar === 'function') renderCalendar();
+  openDetailSheet('agenda', nextKey);
 }
 
 async function deleteAgendaEvent(dateStr, evKey, evSrc, evId, evGcalId) {
@@ -13511,6 +13599,7 @@ function renderTodayPage() {
 }
 
 function navigateDay(dir) {
+  if((dir === 1 || dir === -1) && typeof todaySwipeAnimated === 'function' && todaySwipeAnimated(dir)) return;
   if(dir === 0) {
     todayViewDate = null;
   } else {
@@ -13581,6 +13670,7 @@ function openDetailSheet(kind, overrideDate) {
                 <button class="ds-ev-edit" onclick="toggleAgendaEventDoneByKey('${key}','${agendaEventKey(key,ev).replace(/'/g,"\\'")}')" style="${isAgendaEventDone(key,ev)?'background:var(--green,#4a7a30);color:#fff;border-color:var(--green,#4a7a30)':''}">${isAgendaEventDone(key,ev)?'✓ Afgevinkt':'✓ Afvinken'}</button>
                 <button class="ds-ev-edit" onclick="toggleAgendaEventUrgentByKey('${key}','${agendaEventKey(key,ev).replace(/'/g,"\\'")}')" style="${isAgendaEventUrgent(key,ev)?'background:var(--terra,#c05818);color:#fff;border-color:var(--terra,#c05818)':''}">${isAgendaEventUrgent(key,ev)?'☢️ Urgent':'☢️ Markeer urgent'}</button>
                 ${(ev.src==='local' ? '<button class="ds-ev-edit" onclick="openEventModal(\'' + key + '\',\'' + ev.id + '\')">✏ Bewerk</button>' : '')}
+                ${(ev.src==='local' ? '<button class="ds-ev-edit" onclick="shiftEventToNextDay(\'' + key + '\',\'' + ev.id + '\')">📅 Schuif naar morgen</button>' : '')}
                 <button class="ds-ev-edit" style="border-color:var(--terra,#c05818);color:var(--terra,#c05818)" onclick="deleteAgendaEvent('${key}','${agendaEventKey(key,ev).replace(/'/g,"\\'")}','${ev.src||''}','${ev.id||''}','${ev.gcalId||''}')">🗑 Verwijder</button>
               </div>
             </div>
@@ -14327,9 +14417,8 @@ function renderCalendar() {
       el.innerHTML = '<svg viewBox="0 0 54 50" class="cal-star-svg">'+starDefs
         + '<polygon points="27,2 33,19 51,19 36,30 41,48 27,37 13,48 18,30 3,19 21,19" fill="'+starFill+'" stroke="#0a0a0a" stroke-width="2.6" stroke-linejoin="round"/>'
         + '</svg>'
-        + '<div class="cal-num" style="position:relative">'+d+'</div>'
-        + (starColors.length>2?'':'<div class="cal-dot" style="position:relative"></div>')
-        + '<div class="cal-badges" style="position:relative">'+wasteIcons+'</div>'+adhocAlert;
+        + '<div class="cal-num">'+d+'</div>'
+        + '<div class="cal-badges">'+wasteIcons+'</div>'+adhocAlert;
     } else {
       if(!isT) {
         el.classList.add('has');
@@ -20125,6 +20214,602 @@ function scheduleZangNotification() {
   }, t - now);
 }
 
+// ── Homepage: Tinder-swipe om van dag te wisselen ──
+// De huidige dag is één kaart: je veegt ze weg en ze pivoteert onderaan, tegen
+// de klok in naar links (→ volgende dag) of met de klok mee naar rechts (→
+// vorige dag). De volgende/vorige dag staat al onder de kaart en groeit mee aan.
+// Techniek: bij het begin van een veeg maken we een momentopname (kloon) van de
+// huidige dag — die wordt de kaart die wegdraait — en renderen we de nieuwe dag
+// echt onder de kaart. Bij annuleren zetten we de oude dag terug.
+// Zet TODAY_SWIPE_STAMPS op false voor geen "MORGEN"/"GISTEREN"-stempel.
+var TODAY_SWIPE_STAMPS = true;
+var todaySwipe = { busy:false, wrap:null, sheet:null, under:[], dir:0, w:0, h:0, oldView:null, stamp:null, justSwiped:false };
+
+function todaySwipeLabel(date) {
+  var t0 = new Date(); t0.setHours(0,0,0,0);
+  var d0 = new Date(date); d0.setHours(0,0,0,0);
+  var diff = Math.round((d0 - t0) / 86400000);
+  if(diff === 0) return 'Vandaag';
+  if(diff === 1) return 'Morgen';
+  if(diff === -1) return 'Gisteren';
+  if(diff === 2) return 'Overmorgen';
+  return d0.toLocaleDateString('nl-NL', { weekday:'short', day:'numeric', month:'short' }).replace('.', '');
+}
+function todaySwipeBegin(dir) {
+  var page = document.getElementById('page-today');
+  var app = document.getElementById('app');
+  if(!page || !app || page.offsetParent === null) return false;
+  var s = todaySwipe;
+  var w = page.clientWidth, h = page.clientHeight;
+  s.w = w; s.h = h; s.dir = dir; s.oldView = todayViewDate ? new Date(todayViewDate) : null;
+
+  // uitknipvlak over het inhoudsgebied (de kaart schuift "onder" banner en tabbalk weg)
+  var wrap = document.createElement('div');
+  wrap.style.cssText = 'position:absolute;left:'+page.offsetLeft+'px;top:'+page.offsetTop+'px;width:'+w+'px;height:'+h+'px;overflow:hidden;z-index:3;pointer-events:none;';
+  var sh = h - 12;
+  var sheet = document.createElement('div');
+  sheet.style.cssText = 'position:absolute;left:6px;top:6px;width:'+(w-12)+'px;height:'+sh+'px;overflow:hidden;background:#e9f1e4;border-radius:16px;'
+    + 'box-shadow:0 0 0 2px #0a0a0a,4px 4px 0 2px #0a0a0a;will-change:transform;transform-origin:50% '+Math.round(sh*1.35)+'px;';
+  var inner = document.createElement('div');
+  inner.style.cssText = 'position:absolute;left:-6px;top:-6px;width:'+w+'px;transform:translateY('+(-page.scrollTop)+'px);';
+  Array.prototype.forEach.call(page.children, function(ch){ inner.appendChild(ch.cloneNode(true)); });
+  // id's blijven bewust staan: de kleuren van o.a. #ohCardMMD/#ohCardZang hangen eraan. Het uitknipvlak staat achteraan in #app,
+  // dus getElementById() vindt altijd eerst de echte elementen; de kloon verdwijnt na ~0,5 s.
+  Array.prototype.forEach.call(inner.querySelectorAll('[onclick]'), function(n){ n.removeAttribute('onclick'); });
+  sheet.appendChild(inner);
+
+  // doeldag + stempel
+  var base = todayViewDate ? new Date(todayViewDate) : new Date();
+  base.setDate(base.getDate() + dir); base.setHours(0,0,0,0);
+  s.stamp = null;
+  if(TODAY_SWIPE_STAMPS) {
+    var st = document.createElement('div');
+    st.className = 'oh-swipe-stamp ' + (dir > 0 ? 'r' : 'l');   // stempel aan de kant die in beeld blijft
+    st.textContent = todaySwipeLabel(base);
+    sheet.appendChild(st); s.stamp = st;
+  }
+  wrap.appendChild(sheet); app.appendChild(wrap);
+  s.wrap = wrap; s.sheet = sheet;
+
+  // nieuwe dag echt renderen, onder de kaart
+  todayViewDate = base;
+  renderTodayPage();
+  var pr = page.getBoundingClientRect();
+  s.under = [];
+  Array.prototype.forEach.call(page.children, function(ch){
+    if(!ch.offsetHeight) return;
+    var cr = ch.getBoundingClientRect();
+    ch.style.transformOrigin = '50% ' + Math.round(pr.bottom - cr.top) + 'px';
+    ch.style.transition = 'none';
+    ch.style.transform = 'scale(.93) translateY(18px)';
+    s.under.push(ch);
+  });
+  return true;
+}
+function todaySwipeMove(dx) {
+  var s = todaySwipe; if(!s.wrap) return;
+  s.sheet.style.transition = 'none';
+  s.sheet.style.transform = 'translateX('+dx+'px) rotate('+(dx / s.w * 20)+'deg)';
+  var p = Math.min(1, Math.abs(dx) / (s.w * 0.5));
+  s.under.forEach(function(el){ el.style.transform = 'scale('+(0.93 + 0.07*p)+') translateY('+(18*(1-p))+'px)'; });
+  if(s.stamp) s.stamp.style.opacity = Math.min(1, Math.abs(dx) / (s.w * 0.3));
+}
+function todaySwipeCleanup() {
+  var s = todaySwipe;
+  if(s.wrap && s.wrap.parentNode) s.wrap.parentNode.removeChild(s.wrap);
+  s.under.forEach(function(el){ el.style.transition = ''; el.style.transform = ''; el.style.transformOrigin = ''; });
+  s.under = []; s.wrap = null; s.sheet = null; s.stamp = null; s.busy = false;
+}
+function todaySwipeFinish(commit) {
+  var s = todaySwipe; if(!s.wrap) return;
+  s.busy = true;
+  if(commit) {
+    s.sheet.style.transition = 'transform .42s cubic-bezier(.3,.55,.35,1), opacity .42s';
+    s.sheet.style.transform = 'translateX('+(-s.dir * s.w * 1.4)+'px) translateY(40px) rotate('+(-s.dir * 30)+'deg)';
+    s.sheet.style.opacity = '0';
+    s.under.forEach(function(el){ el.style.transition = 'transform .42s cubic-bezier(.22,1,.36,1)'; el.style.transform = 'scale(1) translateY(0)'; });
+    setTimeout(todaySwipeCleanup, 450);
+  } else {
+    s.sheet.style.transition = 'transform .4s cubic-bezier(.34,1.56,.64,1)';
+    s.sheet.style.transform = 'none';
+    if(s.stamp) { s.stamp.style.transition = 'opacity .2s'; s.stamp.style.opacity = 0; }
+    s.under.forEach(function(el){ el.style.transition = 'transform .3s ease'; el.style.transform = 'scale(.93) translateY(18px)'; });
+    var old = s.oldView;
+    setTimeout(function(){ todayViewDate = old; renderTodayPage(); todaySwipeCleanup(); }, 420);
+  }
+}
+function todaySwipeAbortInstant() {
+  var s = todaySwipe; if(!s.wrap) return;
+  todayViewDate = s.oldView; renderTodayPage(); todaySwipeCleanup();
+}
+// Pijltjes in de banner: dezelfde beweging, zonder vinger
+function todaySwipeAnimated(dir) {
+  if(todaySwipe.busy) return true;
+  if(!todaySwipeBegin(dir)) return false;
+  todaySwipe.busy = true;
+  var sheet = todaySwipe.sheet;
+  if(todaySwipe.stamp) todaySwipe.stamp.style.opacity = 1;
+  requestAnimationFrame(function(){ todaySwipeFinish(true); });
+  return true;
+}
+
+function initTodayPageSwipe() {
+  var page = document.getElementById('page-today');
+  if(!page) return;
+  page.style.touchAction = 'pan-y';
+  var s = todaySwipe;
+  var sx = null, sy = null, pid = null, locked = false, dragging = false, hist = [];
+
+  function blocked(t) {
+    if(!t || !t.closest) return false;
+    // de afsprakenkaart heeft al zijn eigen swipe; invoervelden en horizontaal scrollbare rijen blijven met rust
+    if(t.closest('input, textarea, select, [contenteditable="true"]')) return true;
+    // de afsprakenkaart heeft enkel een eigen swipe als er een echte stapel is (2+ afspraken);
+    // bij 0 of 1 afspraak mag je er gewoon overheen vegen om van dag te wisselen
+    if(t.closest('.oh-agenda-tile-stack')) {
+      var dots = document.getElementById('ohAgendaDots');
+      if(dots && dots.style.display === 'flex') return true;
+    }
+    for(var el = t; el && el !== page; el = el.parentElement) {
+      if(el.scrollWidth > el.clientWidth + 2) {
+        var ox = getComputedStyle(el).overflowX;
+        if(ox === 'auto' || ox === 'scroll') return true;
+      }
+    }
+    return false;
+  }
+  page.addEventListener('pointerdown', function(e){
+    if(s.busy || s.wrap) return;
+    if(e.pointerType === 'mouse' && e.button !== 0) return;
+    if(blocked(e.target)) return;
+    sx = e.clientX; sy = e.clientY; pid = e.pointerId; locked = false; dragging = true;
+    hist = [{ x:e.clientX, t:performance.now() }];
+  });
+  page.addEventListener('pointermove', function(e){
+    if(!dragging || e.pointerId !== pid) return;
+    var dx = e.clientX - sx, dy = e.clientY - sy;
+    if(!locked) {
+      if(Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+      if(Math.abs(dy) > Math.abs(dx) * 0.8) { dragging = false; return; }   // verticaal = gewoon scrollen
+      if(!todaySwipeBegin(dx < 0 ? 1 : -1)) { dragging = false; return; }
+      locked = true; s.justSwiped = true;
+      try { page.setPointerCapture(pid); } catch(err) {}
+      page.style.userSelect = 'none';
+    }
+    // van richting veranderd: oude dag terugzetten en opnieuw beginnen met de juiste kant
+    if(s.wrap && ((dx < -4 && s.dir < 0) || (dx > 4 && s.dir > 0))) {
+      todaySwipeAbortInstant();
+      if(!todaySwipeBegin(dx < 0 ? 1 : -1)) { dragging = false; return; }
+    }
+    hist.push({ x:e.clientX, t:performance.now() }); if(hist.length > 6) hist.shift();
+    todaySwipeMove(dx);
+  });
+  function end(e, cancelled) {
+    if(!dragging || e.pointerId !== pid) return;
+    dragging = false; page.style.userSelect = '';
+    var wasLocked = locked; locked = false;
+    setTimeout(function(){ s.justSwiped = false; }, 60);
+    if(!wasLocked || !s.wrap) return;
+    var dx = e.clientX - sx;
+    var a = hist[0], b = hist[hist.length-1];
+    var v = (a && b && b.t > a.t) ? (b.x - a.x) / (b.t - a.t) : 0;
+    var goes = (dx < 0) === (s.dir > 0);
+    var commit = !cancelled && goes && (Math.abs(dx) > s.w * 0.25 || (Math.abs(v) > 0.5 && Math.abs(dx) > 24));
+    todaySwipeFinish(commit);
+  }
+  page.addEventListener('pointerup', function(e){ end(e, false); });
+  page.addEventListener('pointercancel', function(e){ end(e, true); });
+  // na een veeg geen "per ongeluk" tik op de kaart eronder
+  page.addEventListener('click', function(e){
+    if(s.justSwiped) { e.stopPropagation(); e.preventDefault(); }
+  }, true);
+}
+
+// ═══ SPRAAKOPDRACHTEN ═══
+// Opnemen (Web Speech API, of op iOS/PWA een opname die via voice-command.js
+// getranscribeerd wordt) → commando laten begrijpen → bevestigingskaart → uitvoeren.
+var vcState = 'idle'; // idle | listening | thinking | confirm
+var vcRec = null, vcMedia = null, vcChunks = [], vcStream = null, vcPending = null;
+
+function vcIsIOS() { return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); }
+function vcNowIso() {
+  var d = new Date(), p = function(n){ return String(n).padStart(2,'0'); };
+  return dk(d) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+}
+function vcSet(status, transcript) {
+  var s = document.getElementById('vcStatus'); if(s) s.textContent = status;
+  if(transcript !== undefined) { var t = document.getElementById('vcTranscript'); if(t) t.textContent = transcript; }
+}
+function vcSetMic(rec) {
+  var m = document.getElementById('vcMic'); if(!m) return;
+  m.classList.toggle('rec', !!rec); m.textContent = rec ? '⏹' : '🎤';
+}
+function vcOpen(autoStart) {
+  document.getElementById('vcOverlay').classList.add('open');
+  document.getElementById('vcResult').innerHTML = '';
+  vcPending = null; vcState = 'idle'; vcSetMic(false);
+  vcSet('Tik op de microfoon en spreek', '');
+  if(autoStart) { try { vcStart(); } catch(e) { vcSet('Tik op de microfoon om te spreken', ''); } }
+}
+function vcClose() {
+  vcStopAll();
+  document.getElementById('vcOverlay').classList.remove('open');
+  if('speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch(e){} }
+  vcState = 'idle';
+}
+function vcStopAll() {
+  if(vcRec) { try { vcRec.abort(); } catch(e){} vcRec = null; }
+  if(vcMedia && vcMedia.state !== 'inactive') { vcMedia._cancel = true; try { vcMedia.stop(); } catch(e){} }
+  if(vcStream) { vcStream.getTracks().forEach(function(t){ t.stop(); }); vcStream = null; }
+  vcSetMic(false);
+}
+function vcMicTap() {
+  if(vcState === 'listening') { vcStopListening(); return; }
+  if(vcState === 'thinking') return;
+  document.getElementById('vcResult').innerHTML = '';
+  vcPending = null;
+  vcStart();
+}
+function vcStopListening() {
+  if(vcRec) { try { vcRec.stop(); } catch(e){} }
+  if(vcMedia && vcMedia.state !== 'inactive') { try { vcMedia.stop(); } catch(e){} }
+}
+function vcStart() {
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var useRecorder = vcIsIOS() || !SR;
+  if(useRecorder) return vcStartRecorder();
+  var rec = new SR(); vcRec = rec;
+  rec.lang = 'nl-NL'; rec.continuous = false; rec.interimResults = true;
+  var finalText = '', lastText = '';
+  rec.onresult = function(e) {
+    var f = '', i2 = '';
+    for(var i = 0; i < e.results.length; i++) {
+      if(e.results[i].isFinal) f += e.results[i][0].transcript + ' '; else i2 += e.results[i][0].transcript;
+    }
+    finalText = f.trim(); lastText = (f + i2).trim();
+    vcSet('Ik luister… tik om te stoppen', lastText);
+  };
+  rec.onerror = function(e) {
+    if(e.error === 'no-speech') vcSet('Ik hoorde niets. Probeer opnieuw.', '');
+    else if(e.error === 'not-allowed' || e.error === 'service-not-allowed') vcSet('Microfoon niet toegestaan. Geef toegang of typ je opdracht.', '');
+    else if(e.error !== 'aborted') { vcState = 'idle'; vcStartRecorderFallbackNote(); }
+    vcState = 'idle'; vcSetMic(false);
+  };
+  rec.onend = function() {
+    vcRec = null; vcSetMic(false);
+    var txt = finalText || lastText;
+    if(vcState === 'listening') {
+      if(txt) vcSend({ text: txt }); else { vcState = 'idle'; vcSet('Ik hoorde niets. Tik en probeer opnieuw.', ''); }
+    }
+  };
+  vcState = 'listening'; vcSetMic(true); vcSet('Ik luister… tik om te stoppen', '');
+  rec.start();
+}
+function vcStartRecorderFallbackNote() { vcSet('Spraakherkenning lukt hier niet. Typ je opdracht of probeer opnieuw.', ''); }
+function vcStartRecorder() {
+  if(!navigator.mediaDevices || !window.MediaRecorder) { vcSet('Opnemen wordt niet ondersteund. Typ je opdracht hieronder.', ''); return; }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+    vcStream = stream; vcChunks = [];
+    var mr = new MediaRecorder(stream); vcMedia = mr;
+    mr.ondataavailable = function(e) { if(e.data && e.data.size) vcChunks.push(e.data); };
+    mr.onstop = function() {
+      var cancelled = mr._cancel;
+      var type = mr.mimeType || (vcChunks[0] && vcChunks[0].type) || 'audio/mp4';
+      stream.getTracks().forEach(function(t){ t.stop(); }); vcStream = null; vcSetMic(false);
+      if(cancelled || !vcChunks.length) return;
+      vcSend({ blob: new Blob(vcChunks, { type: type }), type: type });
+    };
+    mr.start();
+    vcState = 'listening'; vcSetMic(true); vcSet('Ik luister… tik om te stoppen', '');
+    // vangnet: automatisch stoppen na 25 s
+    setTimeout(function(){ if(vcMedia === mr && mr.state === 'recording') { try { mr.stop(); } catch(e){} } }, 25000);
+  }).catch(function() {
+    vcState = 'idle'; vcSetMic(false);
+    vcSet('Microfoon niet beschikbaar. Tik op de microfoon (toestemming) of typ je opdracht.', '');
+  });
+}
+function vcSubmitText() {
+  var el = document.getElementById('vcText'); var t = (el.value || '').trim();
+  if(!t || vcState === 'thinking') return;
+  el.value = ''; document.getElementById('vcResult').innerHTML = '';
+  vcSend({ text: t });
+}
+function vcSend(p) {
+  vcState = 'thinking'; vcSetMic(false);
+  vcSet('Even denken…', p.text || '');
+  var opts;
+  if(p.blob) opts = { method: 'POST', headers: { 'Content-Type': p.type, 'X-Now': vcNowIso() }, body: p.blob };
+  else opts = { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: p.text, now: vcNowIso() }) };
+  fetch('/.netlify/functions/voice-command', opts).then(function(r){ return r.json(); }).then(function(j) {
+    if(!j.ok) throw new Error(j.error || 'Mislukt');
+    vcSet('', j.transcript || '');
+    vcHandle(j.command || { action: 'unknown' }, j.transcript || '');
+  }).catch(function(e) {
+    vcState = 'idle';
+    vcSet('Dat lukte niet: ' + (e.message || 'onbekende fout'), '');
+  });
+}
+
+// ── hulpfuncties ──
+function vcNorm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]/g, ' ').replace(/\s+/g, ' ').trim(); }
+function vcEsc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function vcDateLabel(dateStr) {
+  var today = dk(new Date()); var t = new Date(); t.setDate(t.getDate() + 1);
+  if(dateStr === today) return 'vandaag';
+  if(dateStr === dk(t)) return 'morgen';
+  return new Date(dateStr + 'T12:00:00').toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+function vcValidDate(s) { return /^\d{4}-\d{2}-\d{2}$/.test(s || '') && !isNaN(new Date(s + 'T12:00:00')); }
+function vcValidTime(s) { return /^\d{2}:\d{2}$/.test(s || ''); }
+function vcSay(text) { try { vnSpeak(text); } catch(e){} }
+function vcFindEvent(target, targetDate) {
+  var words = vcNorm(target).split(' ').filter(function(w){ return w.length > 1; });
+  if(!words.length) return { err: 'Welke afspraak bedoel je?' };
+  var today = dk(new Date()); var hits = [];
+  Object.keys(localEvents).forEach(function(d) {
+    if(d < dk(new Date(Date.now() - 86400000))) return;
+    (localEvents[d] || []).forEach(function(ev) {
+      if(isZangSyncedEvent(ev) || isZangTitledEvent(ev)) return;
+      var t = vcNorm(ev.title);
+      var n = words.filter(function(w){ return t.indexOf(w) >= 0; }).length;
+      if(n === words.length || (words.length > 2 && n >= words.length - 1)) hits.push({ date: d, ev: ev });
+    });
+  });
+  if(targetDate && vcValidDate(targetDate)) { var onDay = hits.filter(function(h){ return h.date === targetDate; }); if(onDay.length) hits = onDay; }
+  if(!hits.length) return { err: 'Ik vond geen eigen afspraak met “' + target + '”.' };
+  hits.sort(function(a, b){ return (a.date + (a.ev.start || '')).localeCompare(b.date + (b.ev.start || '')); });
+  var future = hits.filter(function(h){ return h.date >= today; });
+  return future[0] || hits[0];
+}
+function vcFindAny(target, targetDate) {
+  var words = vcNorm(target).split(' ').filter(function(w){ return w.length > 1; });
+  if(!words.length) return { err: 'Welke afspraak bedoel je?' };
+  var today = dk(new Date()); var from = dk(new Date(Date.now() - 86400000)); var hits = [];
+  var dates = {}; Object.keys(localEvents).forEach(function(d){ dates[d] = 1; }); Object.keys(icsCache).forEach(function(d){ dates[d] = 1; });
+  Object.keys(dates).forEach(function(d) {
+    if(d < from) return;
+    var loc = getLocalEventsForDate(d, true);
+    var list = loc.map(function(ev){ return { ev: ev, src: 'local' }; });
+    getAgendaForDate(d).forEach(function(ev){
+      if(!loc.find(function(l){ return l.title === ev.title && l.start === ev.start; })) list.push({ ev: ev, src: 'ics' });
+    });
+    list.forEach(function(it) {
+      var t = vcNorm(it.ev.title);
+      var n = words.filter(function(w){ return t.indexOf(w) >= 0; }).length;
+      if(n === words.length || (words.length > 2 && n >= words.length - 1)) hits.push({ date: d, ev: it.ev, src: it.src });
+    });
+  });
+  if(targetDate && vcValidDate(targetDate)) { var onDay = hits.filter(function(h){ return h.date === targetDate; }); if(onDay.length) hits = onDay; }
+  if(!hits.length) return { err: 'Ik vond geen afspraak met “' + target + '”.' };
+  hits.sort(function(a, b){ return (a.date + (a.ev.start || '')).localeCompare(b.date + (b.ev.start || '')); });
+  // liefst de eerstvolgende die nog niet afgevinkt is
+  var open = hits.filter(function(h){ return h.date >= today && !isAgendaEventDone(h.date, h.ev); });
+  var future = hits.filter(function(h){ return h.date >= today; });
+  return open[0] || future[0] || hits[0];
+}
+function vcEvLine(date, ev) {
+  return vcDateLabel(date) + (ev.allDay || !ev.start ? ' (hele dag)' : ' om ' + ev.start);
+}
+function vcCard(act, title, meta, okLabel) {
+  document.getElementById('vcResult').innerHTML =
+    '<div class="vc-card"><div class="vc-card-act">' + vcEsc(act) + '</div><div class="vc-card-title">' + vcEsc(title) + '</div>' +
+    '<div class="vc-card-meta">' + vcEsc(meta) + '</div></div>' +
+    '<div class="vc-btns"><button class="vc-btn" onclick="vcCancel()">Annuleer</button><button class="vc-btn ok" onclick="vcConfirm()">' + (okLabel || 'Bevestig') + '</button></div>';
+  vcState = 'confirm';
+}
+function vcCancel() { vcPending = null; document.getElementById('vcResult').innerHTML = ''; vcState = 'idle'; vcSet('Geannuleerd. Tik op de microfoon voor een nieuwe opdracht.', ''); }
+function vcDone(msg) {
+  vcPending = null; vcState = 'idle'; document.getElementById('vcResult').innerHTML = '';
+  vcSet('✅ ' + msg, ''); showToast(msg); vcSay(msg);
+  if(typeof renderTodayPage === 'function') renderTodayPage();
+  if(typeof renderCalendar === 'function') renderCalendar();
+  setTimeout(function(){ if(vcState === 'idle') vcClose(); }, 2200);
+}
+
+// ── commando verwerken ──
+function vcHandle(c, transcript) {
+  var a = c.action;
+  if(a === 'create') {
+    var date = vcValidDate(c.date) ? c.date : dk(new Date());
+    var title = (c.title || '').trim();
+    if(!title) { vcState = 'idle'; vcSet('Ik begreep de titel niet. Probeer opnieuw.', transcript); return; }
+    var allDay = !!c.allDay || !vcValidTime(c.start);
+    vcPending = { type: 'create', date: date, ev: { title: title, start: allDay ? '' : c.start, allDay: allDay, location: c.location || '' } };
+    vcCard('Nieuwe afspraak', title, vcEvLine(date, { allDay: allDay, start: c.start }) + (c.location ? ' · 📍 ' + c.location : ''), 'Opslaan');
+    vcSet('Klopt dit?', transcript);
+  } else if(a === 'shift' || a === 'delete' || a === 'urgent') {
+    var f = vcFindEvent(c.target, c.targetDate);
+    if(f.err) { vcState = 'idle'; vcSet(f.err, transcript); return; }
+    if(a === 'shift') {
+      var nd;
+      if(vcValidDate(c.newDate)) nd = c.newDate;
+      else { var dt = new Date(f.date + 'T12:00:00'); dt.setDate(dt.getDate() + 1); nd = dk(dt); }
+      var ns = vcValidTime(c.newStart) ? c.newStart : '';
+      vcPending = { type: 'shift', date: f.date, id: f.ev.id, newDate: nd, newStart: ns };
+      vcCard('Verplaatsen', f.ev.title, 'van ' + vcEvLine(f.date, f.ev) + ' → ' + vcDateLabel(nd) + (ns ? ' om ' + ns : ''), 'Verplaats');
+    } else if(a === 'delete') {
+      vcPending = { type: 'delete', date: f.date, id: f.ev.id };
+      vcCard('Verwijderen', f.ev.title, vcEvLine(f.date, f.ev), 'Verwijder');
+    } else {
+      vcPending = { type: 'urgent', date: f.date, id: f.ev.id };
+      vcCard('☢️ Nucleair markeren', f.ev.title, vcEvLine(f.date, f.ev), 'Markeer');
+    }
+    vcSet('Klopt dit?', transcript);
+  } else if(a === 'note') {
+    var body = (c.noteText || '').trim();
+    if(!body) { vcState = 'idle'; vcSet('Ik begreep de notitie niet. Probeer opnieuw.', transcript); return; }
+    if(!notesData[NOTITIES_GENERAL_KEY]) notesData[NOTITIES_GENERAL_KEY] = [];
+    var now = new Date();
+    notesData[NOTITIES_GENERAL_KEY].unshift({
+      id: 'n_' + Date.now(), title: (c.noteTitle || '').trim(), text: body, tags: [],
+      time: now.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' }) + ' ' + now.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' })
+    });
+    localStorage.setItem('wf_notes', JSON.stringify(notesData));
+    if(typeof renderNotitiesTab === 'function') renderNotitiesTab();
+    vcDone('Notitie bewaard');
+  } else if(a === 'query') {
+    var d = vcValidDate(c.date) ? c.date : dk(new Date());
+    var loc = getLocalEventsForDate(d, true);
+    var ics = getAgendaForDate(d).filter(function(ev){ return !loc.find(function(l){ return l.title === ev.title && l.start === ev.start; }); });
+    var all = loc.concat(ics).sort(function(x, y){ return agendaSortKey(d, x).localeCompare(agendaSortKey(d, y)); });
+    var lbl = vcDateLabel(d); lbl = lbl.charAt(0).toUpperCase() + lbl.slice(1);
+    var spoken, html;
+    if(!all.length) { spoken = lbl + ' heb je geen afspraken.'; html = '<div class="vc-card-meta">Geen afspraken.</div>'; }
+    else {
+      spoken = lbl + ' heb je ' + all.length + (all.length === 1 ? ' afspraak: ' : ' afspraken: ') +
+        all.map(function(ev){ return (ev.allDay || !ev.start ? 'de hele dag ' : 'om ' + ev.start + ' ') + ev.title; }).join(', ') + '.';
+      html = all.map(function(ev){
+        return '<div class="vc-card-meta" style="padding:3px 0"><b>' + (ev.allDay || !ev.start ? 'Hele dag' : vcEsc(ev.start)) + '</b> · ' +
+          (isAgendaEventUrgent(d, ev) && !isAgendaEventDone(d, ev) ? '☢️ ' : '') + vcEsc(ev.title) + '</div>';
+      }).join('');
+    }
+    document.getElementById('vcResult').innerHTML = '<div class="vc-card"><div class="vc-card-act">Agenda · ' + vcEsc(vcDateLabel(d)) + '</div>' + html + '</div>';
+    vcState = 'idle'; vcSet('', transcript); vcSay(spoken);
+  } else if(a === 'done') {
+    var fd = vcFindAny(c.target, c.targetDate);
+    if(fd.err) { vcState = 'idle'; vcSet(fd.err, transcript); return; }
+    var undo = c.undo === true || c.undo === 'true';
+    vcPending = { type: 'done', date: fd.date, ev: fd.ev, src: fd.src, undo: undo };
+    vcCard(undo ? 'Afvinken ongedaan maken' : '✓ Afvinken', fd.ev.title, vcEvLine(fd.date, fd.ev) + (fd.src === 'ics' ? ' · Google/ICS' : ''), undo ? 'Ongedaan' : 'Afvinken');
+    vcSet('Klopt dit?', transcript);
+  } else if(a === 'done_all') {
+    var dd = vcValidDate(c.date) ? c.date : dk(new Date());
+    var l1 = getLocalEventsForDate(dd, true);
+    var l2 = getAgendaForDate(dd).filter(function(ev){ return !l1.find(function(l){ return l.title === ev.title && l.start === ev.start; }); });
+    var todo = l1.concat(l2).filter(function(ev){ return !isAgendaEventDone(dd, ev); });
+    if(!todo.length) { vcState = 'idle'; vcSet('Er is niets af te vinken voor ' + vcDateLabel(dd) + '.', transcript); return; }
+    vcPending = { type: 'done_all', date: dd, evs: todo };
+    vcCard('✓ Alles afvinken · ' + vcDateLabel(dd), todo.length + (todo.length === 1 ? ' afspraak' : ' afspraken'), todo.map(function(e){ return e.title; }).join(', '), 'Alles afvinken');
+    vcSet('Klopt dit?', transcript);
+  } else if(a === 'training') {
+    var td = vcValidDate(c.date) ? c.date : dk(new Date());
+    var te = TRAIN_PLAN_BY_DATE[td];
+    var tl = vcDateLabel(td); tl = tl.charAt(0).toUpperCase() + tl.slice(1);
+    var tsay, thtml;
+    if(!te) { tsay = tl + ' staat er geen training in je schema.'; thtml = '<div class="vc-card-meta">Geen training gepland.</div>'; }
+    else if(te.dayType === 'rest' || !(te.exs && te.exs.length)) {
+      tsay = tl + ': ' + (te.title || 'rustdag') + (te.goal ? '. ' + te.goal : '') + '.';
+      thtml = '<div class="vc-card-title">' + vcEsc(te.title || 'Rustdag') + '</div><div class="vc-card-meta">' + vcEsc(te.goal || '') + '</div>';
+    } else {
+      var names = te.exs.map(function(e){ return e.n; });
+      tsay = tl + ': ' + (te.title || 'training') + '. ' + names.length + ' oefeningen' + (te.duration ? ', ongeveer ' + te.duration + ' minuten' : '') + '. ' +
+        names.map(function(n, i){ return (i + 1) + ', ' + n + (te.exs[i].s ? ', ' + te.exs[i].s : ''); }).join('. ') + '.';
+      thtml = '<div class="vc-card-title">' + vcEsc(te.title || 'Training') + '</div>' +
+        te.exs.map(function(e, i){ return '<div class="vc-card-meta" style="padding:2px 0">' + (i + 1) + '. <b>' + vcEsc(e.n) + '</b>' + (e.s ? ' · ' + vcEsc(e.s) : '') + '</div>'; }).join('');
+    }
+    document.getElementById('vcResult').innerHTML = '<div class="vc-card"><div class="vc-card-act">Training · ' + vcEsc(vcDateLabel(td)) + '</div>' + thtml + '</div>';
+    vcState = 'idle'; vcSet('', transcript); vcSay(tsay);
+  } else if(a === 'waste') {
+    var wd = vcValidDate(c.date) ? c.date : dk(new Date());
+    var wk = (c.scope === 'week');
+    var days = [];
+    if(wk) {
+      var base = new Date(wd + 'T12:00:00'); var dow = (base.getDay() + 6) % 7; // maandag = 0
+      var mon = new Date(base); mon.setDate(base.getDate() - dow);
+      for(var i = 0; i < 7; i++) { var x = new Date(mon); x.setDate(mon.getDate() + i); days.push(dk(x)); }
+      var tdy = dk(new Date()); days = days.filter(function(d){ return d >= tdy; });
+    } else days = [wd];
+    var found = days.map(function(d){ return { d: d, t: getWasteForDate(d) }; }).filter(function(x){ return x.t.length; });
+    var wlabel = function(t){ return (WASTE_ICONS[t] || {}).label || t; };
+    var wsay, whtml;
+    if(!found.length) { wsay = wk ? 'Er is die week geen ophaling meer gepland.' : 'Er is ' + vcDateLabel(wd) + ' geen ophaling.'; whtml = '<div class="vc-card-meta">Geen ophaling.</div>'; }
+    else {
+      wsay = found.map(function(x){
+        return vcDateLabel(x.d) + ' wordt opgehaald: ' + x.t.map(wlabel).join(' en ') + (x.d > dk(new Date()) ? '. Zet het de avond ervoor buiten.' : '.');
+      }).join(' ');
+      whtml = found.map(function(x){
+        return '<div class="vc-card-meta" style="padding:3px 0"><b>' + vcEsc(vcDateLabel(x.d)) + '</b> · ' + x.t.map(function(t){ return (WASTE_ICONS[t] ? wastePlainIcon(t) + ' ' : '') + vcEsc(wlabel(t)); }).join(', ') + '</div>';
+      }).join('');
+    }
+    document.getElementById('vcResult').innerHTML = '<div class="vc-card"><div class="vc-card-act">Afval · ' + (wk ? 'die week' : vcEsc(vcDateLabel(wd))) + '</div>' + whtml + '</div>';
+    vcState = 'idle'; vcSet('', transcript); vcSay(wsay);
+  } else if(a === 'zang') {
+    vcSay('Zangles geopend');
+    vcClose();
+    setTimeout(function(){ if(typeof openZangPage === 'function') openZangPage(); }, 150);
+  } else {
+    vcState = 'idle';
+    vcSet('Dat heb ik niet begrepen. Probeer bv. “afspraak morgen om 14 uur tandarts”.', transcript);
+  }
+}
+
+function vcConfirm() {
+  var p = vcPending; if(!p) return;
+  if(p.type === 'create') {
+    var ev = {
+      id: 'ev_' + Date.now(), title: p.ev.title, start: p.ev.start, end: p.ev.start, allDay: p.ev.allDay,
+      location: p.ev.location, notes: '', gcalId: null, synced: false, created: new Date().toISOString(),
+      isKidsEvent: false, voorWie: ['toon']
+    };
+    if(!localEvents[p.date]) localEvents[p.date] = [];
+    localEvents[p.date].push(ev);
+    saveLocalEvents();
+    if(isGcalConnected()) { try { syncEventToGcal(p.date, ev.id); } catch(e){} }
+    syncEventReminder(p.date, ev);
+    return vcDone('Afspraak opgeslagen: ' + ev.title + ', ' + vcEvLine(p.date, ev));
+  }
+  if(p.type === 'done' || p.type === 'done_all') {
+    var list = p.type === 'done' ? [p.ev] : p.evs;
+    list.forEach(function(ev) {
+      var k = agendaEventKey(p.date, ev);
+      if(p.type === 'done' && p.undo) delete AGENDA_DONE[k]; else AGENDA_DONE[k] = true;
+      var le = findLocalEventByKey(p.date, k);
+      if(le) syncEventReminder(p.date, le);
+    });
+    localStorage.setItem('wf_agenda_done', JSON.stringify(AGENDA_DONE));
+    return vcDone(p.type === 'done' ? (p.undo ? p.ev.title + ' staat weer open' : p.ev.title + ' afgevinkt') : list.length + ' afspraken afgevinkt');
+  }
+  var ev0 = (localEvents[p.date] || []).find(function(e){ return e.id === p.id; });
+  if(!ev0) { vcState = 'idle'; document.getElementById('vcResult').innerHTML = ''; vcSet('Die afspraak bestaat niet meer.', ''); return; }
+  if(p.type === 'urgent') {
+    AGENDA_URGENT[agendaEventKey(p.date, ev0)] = true;
+    localStorage.setItem('wf_agenda_urgent', JSON.stringify(AGENDA_URGENT));
+    syncEventReminder(p.date, ev0);
+    return vcDone(ev0.title + ' staat nu op nucleair');
+  }
+  if(p.type === 'delete') {
+    var gid = ev0.gcalId;
+    var finish = function() {
+      localEvents[p.date] = (localEvents[p.date] || []).filter(function(e){ return e.id !== p.id; });
+      if(localEvents[p.date].length === 0) delete localEvents[p.date];
+      saveLocalEvents(); deleteEventReminder(p.date, p.id);
+      vcDone('Afspraak verwijderd: ' + ev0.title);
+    };
+    if(gid && isGcalConnected()) { try { Promise.resolve(deleteGcalEvent(gid)).then(finish, finish); } catch(e) { finish(); } }
+    else finish();
+    return;
+  }
+  if(p.type === 'shift') {
+    var oldKey = agendaEventKey(p.date, ev0);
+    var wasDone = !!AGENDA_DONE[oldKey], wasUrgent = !!AGENDA_URGENT[oldKey];
+    delete AGENDA_DONE[oldKey]; delete AGENDA_URGENT[oldKey];
+    localEvents[p.date] = (localEvents[p.date] || []).filter(function(e){ return e.id !== p.id; });
+    if(localEvents[p.date].length === 0) delete localEvents[p.date];
+    if(p.newStart && !ev0.allDay) { ev0.start = p.newStart; ev0.end = p.newStart; }
+    if(!localEvents[p.newDate]) localEvents[p.newDate] = [];
+    localEvents[p.newDate].push(ev0);
+    saveLocalEvents();
+    var newKey = agendaEventKey(p.newDate, ev0);
+    if(wasDone) AGENDA_DONE[newKey] = true;
+    if(wasUrgent) AGENDA_URGENT[newKey] = true;
+    localStorage.setItem('wf_agenda_done', JSON.stringify(AGENDA_DONE));
+    localStorage.setItem('wf_agenda_urgent', JSON.stringify(AGENDA_URGENT));
+    if(ev0.gcalId && isGcalConnected()) { try { syncEventToGcal(p.newDate, ev0.id); } catch(e){} }
+    deleteEventReminder(p.date, p.id); syncEventReminder(p.newDate, ev0);
+    return vcDone(ev0.title + ' verplaatst naar ' + vcDateLabel(p.newDate));
+  }
+}
+
+// Start via Siri-opdracht / snelkoppeling: https://…/?voice=1
+function vcBootCheck() {
+  try {
+    if(/[?&]voice=1\b/.test(location.search)) {
+      setTimeout(function(){ vcOpen(true); }, 600);
+      if(history.replaceState) history.replaceState(null, '', location.pathname);
+    }
+  } catch(e) {}
+}
+
 // ─── BOOT ────────────────────────────────────────────────────────
 // Auto-unlock met admin user (login screen verborgen)
 _unlockApp(USERS[APP_PASS]);
@@ -20132,6 +20817,8 @@ handleOAuthRedirect(); // Handel de Google OAuth-authorization-code in de URL af
 todayViewDate=null;
 syncZangPlanToAgenda();
 renderTodayPage();
+initTodayPageSwipe();
+vcBootCheck();
 // Schedule waste notifications if permission already granted
 if(typeof Notification !== 'undefined' && Notification.permission === 'granted') {
   scheduleWasteNotifications();
