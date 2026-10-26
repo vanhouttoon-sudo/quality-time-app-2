@@ -3922,7 +3922,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v9/10/26 · 08:22</div>
+    <div class="oh-version-tag" id="ohVersionTag">v26/10/26 · 09:29</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -4874,10 +4874,10 @@ function qtSkateLoaderHtml(text){
           <div class="settings-row" style="border:none;padding-bottom:10px">
             <div class="settings-label-sub" style="color:#d8c8b0;font-size:12px">Upload hier de mp3-oefeningen (bv. vanuit je e-mail of cloudopslag). Ze blijven lokaal op dit toestel bewaard en verschijnen automatisch bij de juiste oefening in het tabblad Zanglessen. De bestandsnaam moet exact overeenkomen met de naam die in het lesplan gebruikt wordt.</div>
           </div>
-          <input type="file" id="zangAudioFileInput" accept="audio/*,.mp3,.m4a,.wav,.aac,audio/mpeg,audio/mp3,audio/x-m4a" multiple style="display:none" onchange="zangAudioAddFiles(this)">
+          <input type="file" id="zangAudioFileInput" accept="" multiple style="display:none" onchange="zangAudioAddFiles(this)">
           <div class="axxes-upload-box" onclick="document.getElementById('zangAudioFileInput').click()">
             <div class="aui">⬆️</div>
-            <div class="aut">Mp3's toevoegen</div>
+            <div class="aut">Audio toevoegen (elk formaat)</div>
             <div class="aus">Meerdere bestanden tegelijk mogelijk · blijft lokaal op dit toestel</div>
           </div>
           <div id="zangAudioList" style="margin-top:14px"></div>
@@ -4895,15 +4895,15 @@ function qtSkateLoaderHtml(text){
             <input type="text" id="zsTitel" placeholder="Songtitel *" class="settings-input" style="width:100%">
             <input type="text" id="zsUitvoerder" placeholder="Uitvoerder" class="settings-input" style="width:100%">
             <input type="text" id="zsToonaard" placeholder="Toonaard, bv. C majeur" class="settings-input" style="width:100%">
-            <input type="file" id="zsFileVocal" accept="audio/*,.mp3,.m4a,.wav,.aac,audio/mpeg,audio/mp3,audio/x-m4a" style="display:none" onchange="document.getElementById('zsFileVocalLabel').textContent = (this.files[0] ? this.files[0].name : '🎤 Gezongen mp3 kiezen… (optioneel)')">
+            <input type="file" id="zsFileVocal" accept="" style="display:none" onchange="document.getElementById('zsFileVocalLabel').textContent = (this.files[0] ? this.files[0].name : '🎤 Gezongen audio kiezen… (optioneel)')">
             <div class="axxes-upload-box" onclick="document.getElementById('zsFileVocal').click()" style="padding:12px">
               <div class="aui" style="font-size:16px">⬆️</div>
-              <div class="aut" id="zsFileVocalLabel" style="font-size:11px">🎤 Gezongen mp3 kiezen… (optioneel)</div>
+              <div class="aut" id="zsFileVocalLabel" style="font-size:11px">🎤 Gezongen audio kiezen… (optioneel)</div>
             </div>
-            <input type="file" id="zsFileInstr" accept="audio/*,.mp3,.m4a,.wav,.aac,audio/mpeg,audio/mp3,audio/x-m4a" style="display:none" onchange="document.getElementById('zsFileInstrLabel').textContent = (this.files[0] ? this.files[0].name : '🎹 Instrumentale mp3 kiezen… (optioneel)')">
+            <input type="file" id="zsFileInstr" accept="" style="display:none" onchange="document.getElementById('zsFileInstrLabel').textContent = (this.files[0] ? this.files[0].name : '🎹 Instrumentale audio kiezen… (optioneel)')">
             <div class="axxes-upload-box" onclick="document.getElementById('zsFileInstr').click()" style="padding:12px">
               <div class="aui" style="font-size:16px">⬆️</div>
-              <div class="aut" id="zsFileInstrLabel" style="font-size:11px">🎹 Instrumentale mp3 kiezen… (optioneel)</div>
+              <div class="aut" id="zsFileInstrLabel" style="font-size:11px">🎹 Instrumentale audio kiezen… (optioneel)</div>
             </div>
             <button class="settings-primary-btn" onclick="zangSongAdd()">+ Nummer toevoegen</button>
             <div id="zsStatus"></div>
@@ -16334,6 +16334,174 @@ function notitiesInsertBullet(taId) {
   ta.setSelectionRange(pos, pos);
 }
 
+// ═══ UNIVERSELE AUDIO-LAAG ═══
+// Elk audiobestand (mp3, m4a, wav, aac, ogg, opus, flac, wma, amr, ac3, aiff, caf,
+// mka, 3gp … ook de audiospoor van een video) wordt voor het bewaren gecontroleerd:
+//  1) Kan dit toestel het afspelen? → ongewijzigd bewaren (enkel een ontbrekend
+//     bestandstype wordt aangevuld).
+//  2) Zo niet → automatisch omgezet naar mp3 met ffmpeg (draait lokaal in de browser,
+//     wordt enkel gedownload wanneer er echt iets omgezet moet worden).
+//  3) Past het niet in de limiet (bv. 5 MB voor opslag op Netlify) → opnieuw
+//     gecomprimeerd tot het wél past.
+var QT_FF_JS_BASES = [
+  'https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd',
+  'https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/umd'
+];
+var QT_FF_CORE_BASES = [ /* ESM-build: nodig omdat de ffmpeg-worker als module draait */
+  'https://cdn.jsdelivr.net/npm/@ffmpeg/core@0.12.6/dist/esm',
+  'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm'
+];
+var QT_AUDIO_EXTS = ['mp3','mpga','mp2','m4a','m4b','m4r','aac','adts','wav','wave','bwf','aif','aiff','aifc','caf','flac','ogg','oga','ogx','opus','spx','weba','mka','wma','ac3','eac3','dts','amr','awb','3ga','gsm','au','snd','ape','wv','tta','mpc','ra','mp4a'];
+var QT_MIME_BY_EXT = { mp3:'audio/mpeg', mpga:'audio/mpeg', mp2:'audio/mpeg', m4a:'audio/mp4', m4b:'audio/mp4', m4r:'audio/mp4', mp4:'audio/mp4', mp4a:'audio/mp4', aac:'audio/aac', adts:'audio/aac', wav:'audio/wav', wave:'audio/wav', bwf:'audio/wav', aif:'audio/aiff', aiff:'audio/aiff', aifc:'audio/aiff', caf:'audio/x-caf', flac:'audio/flac', ogg:'audio/ogg', oga:'audio/ogg', ogx:'audio/ogg', opus:'audio/ogg', spx:'audio/ogg', weba:'audio/webm', webm:'audio/webm', mka:'audio/x-matroska', wma:'audio/x-ms-wma', ac3:'audio/ac3', eac3:'audio/eac3', amr:'audio/amr', awb:'audio/amr-wb', '3gp':'audio/3gpp', '3ga':'audio/3gpp', gsm:'audio/x-gsm', au:'audio/basic', snd:'audio/basic' };
+var qtFFmpegPromise = null;
+
+function qtExt(name) { var m = /\.([a-zA-Z0-9]+)$/.exec(String(name || '')); return m ? m[1].toLowerCase() : ''; }
+function qtAudioMime(name, mime) {
+  if (mime && mime !== 'application/octet-stream') return mime;
+  return QT_MIME_BY_EXT[qtExt(name)] || 'audio/mpeg';
+}
+// Is dit (waarschijnlijk) een pure audio-bestand? (video-containers tellen enkel mee als de aanroeper het zegt)
+function qtLooksLikeAudio(file) {
+  var t = (file && file.type || '').toLowerCase();
+  if (t.indexOf('audio/') === 0) return true;
+  return QT_AUDIO_EXTS.indexOf(qtExt(file && file.name)) > -1;
+}
+
+// ── status-chip onderaan het scherm ──
+function qtAudioStatus(text) {
+  var el = document.getElementById('qtAudioStatus');
+  if (!text) { if (el) el.style.display = 'none'; return; }
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'qtAudioStatus';
+    el.style.cssText = 'position:fixed;left:50%;bottom:92px;transform:translateX(-50%);max-width:88vw;background:#ffe14d;color:#0a0a0a;border:3px solid #0a0a0a;border-radius:12px;box-shadow:4px 4px 0 #0a0a0a;padding:10px 14px;font:800 12px/1.35 var(--grotesk,sans-serif);z-index:99998;text-align:center';
+    document.body.appendChild(el);
+  }
+  el.textContent = text; el.style.display = 'block';
+}
+
+// ── kan dit toestel het afspelen? ──
+function qtProbePlayable(file) {
+  return new Promise(function(resolve) {
+    var type = qtAudioMime(file.name, file.type);
+    var isVideoBox = /^video\//.test(file.type || '');
+    var el = document.createElement(isVideoBox ? 'video' : 'audio');
+    var can = '';
+    try { can = el.canPlayType(type) || ''; } catch (e) {}
+    var url = URL.createObjectURL(file);
+    var done = false;
+    var timer;
+    function fin(ok) {
+      if (done) return; done = true; clearTimeout(timer);
+      try { el.removeAttribute('src'); el.load(); } catch (e) {}
+      try { URL.revokeObjectURL(url); } catch (e) {}
+      resolve(ok);
+    }
+    el.preload = 'metadata';
+    el.onloadedmetadata = function() { fin(true); };
+    el.onerror = function() { fin(false); };
+    // Geen reactie (bv. iOS laadt pas bij afspelen): vertrouw op canPlayType
+    timer = setTimeout(function() { fin(!!can); }, can ? 4000 : 6000);
+    el.src = url;
+  });
+}
+
+// ── ffmpeg (lazy) ──
+function qtLoadScript(src) {
+  return new Promise(function(resolve, reject) {
+    var s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = function() { reject(new Error('kon ' + src + ' niet laden')); };
+    document.head.appendChild(s);
+  });
+}
+function qtBlobURL(url, mime) {
+  return fetch(url).then(function(r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.blob();
+  }).then(function(b) { return URL.createObjectURL(new Blob([b], { type: mime })); });
+}
+function qtLoadFFmpeg() {
+  if (qtFFmpegPromise) return qtFFmpegPromise;
+  qtFFmpegPromise = (async function() {
+    var lastErr = null;
+    for (var i = 0; i < QT_FF_JS_BASES.length; i++) {
+      try {
+        if (!(window.FFmpegWASM && window.FFmpegWASM.FFmpeg)) await qtLoadScript(QT_FF_JS_BASES[i] + '/ffmpeg.js');
+        var ff = new window.FFmpegWASM.FFmpeg();
+        var coreBase = QT_FF_CORE_BASES[Math.min(i, QT_FF_CORE_BASES.length - 1)];
+        await ff.load({
+          classWorkerURL: await qtBlobURL(QT_FF_JS_BASES[i] + '/814.ffmpeg.js', 'text/javascript'),
+          coreURL: await qtBlobURL(coreBase + '/ffmpeg-core.js', 'text/javascript'),
+          wasmURL: await qtBlobURL(coreBase + '/ffmpeg-core.wasm', 'application/wasm')
+        });
+        return ff;
+      } catch (e) { lastErr = e; }
+    }
+    qtFFmpegPromise = null;
+    throw new Error('de omzetter kon niet geladen worden (' + ((lastErr && lastErr.message) || 'onbekend') + '). Controleer je internetverbinding.');
+  })();
+  return qtFFmpegPromise;
+}
+
+// ── omzetten naar mp3 ──
+async function qtConvertToMp3(file, opts) {
+  opts = opts || {};
+  qtAudioStatus('🎧 Omzetter laden… (eenmalig, ~30 MB)');
+  var ff = await qtLoadFFmpeg();
+  var base = String(file.name || 'audio').replace(/\.[^.]+$/, '') || 'audio';
+  var inName = 'in.' + (qtExt(file.name) || 'bin');
+  var onProg = function(e) { if (e && e.progress >= 0 && e.progress <= 1) qtAudioStatus('🎧 Omzetten naar mp3… ' + Math.round(e.progress * 100) + '%'); };
+  ff.on('progress', onProg);
+  try {
+    qtAudioStatus('🎧 Omzetten naar mp3…');
+    await ff.writeFile(inName, new Uint8Array(await file.arrayBuffer()));
+    var args = ['-i', inName, '-vn', '-map', '0:a:0', '-map_metadata', '-1', '-c:a', 'libmp3lame', '-b:a', (opts.kbps || 128) + 'k'];
+    if (opts.mono) args.push('-ac', '1');
+    if (opts.rate) args.push('-ar', String(opts.rate));
+    args.push('out.mp3');
+    var code = await ff.exec(args);
+    if (code !== 0) throw new Error('geen geldig audiobestand');
+    var data = await ff.readFile('out.mp3');
+    if (!data || !data.length) throw new Error('de omzetting gaf een leeg bestand');
+    return new File([data.buffer], base + '.mp3', { type: 'audio/mpeg' });
+  } finally {
+    try { ff.off('progress', onProg); } catch (e) {}
+    try { await ff.deleteFile(inName); } catch (e) {}
+    try { await ff.deleteFile('out.mp3'); } catch (e) {}
+  }
+}
+
+// ── hoofdfunctie: geeft een afspeelbare File terug (of gooit een duidelijke fout) ──
+async function qtPrepareAudio(file, opts) {
+  opts = opts || {};
+  var out = file;
+  try {
+    var ok = await qtProbePlayable(file);
+    if (!ok) {
+      out = await qtConvertToMp3(file);
+    } else if (!file.type || file.type === 'application/octet-stream') {
+      out = new File([file], file.name, { type: qtAudioMime(file.name, file.type) });
+    }
+    if (opts.maxBytes && out.size > opts.maxBytes) {
+      var steps = [{ kbps: 128 }, { kbps: 96 }, { kbps: 64, mono: true }, { kbps: 48, mono: true, rate: 22050 }, { kbps: 32, mono: true, rate: 16000 }];
+      var best = null;
+      for (var i = 0; i < steps.length; i++) {
+        qtAudioStatus('🎧 Te groot (' + (out.size / 1048576).toFixed(1) + ' MB) — comprimeren…');
+        var c = await qtConvertToMp3(file, steps[i]);
+        best = c;
+        if (c.size <= opts.maxBytes) break;
+      }
+      if (!best || best.size > opts.maxBytes) throw new Error('ook na comprimeren groter dan ' + (opts.maxBytes / 1048576).toFixed(0) + ' MB — knip het bestand in stukken');
+      out = best;
+    }
+    return out;
+  } catch (e) {
+    throw new Error(file.name + ': ' + (e && e.message ? e.message : 'kon dit audiobestand niet verwerken'));
+  } finally {
+    qtAudioStatus('');
+  }
+}
+
 // ═══ BIJLAGEN — elk bestandstype, opgeslagen via Netlify Blobs (note-attachment.js) ═══
 // De notitie zelf onthoudt enkel {key, name, type, size} — de bestandsinhoud zelf
 // staat op Netlify, niet in de lokale opslag van het toestel (die is te klein voor
@@ -16358,7 +16526,12 @@ function notitiesFormatSize(bytes) {
   if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
   return (bytes / 1024 / 1024).toFixed(1) + ' MB';
 }
-function notitiesUploadFile(file) {
+async function notitiesUploadFile(file, opts) {
+  // Audio: eerst controleren/omzetten/comprimeren zodat het op elk toestel afspeelt en binnen de limiet past
+  if ((opts && opts.audio) || qtLooksLikeAudio(file)) file = await qtPrepareAudio(file, { maxBytes: 5 * 1024 * 1024 });
+  return notitiesUploadFileRaw(file);
+}
+function notitiesUploadFileRaw(file) {
   return new Promise(function(resolve, reject) {
     var MAX = 5 * 1024 * 1024; // Netlify-functies accepteren max ~6 MB per aanvraag
     if (file.size > MAX) {
@@ -17147,10 +17320,7 @@ function zaFindVersion(versionId){
   return null;
 }
 function zaGuessMime(filename, mime){
-  if(mime && mime !== 'application/octet-stream') return mime;
-  var ext = String(filename || '').split('.').pop().toLowerCase();
-  var map = { mp3:'audio/mpeg', mpga:'audio/mpeg', m4a:'audio/mp4', mp4a:'audio/mp4', aac:'audio/aac', wav:'audio/wav', ogg:'audio/ogg', oga:'audio/ogg', opus:'audio/ogg', flac:'audio/flac', weba:'audio/webm', aif:'audio/aiff', aiff:'audio/aiff', amr:'audio/amr', wma:'audio/x-ms-wma', caf:'audio/x-caf' };
-  return map[ext] || 'audio/mpeg';
+  return qtAudioMime(filename, mime);
 }
 function zaDeleteBlob(key){
   if(!key) return;
@@ -17221,17 +17391,17 @@ function zaFormReset(atts){
   var a = (atts || []).slice();
   zaForm = { audio: null, atts: a, busy: 0, error: '', newKeys: [], origKeys: a.map(function(x){ return x.key; }) };
 }
-var ZA_AUDIO_ACCEPT = 'audio/*,.mp3,.wav,.m4a,.aac,.ogg,.oga,.flac,.wma,.aiff,.aif,.opus,.amr,.mpga,.mpeg,.mp4a,.weba,.caf';
+var ZA_AUDIO_ACCEPT = ''; // geen filter: elk audioformaat kiesbaar (ook op iOS); onbruikbare bestanden worden na het kiezen gemeld
 
 function zaPickAudio(input){
   var f = input.files && input.files[0];
   if(!f) return;
   var st = document.getElementById('zaAudioStatus');
   zaForm.audio = null; zaForm.error = ''; zaForm.busy++;
-  zaSetStatus(st, '⏳ ' + f.name + ' uploaden...', '#a08060');
-  notitiesUploadFile(f).then(function(r){
+  zaSetStatus(st, '⏳ ' + f.name + ' controleren en uploaden...', '#a08060');
+  notitiesUploadFile(f, { audio: true }).then(function(r){
     zaForm.busy--; zaForm.audio = r; zaForm.newKeys.push(r.key);
-    zaSetStatus(document.getElementById('zaAudioStatus'), '✅ ' + f.name + ' (' + notitiesFormatSize(r.size) + ')', '#4a7a30');
+    zaSetStatus(document.getElementById('zaAudioStatus'), '✅ ' + r.filename + (r.filename !== f.name ? ' (omgezet van ' + f.name + ')' : '') + ' · ' + notitiesFormatSize(r.size), '#4a7a30');
   }).catch(function(e){
     zaForm.busy--; zaForm.error = e.message;
     zaSetStatus(document.getElementById('zaAudioStatus'), '⚠️ ' + e.message, '#c0392b');
@@ -17832,9 +18002,15 @@ function axxesOpenDB(cb){
   req.onerror = function(){ alert('Kon lokale opslag niet openen voor opnames.'); };
 }
 
-function axxesAddFiles(input){
-  var files = input.files;
-  if(!files || !files.length) return;
+async function axxesAddFiles(input){
+  var picked = Array.prototype.slice.call(input.files || []);
+  input.value = '';
+  if(!picked.length) return;
+  var files = [];
+  for(var pi = 0; pi < picked.length; pi++){
+    try { files.push(await qtPrepareAudio(picked[pi])); } catch(e){ alert('⚠️ ' + e.message); }
+  }
+  if(!files.length) return;
   axxesOpenDB(function(db){
     Array.prototype.forEach.call(files, function(file){
       var id = 'ax_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
@@ -17935,7 +18111,7 @@ function renderAxxes(){
       '<div class="axxes-sub">Meetingopnames &amp; transcripties</div>' +
     '</div>' +
     '<a class="axxes-notebook-btn" href="'+AXXES_NOTEBOOKLM_URL+'" target="_blank" rel="noopener">🔗 Open in Google NotebookLM</a>' +
-    '<input type="file" id="axxesFileInput" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.oga,.flac,.wma,.aiff,.aif,.opus,.amr,.mpga,.mpeg,.mp4a,.weba,.caf" multiple style="display:none" onchange="axxesAddFiles(this)">' +
+    '<input type="file" id="axxesFileInput" accept="" multiple style="display:none" onchange="axxesAddFiles(this)">' +
     '<div class="axxes-upload-box" onclick="document.getElementById(\'axxesFileInput\').click()">' +
       '<div class="aui">⬆️</div>' +
       '<div class="aut">Opname of MP3 toevoegen</div>' +
@@ -19920,9 +20096,15 @@ function zangAudioPreload(cb){
   });
 }
 
-function zangAudioAddFiles(input){
-  var files = input.files;
-  if(!files || !files.length) return;
+async function zangAudioAddFiles(input){
+  var picked = Array.prototype.slice.call(input.files || []);
+  input.value = '';
+  if(!picked.length) return;
+  var files = [];
+  for(var pi = 0; pi < picked.length; pi++){
+    try { files.push(await qtPrepareAudio(picked[pi])); } catch(e){ alert('⚠️ ' + e.message); }
+  }
+  if(!files.length) return;
   zangAudioOpenDB(function(db){
     var remaining = files.length;
     Array.prototype.forEach.call(files, function(file){
@@ -20079,7 +20261,7 @@ function zangSongsPreload(cb){
   });
 }
 
-function zangSongAdd(){
+async function zangSongAdd(){
   var titelEl = document.getElementById('zsTitel');
   var uitvEl  = document.getElementById('zsUitvoerder');
   var toonEl  = document.getElementById('zsToonaard');
@@ -20099,6 +20281,13 @@ function zangSongAdd(){
     return;
   }
 
+  try {
+    if(vocalFile) vocalFile = await qtPrepareAudio(vocalFile);
+    if(instrFile) instrFile = await qtPrepareAudio(instrFile);
+  } catch(e) {
+    if(statusEl) statusEl.innerHTML = '<div style="font-family:var(--cond);font-size:9px;font-weight:700;color:var(--surf-coral);margin-top:4px">⚠️ ' + e.message + '</div>';
+    return;
+  }
   var id = 'song_' + Date.now();
   zangAudioOpenDB(function(db){
     var tx = db.transaction('songs','readwrite');
@@ -20115,8 +20304,8 @@ function zangSongAdd(){
       });
       zangSongsSave();
       titelEl.value = ''; if(uitvEl) uitvEl.value = ''; if(toonEl) toonEl.value = '';
-      if(vocalEl){ vocalEl.value=''; var vl=document.getElementById('zsFileVocalLabel'); if(vl) vl.textContent = '🎤 Gezongen mp3 kiezen… (optioneel)'; }
-      if(instrEl){ instrEl.value=''; var il=document.getElementById('zsFileInstrLabel'); if(il) il.textContent = '🎹 Instrumentale mp3 kiezen… (optioneel)'; }
+      if(vocalEl){ vocalEl.value=''; var vl=document.getElementById('zsFileVocalLabel'); if(vl) vl.textContent = '🎤 Gezongen audio kiezen… (optioneel)'; }
+      if(instrEl){ instrEl.value=''; var il=document.getElementById('zsFileInstrLabel'); if(il) il.textContent = '🎹 Instrumentale audio kiezen… (optioneel)'; }
       if(statusEl) statusEl.innerHTML = '<div style="font-family:var(--cond);font-size:9px;font-weight:700;color:#2f8f6f;margin-top:4px">✓ Nummer toegevoegd.</div>';
       renderZangSongsList();
     };
