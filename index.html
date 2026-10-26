@@ -3897,7 +3897,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v26/10/26 · 12:40</div>
+    <div class="oh-version-tag" id="ohVersionTag">v26/10/26 · 13:52</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -19739,6 +19739,17 @@ function qtrInjectCss() {
     '.qtr-input{width:100%;height:50px;background:#fff;border:3px solid #0a0a0a;border-radius:12px;padding:0 14px;font-family:inherit;font-size:17px;font-weight:700;color:#0a0a0a;outline:none;}',
     '.qtr-input.sm{height:42px;font-size:15px;border-radius:10px;padding:0 10px;}',
     '.qtr-input.bad{border-color:#d4261c;background:#fff2f0;}',
+    '.qtr-step{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;}',
+    '.qtr-stn{flex-shrink:0;width:30px;height:30px;border:3px solid #0a0a0a;border-radius:50%;background:#ffe14d;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:2px;}',
+    '.qtr-sta{flex:1;min-width:0;min-height:60px;overflow:hidden;font-size:15px;}',
+    '.qtr-stc{display:flex;flex-direction:column;gap:3px;flex-shrink:0;}',
+    '.qtr-stc button{width:30px;height:26px;padding:0;background:#fff;border:2px solid #0a0a0a;border-radius:7px;font-size:11px;font-weight:800;cursor:pointer;line-height:1;}',
+    '.qtr-stc button:disabled{opacity:.3;}',
+    '.qtr-dstep{display:flex;gap:10px;align-items:flex-start;padding:9px 10px;margin-bottom:6px;background:#fff;border:3px solid #0a0a0a;border-radius:12px;cursor:pointer;}',
+    '.qtr-dstep .qtr-dt{font-size:14.5px;line-height:1.4;font-weight:500;}',
+    '.qtr-dstep.done{background:#d3ecd0;}',
+    '.qtr-dstep.done .qtr-dt{text-decoration:line-through;opacity:.6;}',
+    '.qtr-dstep.done .qtr-stn{background:#5ee0e0;}',
     '.qtr-area{width:100%;background:#fff;border:3px solid #0a0a0a;border-radius:12px;padding:10px 12px;font-family:inherit;font-size:15px;line-height:1.45;color:#0a0a0a;outline:none;resize:none;}',
     '.qtr-chip{display:inline-flex;align-items:center;gap:5px;border:3px solid #0a0a0a;border-radius:999px;padding:3px 12px;font-weight:700;font-size:13px;color:#0a0a0a;background:#fff;}',
     '.qtr-chip.sm{border-width:2px;padding:1px 9px;font-size:11px;}',
@@ -20106,7 +20117,10 @@ function qtrDtRender(keepScroll) {
   h += '<div class="qtr-box" style="background:#fff1bf"><div class="qtr-lbl" style="color:#4a3a00">Ingrediënten · voor ' + (r.porties || 2) + '</div><div class="qtr-ing" style="margin-top:6px">'
     + (r.ing || []).map(function(i){ return '<div>' + qtrEsc(qtrIngText(i)) + '</div>'; }).join('') + '</div></div>';
   if(r.bereiding && r.bereiding.trim()) {
-    h += '<div class="qtr-lbl" style="margin-top:14px">Bereiding</div><div style="font-size:14px;line-height:1.5;margin-top:4px;white-space:pre-line">' + qtrEsc(r.bereiding.trim()) + '</div>';
+    var sts = r.bereiding.split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean);
+    h += '<div class="qtr-lbl" style="margin-top:14px">Stappenplan · ' + sts.length + (sts.length === 1 ? ' stap' : ' stappen') + '</div><div style="margin-top:6px">'
+      + sts.map(function(t, i){ return '<div class="qtr-dstep" onclick="this.classList.toggle(\'done\')"><div class="qtr-stn">' + (i + 1) + '</div><div class="qtr-dt">' + qtrEsc(t) + '</div></div>'; }).join('')
+      + '</div><div style="font-size:11px;color:#3a3a3a;margin-top:4px">Tik een stap aan om hem af te vinken tijdens het koken.</div>';
   }
   h += '</div></div>';
   h += '<div class="qtr-ov-foot"><button class="qtr-btn" style="width:54px;min-height:54px;padding:0" aria-label="Bewerken" onclick="qtrDtEdit()">' + QTR_IC.edit + '</button>'
@@ -20313,7 +20327,7 @@ function qtrWizardOpen(editId, planKey) {
     naam: r ? r.naam : '', porties: r ? (r.porties || 2) : 2, tijd: r ? (r.tijd || '') : '',
     tags: r ? (r.tags || []).slice() : [],
     ing: r ? JSON.parse(JSON.stringify(r.ing || [])) : [],
-    bereiding: r ? (r.bereiding || '') : '',
+    stappen: r ? String(r.bereiding || '').split(/\n+/).map(function(x){ return x.trim(); }).filter(Boolean) : [], stPaste: false,
     photoBlob: null, photoUrl: null, hadPhoto: r ? !!r.foto : false, removePhoto: false, paste: ''
   };
   if(r && r.foto) qtrPhotoUrl(r.id).then(function(u) { if(qtrW && qtrW.id === r.id) { qtrW.photoUrl = u; if(qtrW.step === 1) qtrWRenderPhoto(); } });
@@ -20322,8 +20336,8 @@ function qtrWizardOpen(editId, planKey) {
 function qtrWTop(stepNo, title, back) {
   var h = '<div class="qtr-ov-top"><div style="display:flex;align-items:center;gap:10px">'
     + '<button class="qtr-round" aria-label="' + (back ? 'Terug' : 'Sluiten') + '" onclick="' + (back ? 'qtrWBack()' : 'qtrWClose()') + '">' + (back ? QTR_IC.back : QTR_IC.close) + '</button>'
-    + '<div class="qtr-kick">' + (qtrW.edit ? 'Recept bewerken' : 'Nieuw recept') + ' · stap ' + stepNo + ' van 3</div></div>'
-    + '<div class="qtr-prog"><i class="on"></i><i class="' + (stepNo >= 2 ? 'on' : '') + '"></i><i class="' + (stepNo >= 3 ? 'on' : '') + '"></i></div></div>';
+    + '<div class="qtr-kick">' + (qtrW.edit ? 'Recept bewerken' : 'Nieuw recept') + ' · stap ' + (stepNo === 'S' ? 4 : stepNo) + ' van 4</div></div>'
+    + '<div class="qtr-prog"><i class="on"></i><i class="' + (stepNo === 'S' || stepNo >= 2 ? 'on' : '') + '"></i><i class="' + (stepNo === 'S' || stepNo >= 3 ? 'on' : '') + '"></i><i class="' + (stepNo === 'S' ? 'on' : '') + '"></i></div></div>';
   return h;
 }
 function qtrWRender() {
@@ -20332,6 +20346,7 @@ function qtrWRender() {
   if(qtrW.step === 1) qtrWRender1();
   else if(qtrW.step === 2) qtrWRender2();
   else if(qtrW.step === 3) qtrWRender3();
+  else if(qtrW.step === 'S') qtrWRenderS();
   else qtrWRenderDone();
 }
 function qtrWClose() {
@@ -20341,7 +20356,8 @@ function qtrWClose() {
 }
 function qtrWBack() {
   if(!qtrW) return;
-  if(qtrW.step === 3) qtrW.step = qtrW.edit ? 1 : 2;
+  if(qtrW.step === 'S') qtrW.step = 3;
+  else if(qtrW.step === 3) qtrW.step = qtrW.edit ? 1 : 2;
   else if(qtrW.step === 2) qtrW.step = 1;
   qtrWRender();
 }
@@ -20460,12 +20476,71 @@ function qtrWRender3() {
     + '<button style="background:none;border:none;font-weight:700;font-size:11px;text-decoration:underline;cursor:pointer;color:#0a0a0a" onclick="qtrW.step=2;qtrWRender()">Plak een lijst</button></div>'
     + '<div id="qtrWIngs" style="margin-top:8px"></div>'
     + '<button class="qtr-btn" style="width:100%;min-height:42px;border-style:dashed;box-shadow:none;margin-top:4px;font-size:14px" onclick="qtrWAddIng()">' + QTR_IC.plus + 'Ingrediënt toevoegen</button></div>'
-    + '<div class="qtr-lbl" style="margin-top:14px">Bereiding (optioneel)</div>'
-    + '<textarea class="qtr-area" style="margin-top:4px;height:110px" placeholder="Beschrijf kort hoe je het bereidt" oninput="qtrW.bereiding=this.value">' + qtrEsc(qtrW.bereiding) + '</textarea></div>'
+    + '</div>'
     + '<div class="qtr-ov-foot"><button class="qtr-btn" style="width:110px;min-height:52px" onclick="qtrWBack()">Terug</button>'
-    + '<button class="qtr-btn y big" style="flex:1;min-height:52px" onclick="qtrWSave()">Bewaar recept</button></div>';
+    + '<button class="qtr-btn y big" style="flex:1;min-height:52px" onclick="qtrWNext3()">Volgende: stappen' + QTR_IC.next + '</button></div>';
   qtrOvOpen(h); qtrWRenderIngs();
 }
+function qtrWNext3() {
+  var has = qtrW.ing.some(function(i){ return (i.n || '').trim(); });
+  if(!has) { if(typeof showSkipToast === 'function') showSkipToast('Voeg minstens één ingrediënt toe'); return; }
+  qtrW.step = 'S'; qtrWRender();
+}
+// ── stap 4: stappenplan
+function qtrStepsParse(txt) {
+  var lines = String(txt || '').replace(/\r/g, '').split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean);
+  if(lines.length === 1 && lines[0].length > 120) lines = lines[0].split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý])/);
+  var out = [];
+  lines.forEach(function(l) {
+    var c = l.replace(/^(stap\s*)?\d+\s*[.):\-–]\s*/i, '').replace(/^[-•*▪●]\s+/, '').trim();
+    if(/^(stap\s*)?\d+$/i.test(l) || /^(bereiding|bereidingswijze|werkwijze|instructies)\s*:?$/i.test(c)) return;
+    if(c) out.push(c);
+  });
+  return out;
+}
+function qtrWRenderS() {
+  var h = qtrWTop('S', '', true);
+  h += '<div class="qtr-ov-body"><div class="qtr-h1" style="font-size:30px;margin-top:6px">Hoe maak je het?</div>'
+    + '<div style="font-size:14px;color:#3a3a3a;margin-top:4px;line-height:1.35">Eén stap per kaartje. Je mag dit ook overslaan.</div>'
+    + '<div id="qtrWSteps" style="margin-top:12px"></div>'
+    + '<button class="qtr-btn" style="width:100%;min-height:46px;border-style:dashed;box-shadow:none;margin-top:4px;font-size:14px" onclick="qtrWAddStep()">' + QTR_IC.plus + 'Stap toevoegen</button>'
+    + '<button class="qtr-btn" style="width:100%;min-height:42px;box-shadow:none;margin-top:10px;font-size:13px;background:#cdf3e8" onclick="qtrW.stPaste=!qtrW.stPaste;qtrWRenderStPaste()">Of plak een heel stappenplan</button>'
+    + '<div id="qtrWStPaste"></div></div>'
+    + '<div class="qtr-ov-foot"><button class="qtr-btn" style="width:110px;min-height:52px" onclick="qtrWBack()">Terug</button>'
+    + '<button class="qtr-btn y big" style="flex:1;min-height:52px" onclick="qtrWSave()">Bewaar recept</button></div>';
+  qtrOvOpen(h); qtrWRenderSteps(); qtrWRenderStPaste();
+}
+function qtrWRenderStPaste() {
+  var b = qtrEl('qtrWStPaste'); if(!b) return;
+  if(!qtrW.stPaste) { b.innerHTML = ''; return; }
+  b.innerHTML = '<textarea class="qtr-area" id="qtrWStPasteTa" style="margin-top:8px;height:170px;box-shadow:3px 3px 0 #0a0a0a" placeholder="1. Verwarm de oven op 200°C.&#10;2. Snij de pompoen in blokjes.&#10;3. Rooster 25 minuten."></textarea>'
+    + '<button class="qtr-btn y" style="width:100%;min-height:46px;margin-top:8px" onclick="qtrWStPasteGo()">Verdeel in stappen</button>';
+  var t = qtrEl('qtrWStPasteTa'); if(t) t.focus();
+}
+function qtrWStPasteGo() {
+  var t = qtrEl('qtrWStPasteTa'); var list = qtrStepsParse(t ? t.value : '');
+  if(!list.length) return;
+  qtrW.stappen = qtrW.stappen.filter(function(x){ return x.trim(); }).concat(list);
+  qtrW.stPaste = false; qtrWRenderStPaste(); qtrWRenderSteps();
+}
+function qtrWRenderSteps() {
+  var box = qtrEl('qtrWSteps'); if(!box) return;
+  var n = qtrW.stappen.length, h = '';
+  qtrW.stappen.forEach(function(t, i) {
+    h += '<div class="qtr-step"><div class="qtr-stn">' + (i + 1) + '</div>'
+      + '<textarea class="qtr-area qtr-sta" rows="2" placeholder="Beschrijf deze stap" oninput="qtrWStepSet(' + i + ',this)">' + qtrEsc(t) + '</textarea>'
+      + '<div class="qtr-stc"><button aria-label="Omhoog" ' + (i === 0 ? 'disabled' : '') + ' onclick="qtrWStepMove(' + i + ',-1)">▲</button>'
+      + '<button aria-label="Omlaag" ' + (i === n - 1 ? 'disabled' : '') + ' onclick="qtrWStepMove(' + i + ',1)">▼</button>'
+      + '<button aria-label="Verwijderen" onclick="qtrWStepDel(' + i + ')">×</button></div></div>';
+  });
+  box.innerHTML = h;
+  box.querySelectorAll('.qtr-sta').forEach(qtrAutoGrow);
+}
+function qtrAutoGrow(t) { t.style.height = 'auto'; t.style.height = Math.max(60, t.scrollHeight + 4) + 'px'; }
+function qtrWStepSet(i, el) { qtrW.stappen[i] = el.value; qtrAutoGrow(el); }
+function qtrWAddStep() { qtrW.stappen.push(''); qtrWRenderSteps(); var a = document.querySelectorAll('.qtr-sta'); if(a.length) a[a.length - 1].focus(); }
+function qtrWStepDel(i) { qtrW.stappen.splice(i, 1); qtrWRenderSteps(); }
+function qtrWStepMove(i, d) { var j = i + d; if(j < 0 || j >= qtrW.stappen.length) return; var t = qtrW.stappen[i]; qtrW.stappen[i] = qtrW.stappen[j]; qtrW.stappen[j] = t; qtrWRenderSteps(); }
 function qtrWRenderIngs() {
   var box = qtrEl('qtrWIngs'); if(!box) return;
   var h = '';
@@ -20510,7 +20585,7 @@ function qtrWSave() {
   if(isNew) { r = {id: qtrNewId('r'), foto: false}; qtrRecipes.push(r); }
   r.naam = w.naam.trim(); r.porties = parseInt(w.porties, 10) || 2;
   r.tijd = w.tijd ? parseInt(w.tijd, 10) || null : null;
-  r.tags = w.tags.slice(); r.ing = ing; r.bereiding = (w.bereiding || '').trim();
+  r.tags = w.tags.slice(); r.ing = ing; r.bereiding = (w.stappen || []).map(function(x){ return String(x).replace(/\s*\n+\s*/g, ' ').trim(); }).filter(Boolean).join('\n');
   var done = function() {
     qtrSaveRecipes();
     w.id = r.id; w.saved = true;
@@ -20626,7 +20701,8 @@ function qtrRenderHomeTile(key) {
     if(t) t.textContent = r.naam;
     if(s) s.textContent = [(r.porties ? r.porties + ' porties' : ''), tn.slice(0, 3).join(' · ')].filter(Boolean).join(' · ');
     if(tj) tj.textContent = r.tijd ? ' · ⏱ ' + r.tijd + ' min' : '';
-    if(ic) { ic.classList.remove('qtr-has-photo'); ic.style.backgroundImage = ''; ic.textContent = '🍽️'; qtrFillPhoto(ic, r.id, {onFound: function(){ ic.textContent = ''; }}); }
+    if(ic) { ic.classList.remove('qtr-has-photo'); ic.style.backgroundImage = ''; ic.textContent = '🍽️';
+      qtrPhotoUrl(r.id).then(function(u) { if(!u || !ic.isConnected) return; ic.textContent = ''; var im = document.createElement('img'); im.src = u; im.alt = ''; im.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;display:block'; ic.appendChild(im); ic.classList.add('qtr-has-photo'); }); }
   } else {
     if(t) t.textContent = 'Voeg recept toe';
     if(s) s.textContent = 'Kies een recept voor deze dag';
