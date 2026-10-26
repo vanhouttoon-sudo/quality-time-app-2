@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -3802,7 +3801,7 @@ textarea.za-input{ resize:none; line-height:1.45; }
 .ds-ex-row.za-plrow.on{ background:#fff4cf !important; border-radius:6px !important; margin:0 -6px; padding:9px 6px !important; }
 .za-plbtn{ flex-shrink:0; }
 /* ── SPRAAKOPDRACHTEN ── */
-.vc-fab{position:fixed;right:16px;bottom:22px;width:58px;height:58px;border-radius:50%;background:var(--brut-yellow);border:3px solid var(--brut-ink);box-shadow:4px 4px 0 var(--brut-ink);font-size:26px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:800;padding:0;-webkit-tap-highlight-color:transparent}
+.vc-fab{position:fixed;right:16px;bottom:22px;width:58px;height:58px;border-radius:50%;background:var(--brut-yellow);border:3px solid var(--brut-ink);box-shadow:4px 4px 0 var(--brut-ink);font-size:26px;line-height:1;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:800;padding:0;-webkit-tap-highlight-color:transparent}
 .vc-fab:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--brut-ink)}
 .vc-overlay{position:fixed;inset:0;background:rgba(10,10,10,.55);z-index:4200;display:none;align-items:flex-end;justify-content:center}
 .vc-overlay.open{display:flex}
@@ -3923,7 +3922,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v26/10/26 · 09:36</div>
+    <div class="oh-version-tag" id="ohVersionTag">v26/10/26 · 09:48</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -4595,6 +4594,7 @@ function qtSkateLoaderHtml(text){
               <label class="settings-toggle"><input type="checkbox" id="vcWakeToggle" onchange="vcWakeToggle(this.checked)"><span class="toggle-slider"></span></label>
             </div>
             <div class="settings-label-sub" id="vcWakeStatus">Werkt zolang de app open staat. Gebruikt de microfoon en wat batterij.</div>
+            <button class="settings-btn" onclick="vcOpen(false)">🎤 Spraakopdracht nu starten</button>
           </div>
           <div class="settings-row">
             <div class="settings-label">Exporteer alle data</div>
@@ -20655,7 +20655,7 @@ function vcStopListening() {
 }
 function vcStart() {
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  var useRecorder = vcIsIOS() || !SR;
+  var useRecorder = (vcIsIOS() && !vcWake.everWorked) || !SR;
   if(useRecorder) return vcStartRecorder();
   var rec = new SR(); vcRec = rec;
   rec.lang = 'nl-NL'; rec.continuous = false; rec.interimResults = true;
@@ -21007,7 +21007,7 @@ function vcConfirm() {
 // Een gesloten app kan niet meeluisteren (beperking van iOS/Android). Lukt luisteren op
 // dit toestel niet (bv. iPhone-app op het beginscherm), dan blijft de 🎤-knop zichtbaar.
 var VC_WAKE_RE = /(?:hey|hé|hee|hei|hallo|hi|ok|okay)[\s,.\-]*(?:quality[\s\-]*time|qualitytime|kwaliteits?[\s\-]*tijd|kwaliteit)/i;
-var vcWake = { rec: null, running: false, paused: false, fails: 0, timer: null, trig: null, gotAudio: false, dead: false };
+var vcWake = { rec: null, running: false, paused: false, fails: 0, timer: null, trig: null, gotAudio: false, dead: false, everWorked: false, armed: false };
 function vcWakeEnabled() { try { return localStorage.getItem('wf_wake') !== '0'; } catch (e) { return true; } }
 function vcWakeSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
 function vcWakeFab(show) { var f = document.getElementById('vcFab'); if (f) f.style.display = show ? 'flex' : 'none'; }
@@ -21019,7 +21019,7 @@ function vcWakeStart() {
   try { rec = new SR(); } catch (e) { return; }
   rec.lang = 'nl-NL'; rec.continuous = true; rec.interimResults = true;
   vcWake.rec = rec; vcWake.running = true; vcWake.gotAudio = false;
-  rec.onaudiostart = function() { vcWake.gotAudio = true; vcWake.fails = 0; vcWakeFab(false); vcWakeStatus('🟢 Luistert naar “Hey QualityTime”'); };
+  rec.onaudiostart = function() { vcWake.gotAudio = true; vcWake.everWorked = true; vcWake.fails = 0; vcWakeStatus('🟢 Luistert naar “Hey QualityTime”'); };
   rec.onresult = function(e) {
     var all = '';
     for (var i = 0; i < e.results.length; i++) all += e.results[i][0].transcript + ' ';
@@ -21067,16 +21067,35 @@ function vcWakeToggle(on) {
   if (on) {
     vcWake.dead = false; vcWake.fails = 0; vcWake.paused = false;
     if (!vcWakeSupported()) { vcWakeStatus('⚠️ Deze browser kan niet luisteren — de 🎤-knop blijft.'); vcWakeFab(true); return; }
-    vcWakeStatus('Starten…'); vcWakeStart();
+    vcWakeStatus('Starten…'); vcWakeFab(false); vcWake.armed = false; vcWakeArm();
   } else { vcWakeStop(); vcWakeFab(true); vcWakeStatus('Uit — gebruik de 🎤-knop.'); }
+}
+// Start het luisteren pas wanneer dat zonder vraag kan (microfoon al toegestaan), of bij de
+// eerste tik op het scherm — dan mag de browser de toestemming vragen en werkt luisteren
+// ook op iPhone, waar starten zonder aanraking niet mag.
+function vcWakeArm() {
+  if (vcWake.armed) return; vcWake.armed = true;
+  var gesture = function() {
+    vcWakeStatus('Tik één keer op het scherm om het luisteren te starten.');
+    var h = function() {
+      document.removeEventListener('pointerdown', h, true); document.removeEventListener('keydown', h, true);
+      vcWake.armed = false; vcWakeStart();
+    };
+    document.addEventListener('pointerdown', h, true); document.addEventListener('keydown', h, true);
+  };
+  try {
+    navigator.permissions.query({ name: 'microphone' }).then(function(p) {
+      if (p.state === 'granted') { vcWake.armed = false; setTimeout(vcWakeStart, 300); } else gesture();
+    }, gesture);
+  } catch (e) { gesture(); }
 }
 function vcWakeInit() {
   var cb = document.getElementById('vcWakeToggle'); if (cb) cb.checked = vcWakeEnabled();
   document.addEventListener('visibilitychange', function() {
     if (document.hidden) vcWakeStop(); else if (!vcWake.paused) setTimeout(vcWakeStart, 500);
   });
-  if (!vcWakeSupported()) { vcWakeStatus('Niet beschikbaar op dit toestel — gebruik de 🎤-knop.'); return; }
-  if (vcWakeEnabled()) setTimeout(vcWakeStart, 1500); else vcWakeStatus('Uit — gebruik de 🎤-knop.');
+  if (!vcWakeSupported()) { vcWakeFab(true); vcWakeStatus('Niet beschikbaar op dit toestel — gebruik de 🎤-knop.'); return; }
+  if (vcWakeEnabled()) vcWakeArm(); else { vcWakeFab(true); vcWakeStatus('Uit — gebruik de 🎤-knop.'); }
 }
 
 // Start via Siri-opdracht / snelkoppeling: https://…/?voice=1
