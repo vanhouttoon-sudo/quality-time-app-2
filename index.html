@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -3922,7 +3923,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v26/10/26 · 09:29</div>
+    <div class="oh-version-tag" id="ohVersionTag">v26/10/26 · 09:36</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -4588,6 +4589,13 @@ function qtSkateLoaderHtml(text){
           <div class="card-title">💾 BACKUP &amp; HERSTEL</div>
         </div>
         <div class="settings-section">
+          <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:4px">
+            <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+              <div class="settings-label">🎤 “Hey QualityTime” (luisteren)</div>
+              <label class="settings-toggle"><input type="checkbox" id="vcWakeToggle" onchange="vcWakeToggle(this.checked)"><span class="toggle-slider"></span></label>
+            </div>
+            <div class="settings-label-sub" id="vcWakeStatus">Werkt zolang de app open staat. Gebruikt de microfoon en wat batterij.</div>
+          </div>
           <div class="settings-row">
             <div class="settings-label">Exporteer alle data</div>
             <button class="settings-btn" onclick="exportQualityTimeData()">⬇ Download</button>
@@ -5197,7 +5205,7 @@ function qtSkateLoaderHtml(text){
       <input id="vcText" type="text" placeholder="of typ je opdracht…" onkeydown="if(event.key==='Enter')vcSubmitText()">
       <button onclick="vcSubmitText()">➤</button>
     </div>
-    <div class="vc-hint">Bv. “afspraak morgen om 14 uur tandarts” · “schuif tandarts naar vrijdag” · “zet tandarts op nucleair” · “verwijder tandarts” · “vink tandarts af” · “wat staat er vandaag?” · “wat is mijn training?” · “welk afval deze week?” · “open zangles” · “notitie: bel de loodgieter”</div>
+    <div class="vc-hint">Zeg ook gewoon <b>“Hey QualityTime …”</b> terwijl de app open staat.<br>Bv. “afspraak morgen om 14 uur tandarts” · “schuif tandarts naar vrijdag” · “zet tandarts op nucleair” · “verwijder tandarts” · “vink tandarts af” · “wat staat er vandaag?” · “wat is mijn training?” · “welk afval deze week?” · “open zangles” · “notitie: bel de loodgieter”</div>
   </div>
 </div>
 <!-- PHOTO COMPARE MODAL -->
@@ -20614,6 +20622,7 @@ function vcSetMic(rec) {
   m.classList.toggle('rec', !!rec); m.textContent = rec ? '⏹' : '🎤';
 }
 function vcOpen(autoStart) {
+  if (typeof vcWakeSuspend === 'function') vcWakeSuspend();
   document.getElementById('vcOverlay').classList.add('open');
   document.getElementById('vcResult').innerHTML = '';
   vcPending = null; vcState = 'idle'; vcSetMic(false);
@@ -20625,6 +20634,7 @@ function vcClose() {
   document.getElementById('vcOverlay').classList.remove('open');
   if('speechSynthesis' in window) { try { speechSynthesis.cancel(); } catch(e){} }
   vcState = 'idle';
+  if (typeof vcWakeResume === 'function') vcWakeResume();
 }
 function vcStopAll() {
   if(vcRec) { try { vcRec.abort(); } catch(e){} vcRec = null; }
@@ -20989,8 +20999,89 @@ function vcConfirm() {
   }
 }
 
+
+// ═══ "HEY QUALITYTIME" — wekwoord ═══
+// Zolang de app OPEN staat luistert de browser naar het wekwoord (SpeechRecognition,
+// continu). Eén zin volstaat: "Hey QualityTime, afspraak morgen om 14 uur tandarts".
+// Zegt men enkel "Hey QualityTime", dan opent het spraakvenster en luistert het verder.
+// Een gesloten app kan niet meeluisteren (beperking van iOS/Android). Lukt luisteren op
+// dit toestel niet (bv. iPhone-app op het beginscherm), dan blijft de 🎤-knop zichtbaar.
+var VC_WAKE_RE = /(?:hey|hé|hee|hei|hallo|hi|ok|okay)[\s,.\-]*(?:quality[\s\-]*time|qualitytime|kwaliteits?[\s\-]*tijd|kwaliteit)/i;
+var vcWake = { rec: null, running: false, paused: false, fails: 0, timer: null, trig: null, gotAudio: false, dead: false };
+function vcWakeEnabled() { try { return localStorage.getItem('wf_wake') !== '0'; } catch (e) { return true; } }
+function vcWakeSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
+function vcWakeFab(show) { var f = document.getElementById('vcFab'); if (f) f.style.display = show ? 'flex' : 'none'; }
+function vcWakeStatus(t) { var el = document.getElementById('vcWakeStatus'); if (el) el.textContent = t || ''; }
+function vcWakeStart() {
+  if (!vcWakeEnabled() || !vcWakeSupported() || vcWake.running || vcWake.paused || vcWake.dead || document.hidden) return;
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec;
+  try { rec = new SR(); } catch (e) { return; }
+  rec.lang = 'nl-NL'; rec.continuous = true; rec.interimResults = true;
+  vcWake.rec = rec; vcWake.running = true; vcWake.gotAudio = false;
+  rec.onaudiostart = function() { vcWake.gotAudio = true; vcWake.fails = 0; vcWakeFab(false); vcWakeStatus('🟢 Luistert naar “Hey QualityTime”'); };
+  rec.onresult = function(e) {
+    var all = '';
+    for (var i = 0; i < e.results.length; i++) all += e.results[i][0].transcript + ' ';
+    var m = VC_WAKE_RE.exec(all);
+    if (!m) return;
+    var rest = all.slice(m.index + m[0].length).replace(/^[\s,.:;!?\-]+/, '').trim();
+    vcWake.trig = rest;
+    clearTimeout(vcWake.timer);
+    // even wachten of er nog een opdracht op volgt in dezelfde zin
+    vcWake.timer = setTimeout(function() { vcWakeFire(vcWake.trig); }, 1300);
+  };
+  rec.onerror = function(e) {
+    if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+      vcWake.dead = true; vcWakeFab(true);
+      vcWakeStatus('⚠️ Luisteren niet toegestaan op dit toestel — gebruik de 🎤-knop.');
+    }
+  };
+  rec.onend = function() {
+    vcWake.running = false;
+    if (vcWake.dead || vcWake.paused || !vcWakeEnabled()) return;
+    if (!vcWake.gotAudio) {
+      vcWake.fails++;
+      if (vcWake.fails >= 4) { vcWake.dead = true; vcWakeFab(true); vcWakeStatus('⚠️ Luisteren lukt hier niet — gebruik de 🎤-knop.'); return; }
+    }
+    setTimeout(vcWakeStart, 500);
+  };
+  try { rec.start(); } catch (e) { vcWake.running = false; }
+}
+function vcWakeStop() {
+  clearTimeout(vcWake.timer);
+  if (vcWake.rec) { var r = vcWake.rec; vcWake.rec = null; r.onend = null; r.onerror = null; r.onresult = null; try { r.abort(); } catch (e) {} }
+  vcWake.running = false;
+}
+function vcWakeFire(rest) {
+  vcWakeStop(); vcWake.paused = true;
+  try { if (navigator.vibrate) navigator.vibrate(60); } catch (e) {}
+  vcOpen(false);
+  if (rest && rest.length > 3) { document.getElementById('vcResult').innerHTML = ''; vcSend({ text: rest }); }
+  else { try { vcStart(); } catch (e) { vcSet('Tik op de microfoon om te spreken', ''); } }
+}
+function vcWakeSuspend() { vcWake.paused = true; vcWakeStop(); }
+function vcWakeResume() { vcWake.paused = false; setTimeout(vcWakeStart, 700); }
+function vcWakeToggle(on) {
+  try { localStorage.setItem('wf_wake', on ? '1' : '0'); } catch (e) {}
+  if (on) {
+    vcWake.dead = false; vcWake.fails = 0; vcWake.paused = false;
+    if (!vcWakeSupported()) { vcWakeStatus('⚠️ Deze browser kan niet luisteren — de 🎤-knop blijft.'); vcWakeFab(true); return; }
+    vcWakeStatus('Starten…'); vcWakeStart();
+  } else { vcWakeStop(); vcWakeFab(true); vcWakeStatus('Uit — gebruik de 🎤-knop.'); }
+}
+function vcWakeInit() {
+  var cb = document.getElementById('vcWakeToggle'); if (cb) cb.checked = vcWakeEnabled();
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) vcWakeStop(); else if (!vcWake.paused) setTimeout(vcWakeStart, 500);
+  });
+  if (!vcWakeSupported()) { vcWakeStatus('Niet beschikbaar op dit toestel — gebruik de 🎤-knop.'); return; }
+  if (vcWakeEnabled()) setTimeout(vcWakeStart, 1500); else vcWakeStatus('Uit — gebruik de 🎤-knop.');
+}
+
 // Start via Siri-opdracht / snelkoppeling: https://…/?voice=1
 function vcBootCheck() {
+  try { vcWakeInit(); } catch(e) {}
   try {
     if(/[?&]voice=1\b/.test(location.search)) {
       setTimeout(function(){ vcOpen(true); }, 600);
