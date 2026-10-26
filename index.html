@@ -3897,7 +3897,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v26/10/26 · 13:52</div>
+    <div class="oh-version-tag" id="ohVersionTag">v26/10/26 · 14:01</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -19658,7 +19658,9 @@ function qtrPhotoUrl(id) {
     });
   }).catch(function() { return null; });
 }
-function qtrResizeImage(file, maxSide, quality) {
+// Foto's worden ongewijzigd (originele kwaliteit) bewaard; geen verkleining meer.
+function qtrResizeImage(file) { return Promise.resolve(file); }
+function qtrResizeImageOld(file, maxSide, quality) {
   maxSide = maxSide || 1000; quality = quality || 0.82;
   return new Promise(function(resolve, reject) {
     var url = URL.createObjectURL(file);
@@ -20394,7 +20396,7 @@ function qtrWRenderPhoto() {
       + '<div style="display:flex;gap:10px"><button class="qtr-btn c" style="min-height:38px;font-size:13px;padding:0 16px;box-shadow:2px 2px 0 #0a0a0a" onclick="qtrWPick(true)">Camera</button>'
       + '<button class="qtr-btn" style="min-height:38px;font-size:13px;padding:0 16px;box-shadow:2px 2px 0 #0a0a0a" onclick="qtrWPick(false)">Uit galerij</button></div></div>';
   }
-  box.insertAdjacentHTML('beforeend', '<div style="font-size:12.5px;color:#3a3a3a;margin-top:8px;line-height:1.35">De foto wordt verkleind en bewaard in de app op dit toestel. Het origineel in je galerij blijft ongemoeid.</div>');
+  box.insertAdjacentHTML('beforeend', '<div style="font-size:12.5px;color:#3a3a3a;margin-top:8px;line-height:1.35">De foto wordt in originele kwaliteit bewaard in de app op dit toestel. Het origineel in je galerij blijft ongemoeid.</div>');
 }
 function qtrWPick(cam) {
   qtrPickPhotoFile(function(file) {
