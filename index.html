@@ -21501,41 +21501,43 @@ function fresh(){
   var tmpl=[{id:'f1',name:'Huur',amount:1100},{id:'f2',name:'Lening',amount:300},{id:'f3',name:'Gas & elektriciteit',amount:88}];
   return{v:1,labels:labels,fixedTemplate:tmpl,months:{}};
 }
-function demo(){
-  var s=fresh(),t=today(),ym=ymOf(t),n=t.getDate(),ex=[],r=7;
-  function rnd(){r=(r*9301+49297)%233280;return r/233280;}
-  var pick=[['Colruyt','l1',[18,62],'17:40'],['Delhaize','l1',[9,34],'12:15'],['Koffie to go','l5',[3.2,4.8],'08:20'],
-    ['Schoolreis Cyriel','l3',[12,25],'09:00'],['Zara','l4',[29,59],'15:30'],['Broodjes','l5',[6,11],'12:30'],['Lidl','l1',[14,41],'18:10'],['Speelgoed','l3',[9,22],'16:00']];
-  for(var d=1;d<=n;d++){var k=ym+'-'+pad(d),cnt=d===n?2:Math.floor(rnd()*2.6);
-    if(d%2===1)ex.push({id:uid(),date:k,time:'07:45',name:'Pakje sigaretten',amount:8.5,labelId:'l2'});
-    if(d%9===4)ex.push({id:uid(),date:k,time:'08:05',name:'Tanken',amount:Math.round((48+rnd()*15)*100)/100,labelId:'l6'});
-    for(var i=0;i<cnt;i++){var p=pick[Math.floor(rnd()*pick.length)];if(p[1]==='l4'&&rnd()>.3)continue;
-      ex.push({id:uid(),date:k,time:p[3],name:p[0],amount:Math.round((p[2][0]+rnd()*(p[2][1]-p[2][0]))*100)/100,labelId:p[1]});}}
-  s.months[ym]={net:2950,daily:38,fixed:s.fixedTemplate.map(function(f){return{id:f.id,name:f.name,amount:f.amount,on:true};}),
-    variable:[{id:uid(),name:'Gsm-abonnement',amount:25},{id:uid(),name:'Netflix',amount:13.99},{id:uid(),name:'Autoverzekering',amount:62},{id:uid(),name:'Fitness',amount:29.9}],expenses:ex,
-    dailyMode:'manual',incomes:[{id:uid(),date:ym+'-'+pad(Math.max(1,n-5)),time:'10:12',name:'Terugbetaling ziekenfonds',amount:23.4,labelId:'i1'},{id:uid(),date:ym+'-'+pad(Math.max(1,n-12)),time:'19:30',name:'Fiets verkocht',amount:85,labelId:'i4'}]};
-  return migrate(s);
-}
 var IN_LABELS=[
   {id:'i1',name:'Terugbetaling',emoji:'↩️',color:PALETTE[0]},
   {id:'i2',name:'Extra inkomen',emoji:'💼',color:PALETTE[2]},
   {id:'i3',name:'Cadeau',emoji:'🎁',color:PALETTE[3]},
   {id:'i4',name:'Verkoop',emoji:'🏷️',color:PALETTE[4]}];
+var DEMO_VAR={'Gsm-abonnement':25,'Netflix':13.99,'Autoverzekering':62,'Fitness':29.9};
+var DEMO_EXP={'Pakje sigaretten':'07:45','Tanken':'08:05','Colruyt':'17:40','Delhaize':'12:15','Koffie to go':'08:20','Schoolreis Cyriel':'09:00','Zara':'15:30','Broodjes':'12:30','Lidl':'18:10','Speelgoed':'16:00'};
+var DEMO_INC={'Terugbetaling ziekenfonds':23.4,'Fiets verkocht':85};
+function isDemoMonth(m){return m&&m.net===2950&&(m.variable||[]).filter(function(v){return DEMO_VAR[v.name]===v.amount;}).length>=3;}
+function stripDemo(m){
+  m.variable=(m.variable||[]).filter(function(v){return DEMO_VAR[v.name]!==v.amount;});
+  m.expenses=(m.expenses||[]).filter(function(e){return !(DEMO_EXP[e.name]&&DEMO_EXP[e.name]===e.time);});
+  m.incomes=(m.incomes||[]).filter(function(e){return DEMO_INC[e.name]!==e.amount;});
+  m.net=0;m.daily=0;m.dailyMode='auto';}
+function isEmptyMonth(m){return !m.net&&!(m.expenses||[]).length&&!(m.incomes||[]).length&&!(m.variable||[]).length;}
 function migrate(s){
+  if(!s.cleanV2){Object.keys(s.months||{}).forEach(function(k){var m=s.months[k];
+      if(isDemoMonth(m))stripDemo(m);
+      if(isEmptyMonth(m))delete s.months[k];else m.started=true;});
+    s.cleanV2=true;}
   if(!s.inLabels)s.inLabels=IN_LABELS.map(function(l){return{id:l.id,name:l.name,emoji:l.emoji,color:l.color};});
   Object.keys(s.months||{}).forEach(function(k){var m=s.months[k];if(!m.incomes)m.incomes=[];if(!m.dailyMode)m.dailyMode=(m.daily>0?'manual':'auto');});
   return s;}
 function load(){try{var j=store.get(KEY);if(j)return migrate(JSON.parse(j));}catch(e){}return null;}
 function save(){store.set(KEY,JSON.stringify(S));}
-S=load()||migrate(fresh());
+S=load();if(S){save();}else{S=migrate(fresh());}
 
-var ui=B.ui={ym:ymOf(today()),tab:'overzicht',dash:'maand',dashDay:TK(),label:null,open:{},tables:{},collapsed:{}};
+var UIKEY='qtBudget_ui';function loadUi(){try{var j=JSON.parse(store.get(UIKEY)||'null');if(j&&/^\d{4}-\d{2}$/.test(j.ym))return j;}catch(e){}return null;}
+function saveUi(){store.set(UIKEY,JSON.stringify({ym:ui.ym,tab:ui.tab,at:Date.now()}));}
+var _u=loadUi();
+var ui=B.ui={ym:(_u&&Date.now()-(_u.at||0)<1000*60*60*12)?_u.ym:ymOf(today()),tab:'overzicht',dash:'maand',dashDay:TK(),label:null,open:{},tables:{},collapsed:{}};
 ui.open[TK()]=true;
 
 function M(ym){ym=ym||ui.ym;
   if(!S.months[ym]){var prev=null;Object.keys(S.months).sort().forEach(function(k){if(k<ym)prev=S.months[k];});
     S.months[ym]={net:0,daily:prev?prev.daily:0,dailyMode:'auto',fixed:S.fixedTemplate.map(function(f){return{id:f.id,name:f.name,amount:f.amount,on:true};}),variable:[],expenses:[],incomes:[]};}
-  var m=S.months[ym];if(!m.incomes)m.incomes=[];if(!m.dailyMode)m.dailyMode='manual';
+  var m=S.months[ym];m.started=true;if(!m.incomes)m.incomes=[];if(!m.dailyMode)m.dailyMode='manual';
   return m;}
 function labelOf(id){var all=S.labels.concat(S.inLabels||[]);for(var i=0;i<all.length;i++)if(all[i].id===id)return all[i];return{id:null,name:'Zonder label',emoji:'•',color:'#bdb3a3'};}
 function findExp(id){var f=null;Object.keys(S.months).forEach(function(k){S.months[k].expenses.forEach(function(x){if(x.id===id){f=x;f._t='out';}});(S.months[k].incomes||[]).forEach(function(x){if(x.id===id){f=x;f._t='in';}});});return f;}
@@ -21571,20 +21573,23 @@ function calc(ym){ym=ym||ui.ym;var m=M(ym),n=daysIn(ym),t=today(),cur=ymOf(t),tk
 function root(){return document.getElementById('budRoot');}
 function scroller(){return document.getElementById('page-shop');}
 function render(){
-  var r=root();if(!r){homeRefresh();return;}var c=calc(),p=ui.ym.split('-');
+  try{saveUi();}catch(e){}
+  var r=root();if(!r){homeRefresh();return;}var started=!!S.months[ui.ym],p=ui.ym.split('-');
+  var c=started?calc():{n:daysIn(ui.ym),elapsed:-1};
   var h='<div class="bud-head" style="margin-top:10px;border-radius:6px">'+
     '<div class="month-nav"><button class="nav-btn" onclick="qtBud.shiftMonth(-1)" aria-label="Vorige maand">‹</button>'+
-    '<div><div class="month-lbl">'+MND[+p[1]-1]+' '+p[0]+'</div><div class="month-sub">'+c.n+' dagen · '+(c.elapsed===c.n?'afgesloten':c.elapsed===0?'nog niet gestart':'dag '+c.elapsed+' van '+c.n)+'</div></div>'+
+    '<div><div class="month-lbl">'+MND[+p[1]-1]+' '+p[0]+'</div><div class="month-sub">'+c.n+' dagen · '+(!started?'budget nog niet gestart':c.elapsed===c.n?'afgesloten':c.elapsed===0?'maand nog niet begonnen':'dag '+c.elapsed+' van '+c.n)+'</div>'+
+    (ui.ym!==ymOf(today())?'<div style="text-align:center;margin-top:3px"><span class="chip" style="font-size:9px;padding:2px 9px" onclick="qtBud.goToday()">↺ naar '+MND[today().getMonth()]+'</span></div>':'')+'</div>'+
     '<button class="nav-btn" onclick="qtBud.shiftMonth(1)" aria-label="Volgende maand">›</button></div>'+
     '<div class="subtabs">'+[['overzicht','Overzicht'],['dagen','Dagen'],['dashboard','Dashboard'],['labels','Labels']].map(function(t){
       return '<button class="stab'+(ui.tab===t[0]?' on':'')+'" onclick="qtBud.setTab(\''+t[0]+'\')">'+t[1]+'</button>';}).join('')+'</div></div>';
-  h+=({overzicht:vOverzicht,dagen:vDagen,dashboard:vDash,labels:vLabels})[ui.tab](c);
+  h+=started?({overzicht:vOverzicht,dagen:vDagen,dashboard:vDash,labels:vLabels})[ui.tab](c):vStart();
   r.innerHTML=h;bindTips();homeRefresh();
 }
 B.render=render;
 /* ── Homepagina-knop ── */
 function homeRefresh(){var el=document.getElementById('ohBudSub');if(!el)return;var ym=ymOf(today()),m=S.months[ym];
-  if(!m){el.textContent='Tik om je eerste uitgave in te geven';return;}
+  if(!m){el.textContent='Budget nog niet gestart voor '+MND[today().getMonth()];var r1=document.getElementById('ohBudRest');if(r1)r1.textContent='';return;}
   var c=calc(ym),tk=TK(),tot=m.expenses.filter(function(e){return e.date===tk;}).reduce(function(s,e){return s+e.amount;},0),sal=c.daily-tot;
   if(!m.net&&!c.inc){el.innerHTML='Vandaag '+fm(tot)+' uitgegeven · <b>stel je nettobedrag in</b>';var r0=document.getElementById('ohBudRest');if(r0)r0.textContent='';return;}
   el.innerHTML='Vandaag '+fm(tot)+' van '+fm(c.daily)+' · <b style="color:'+(sal>=0?'#12463C':'#8a3a12')+'">'+(sal>=0?'▲ over ':'▼ in de min ')+fm(Math.abs(sal))+'</b>';
@@ -21596,7 +21601,19 @@ function keep(fn){var s=scroller(),y=s?s.scrollTop:0;fn();if(s)s.scrollTop=y;}
 B.setTab=function(t){ui.tab=t;render();var s=scroller();
   if(t==='dagen'&&ui.ym===ymOf(today())){setTimeout(function(){scrollToEl(document.getElementById('bud-day-'+TK()));},40);}
   else if(s){var top=root().getBoundingClientRect().top-s.getBoundingClientRect().top+s.scrollTop-70;if(s.scrollTop>top)s.scrollTop=Math.max(top,0);}};
-B.shiftMonth=function(d){var x=new Date(+ui.ym.slice(0,4),+ui.ym.slice(5,7)-1+d,1);ui.ym=ymOf(x);M();ui.dashDay=ui.ym===ymOf(today())?TK():ui.ym+'-01';save();render();};
+B.shiftMonth=function(d){var x=new Date(+ui.ym.slice(0,4),+ui.ym.slice(5,7)-1+d,1);ui.ym=ymOf(x);ui.dashDay=ui.ym===ymOf(today())?TK():ui.ym+'-01';save();saveUi();render();};
+B.goToday=function(){ui.ym=ymOf(today());ui.dashDay=TK();saveUi();render();};
+
+/* ── Startscherm voor een maand zonder gegevens ── */
+function vStart(){var mn=MND[+ui.ym.slice(5,7)-1]+' '+ui.ym.slice(0,4),any=Object.keys(S.months).length>0;
+  return '<div class="wrap"><div class="bcard c1 tilt-l" style="text-align:center;padding:22px 16px"><div class="card-pin"></div>'+
+    '<div style="font-size:34px;line-height:1">💶</div><div class="ctitle" style="margin-top:8px;font-size:15px">Nog geen gegevens voor '+mn+'</div>'+
+    '<div class="muted" style="margin:6px auto 14px;max-width:290px">'+(any?'Voor deze maand is je budget nog niet gestart. Er wordt niets berekend tot je hem start.':'Je budget start pas wanneer jij dat wil. Tot dan worden er geen kosten afgetrokken en blijven de dashboards leeg.')+'</div>'+
+    '<button class="btn dark full" onclick="qtBud.startMonth()">▶ Start budget voor '+MND[+ui.ym.slice(5,7)-1]+'</button>'+
+    '<div class="muted" style="margin-top:10px;font-size:10px">Bij het starten worden je standaard vaste kosten ('+S.fixedTemplate.map(function(f){return esc(f.name);}).join(', ')+') toegevoegd. Daarna vul je je nettobedrag in.</div></div></div>';}
+B.clearMonth=function(){var ym=ui.ym,old=S.months[ym];if(!old)return;delete S.months[ym];save();render();
+  toast(MND[+ym.slice(5,7)-1]+' gewist','Ongedaan maken',function(){S.months[ym]=old;save();render();toast('Teruggezet');});};
+B.startMonth=function(){M(ui.ym);save();ui.tab='overzicht';render();toast('Budget voor '+MND[+ui.ym.slice(5,7)-1]+' gestart');};
 
 /* ── Overzicht ── */
 function row(op,l,sub,v){return '<div class="calc-row"><div class="calc-lbl"><span class="calc-op">'+op+'</span><span>'+l+(sub?'<br><span class="calc-sub">'+sub+'</span>':'')+'</span></div><div class="calc-val">'+v+'</div></div>';}
@@ -21608,6 +21625,7 @@ function grp(key,l,sub,total,items,op,fmtItem){var open=ui.collapsed[key]!==true
     items.forEach(function(f){if(fmtItem){h+=fmtItem(f);return;}var off=f.on===false;h+='<div class="grp-item'+(off?' off':'')+'"><span>'+esc(f.name)+(off?' <em>niet afgetrokken</em>':'')+'</span><span>'+fm(f.amount)+'</span></div>';});h+='</div>';}
   return h;}
 B.toggleGrp=function(k){ui.collapsed[k]=!ui.collapsed[k];keep(render);};
+function prevMonth(ym){var x=new Date(+ym.slice(0,4),+ym.slice(5,7)-2,1);var k=ymOf(x);return S.months[k]?{k:k,m:S.months[k],lbl:MND[x.getMonth()]}:null;}
 function incItem(f){var L=labelOf(f.labelId);return '<div class="grp-item" onclick="event.stopPropagation();qtBud.openExpense(\''+f.id+'\')" style="cursor:pointer"><span>'+L.emoji+' '+esc(f.name)+' <em>'+dLabel(f.date)+'</em></span><span style="color:var(--pos)">+'+fm(f.amount)+'</span></div>';}
 function vOverzicht(c){
   var m=c.m,used=c.avail>0?Math.min(100,c.spent/c.avail*100):(c.spent>0?100:0),h='<div class="wrap">';
@@ -21618,7 +21636,7 @@ function vOverzicht(c){
     '<div class="meter-row"><span>'+fm(c.spent)+' uitgegeven</span><span>'+Math.round(used)+'%</span></div>'+
     '<div class="hero-chips"><span class="pill '+(c.saldo>=0?'pos':'neg')+'">'+(c.saldo>=0?'▲ ':'▼ ')+'Dagsaldo '+fs(c.saldo)+'</span>'+
     '<span class="pill '+(c.prognose>=0?'pos':'neg')+'">🔮 Prognose '+(c.prognose<0?'−':'')+fm(Math.abs(c.prognose))+'</span></div></div>';
-  if(!m.net&&!m.expenses.length)h+='<div class="notice warn" style="margin-top:0">👋<div><b>Start van de maand?</b> Vul hieronder je nettobedrag in. Wil je eerst rondkijken met voorbeelddata? <button class="btn sm" style="margin-top:6px" onclick="qtBud.loadDemo()">Laad demo</button></div></div>';
+  if(!m.net&&!m.expenses.length)h+='<div class="notice warn" style="margin-top:0">👋<div><b>Eerste stap:</b> vul hieronder je nettobedrag voor '+MND[+ui.ym.slice(5,7)-1]+' in.</div></div>';
   // prognose
   var pastLbl=c.remDays===c.n?'nog geen voorbije dagen':(c.remDays===0?'alle '+c.n+' dagen':'dag 1 t.e.m. '+(c.n-c.remDays));
   h+='<div class="bcard mint tilt-r"><div class="card-pin" style="background:var(--brut-cyan)"></div><div class="chead"><div><div class="eyebrow">Verwacht eindresultaat</div><div class="ctitle">Prognose einde maand</div></div>'+
@@ -21629,8 +21647,10 @@ function vOverzicht(c){
     '<div class="calc-row total"><div class="calc-lbl"><span class="calc-op">=</span>Prognose</div><div class="calc-val" style="color:'+(c.prognose<0?'var(--neg)':'var(--surf-teal-dark)')+'">'+(c.prognose<0?'−':'')+fm(Math.abs(c.prognose))+'</div></div>'+
     '<div class="muted" style="margin-top:6px">'+(c.prognose>=0?'Hou je je de resterende dagen aan je dagbedrag, dan hou je dit over op het einde van de maand.':'Aan dit tempo kom je dit bedrag tekort op het einde van de maand.')+'</div></div>';
   h+='<div class="bcard"><div class="chead"><div><div class="eyebrow">De rekensom</div><div class="ctitle">Van netto naar rest</div></div></div>'+
-    '<div class="fld" style="margin-bottom:6px"><label>Nettobedrag beschikbaar (begin van de maand)</label>'+
-    '<div class="money big"><span>€</span><input inputmode="decimal" value="'+(m.net?String(m.net).replace('.',','):'')+'" placeholder="0,00" onchange="qtBud.setNet(this.value)"></div></div>'+
+    '<div class="fld" style="margin-bottom:6px"><label>Nettobedrag voor <b style="color:var(--brut-ink)">'+MND[+ui.ym.slice(5,7)-1]+' '+ui.ym.slice(0,4)+'</b></label>'+
+    '<div class="money big"><span>€</span><input inputmode="decimal" enterkeyhint="done" value="'+(m.net?String(m.net).replace('.',','):'')+'" placeholder="0,00" oninput="qtBud.liveNet(this.value)" onchange="qtBud.setNet(this.value)" onkeydown="if(event.key===\'Enter\')this.blur()"></div>'+
+    (function(){var pv=prevMonth(ui.ym);return (!m.net&&pv&&pv.m.net)?'<button class="btn sm" style="margin-top:8px" onclick="qtBud.setNet(\''+pv.m.net+'\')">Neem '+fm(pv.m.net)+' van '+pv.lbl+' over</button>':'';})()+
+    '<div class="muted" style="margin-top:5px;font-size:10px">Elke maand heeft een eigen nettobedrag — verandert je loon, vul hier gewoon het nieuwe bedrag in.</div></div>'+
     row('+','Nettobedrag','',fm(m.net))+
     grp('incomes','Ontvangsten',m.incomes.length+' ontvangst'+(m.incomes.length===1?'':'en')+' · verhoogt het netto',c.inc,m.incomes.slice().sort(sortExp),'+',incItem)+
     grp('fixed','Vaste kosten',m.fixed.filter(function(f){return f.on;}).length+' posten',c.fixed,m.fixed)+
@@ -21649,23 +21669,28 @@ function vOverzicht(c){
     '<div class="daily-grid" style="grid-template-columns:1fr">'+mini('Dagsaldo','<span style="color:'+(c.saldo>=0?'var(--pos)':'var(--neg)')+'">'+fs(c.saldo)+'</span>',c.saldo>=0?'onder je dagbedrag t.e.m. vandaag':'boven je dagbedrag t.e.m. vandaag')+'</div>'+
     (gap<-0.01?'<div class="notice warn">⚠️<div><b>'+fm(-gap)+' tekort</b> als je elke dag je dagbedrag uitgeeft. <button class="btn sm" style="margin-top:6px" onclick="qtBud.useSuggested()">Zet op '+fm(c.suggested)+'</button></div></div>'
           :gap>0.5?'<div class="notice ok">✅<div><b>'+fm(gap)+' buffer</b> als je elke dag exact je dagbedrag uitgeeft.</div></div>':'')+'</div>';
-  h+='<div class="bcard"><div class="chead"><div><div class="eyebrow">Meteen afgetrokken</div><div class="ctitle">Vaste kosten</div></div><button class="btn sm" onclick="qtBud.saveTemplate()">Als standaard</button></div>';
+  h+='<div class="bcard"><div class="chead"><div><div class="eyebrow">Meteen afgetrokken · '+MND[+ui.ym.slice(5,7)-1]+' '+ui.ym.slice(0,4)+'</div><div class="ctitle">Vaste kosten</div></div><button class="btn sm" onclick="qtBud.saveTemplate()">Als standaard</button></div>';
   m.fixed.forEach(function(f){h+='<div class="cost-row'+(f.on?'':' off')+'"><div class="tgl'+(f.on?' on':'')+'" onclick="qtBud.toggleFixed(\''+f.id+'\')" title="Aftrekken aan/uit"></div>'+
-    '<input class="nm" value="'+esc(f.name)+'" onchange="qtBud.editCost(\'fixed\',\''+f.id+'\',\'name\',this.value)">'+
-    '<div class="money"><span>€</span><input inputmode="decimal" value="'+String(f.amount).replace('.',',')+'" onchange="qtBud.editCost(\'fixed\',\''+f.id+'\',\'amount\',this.value)"></div>'+
+    '<input class="nm" value="'+esc(f.name)+'" oninput="qtBud.liveCost(\'fixed\',\''+f.id+'\',\'name\',this.value)" onchange="qtBud.editCost(\'fixed\',\''+f.id+'\',\'name\',this.value)">'+
+    '<div class="money"><span>€</span><input inputmode="decimal" value="'+String(f.amount).replace('.',',')+'" oninput="qtBud.liveCost(\'fixed\',\''+f.id+'\',\'amount\',this.value)" onchange="qtBud.editCost(\'fixed\',\''+f.id+'\',\'amount\',this.value)"></div>'+
     '<button class="x-del" onclick="qtBud.delCost(\'fixed\',\''+f.id+'\')" aria-label="Verwijder">✕</button></div>';});
   h+='<div class="add-row"><input class="nm" id="budFxN" placeholder="Nieuwe vaste kost"><div class="money"><span>€</span><input id="budFxA" inputmode="decimal" placeholder="0,00"></div><button class="btn dark" onclick="qtBud.addCost(\'fixed\')">+</button></div>'+
     '<div class="sum-line"><span>Totaal vast</span><span>'+fm(c.fixed)+'</span></div></div>';
-  h+='<div class="bcard c3 tilt-l"><div class="card-pin" style="background:var(--brut-yellow)"></div><div class="chead"><div><div class="eyebrow">Enkel deze maand</div><div class="ctitle">Variabele kosten</div></div></div>';
-  if(!m.variable.length)h+='<div class="muted" style="padding:4px 0 6px">Nog geen variabele kosten voor deze maand.</div>';
-  m.variable.forEach(function(f){h+='<div class="cost-row"><input class="nm" value="'+esc(f.name)+'" onchange="qtBud.editCost(\'variable\',\''+f.id+'\',\'name\',this.value)">'+
-    '<div class="money"><span>€</span><input inputmode="decimal" value="'+String(f.amount).replace('.',',')+'" onchange="qtBud.editCost(\'variable\',\''+f.id+'\',\'amount\',this.value)"></div>'+
+  h+='<div class="bcard c3 tilt-l"><div class="card-pin" style="background:var(--brut-yellow)"></div><div class="chead"><div><div class="eyebrow">Enkel voor '+MND[+ui.ym.slice(5,7)-1]+' '+ui.ym.slice(0,4)+'</div><div class="ctitle">Variabele kosten</div></div></div>';
+  if(!m.variable.length){var pv=prevMonth(ui.ym);h+='<div class="muted" style="padding:4px 0 6px">Nog geen variabele kosten voor deze maand.</div>'+
+    (pv&&pv.m.variable.length?'<button class="btn sm" style="margin:2px 0 6px" onclick="qtBud.copyVariable()">Neem '+pv.m.variable.length+' posten van '+pv.lbl+' over ('+fm(pv.m.variable.reduce(function(a,v){return a+v.amount;},0))+')</button>':'');}
+  m.variable.forEach(function(f){h+='<div class="cost-row"><input class="nm" value="'+esc(f.name)+'" oninput="qtBud.liveCost(\'variable\',\''+f.id+'\',\'name\',this.value)" onchange="qtBud.editCost(\'variable\',\''+f.id+'\',\'name\',this.value)">'+
+    '<div class="money"><span>€</span><input inputmode="decimal" value="'+String(f.amount).replace('.',',')+'" oninput="qtBud.liveCost(\'variable\',\''+f.id+'\',\'amount\',this.value)" onchange="qtBud.editCost(\'variable\',\''+f.id+'\',\'amount\',this.value)"></div>'+
     '<button class="x-del" onclick="qtBud.delCost(\'variable\',\''+f.id+'\')" aria-label="Verwijder">✕</button></div>';});
   h+='<div class="add-row"><input class="nm" id="budVaN" placeholder="Naam (bv. tandarts)"><div class="money"><span>€</span><input id="budVaA" inputmode="decimal" placeholder="0,00"></div><button class="btn dark" onclick="qtBud.addCost(\'variable\')">+</button></div>'+
     '<div class="sum-line"><span>Totaal variabel</span><span>'+fm(c.vari)+'</span></div></div>';
+  h+='<button class="btn full" style="background:#fff" onclick="qtBud.clearMonth()">🗑 Budget van '+MND[+ui.ym.slice(5,7)-1]+' wissen</button>';
   return h+'</div>';
 }
-B.setNet=function(v){M().net=num(v);save();keep(render);};
+B.setNet=function(v){M(ui.ym).net=num(v);save();saveUi();keep(render);toast('Nettobedrag '+MND[+ui.ym.slice(5,7)-1]+': '+fm(M(ui.ym).net));};
+B.liveNet=function(v){M(ui.ym).net=num(v);save();saveUi();};
+B.liveCost=function(t,id,k,v){M(ui.ym)[t].forEach(function(f){if(f.id===id)f[k]=k==='amount'?num(v):v;});save();saveUi();};
+B.copyVariable=function(){var pv=prevMonth(ui.ym);if(!pv)return;M(ui.ym).variable=pv.m.variable.map(function(v){return{id:uid(),name:v.name,amount:v.amount};});save();keep(render);toast('Variabele kosten overgenomen van '+pv.lbl+' — pas gerust aan');};
 B.setDaily=function(v){var m=M();m.daily=num(v);m.dailyMode='manual';save();keep(render);toast('Dagbedrag: '+fm(m.daily)+' (zelf ingesteld)');};
 B.useSuggested=function(){var m=M();m.dailyMode='auto';save();keep(render);toast('Voorgesteld dagbedrag: '+fm(calc().daily)+' / dag');};
 B.toggleFixed=function(id){M().fixed.forEach(function(f){if(f.id===id)f.on=!f.on;});save();keep(render);};
@@ -21674,7 +21699,6 @@ B.delCost=function(t,id){M()[t]=M()[t].filter(function(f){return f.id!==id;});sa
 B.addCost=function(t){var p=t==='fixed'?'budFx':'budVa',n=document.getElementById(p+'N').value.trim(),a=num(document.getElementById(p+'A').value);
   if(!n||!a){toast('Geef een naam én bedrag');return;}var o={id:uid(),name:n,amount:a};if(t==='fixed')o.on=true;M()[t].push(o);save();keep(render);};
 B.saveTemplate=function(){S.fixedTemplate=M().fixed.map(function(f){return{id:f.id,name:f.name,amount:f.amount};});save();toast('Standaard voor nieuwe maanden bewaard');};
-B.loadDemo=function(){S=demo();save();ui.ym=ymOf(today());render();toast('Demodata geladen');};
 
 /* ── Dagen ── */
 function expRow(e,showDate,isIn){var L=labelOf(e.labelId);
@@ -21787,7 +21811,7 @@ function dashDay(c){
   var avg=c.elapsed?c.spent/c.elapsed:0;
   return h+'<div class="bcard c3"><div class="eyebrow">Vergelijking</div><div class="daily-grid" style="margin-top:4px">'+mini('Deze dag',fm(tot),list.length+' uitgaven')+mini('Maandgemiddelde',fm(avg),'per dag')+'</div></div>';
 }
-B.shiftDay=function(d){var dt=pd(ui.dashDay);dt.setDate(dt.getDate()+d);ui.dashDay=dkey(dt);if(ymOf(dt)!==ui.ym){ui.ym=ymOf(dt);M();}render();};
+B.shiftDay=function(d){var dt=pd(ui.dashDay);dt.setDate(dt.getDate()+d);ui.dashDay=dkey(dt);if(ymOf(dt)!==ui.ym){ui.ym=ymOf(dt);}render();};
 
 /* ── Labels ── */
 function isInLabel(id){return (S.inLabels||[]).some(function(L){return L.id===id;});}
@@ -21853,10 +21877,10 @@ B.saveExpense=function(){B.syncDraft();var d=B.d,a=num(d.amount),isIn=d.type==='
   if(!a){toast('Vul een bedrag in');return;} if(!String(d.name).trim()){toast('Geef '+(isIn?'de ontvangst':'de uitgave')+' een naam');return;}
   if(!d.labelId){toast('Kies een label');return;} if(!/^\d{4}-\d{2}-\d{2}$/.test(d.date)){toast('Kies een geldige dag');return;}
   if(d.id)removeById(d.id);
-  var ym=d.date.slice(0,7),wasEdit=!!d.id;arr(M(ym),d.type).push({id:d.id||uid(),date:d.date,time:d.time||'',name:String(d.name).trim(),amount:a,labelId:d.labelId});
+  var ym=d.date.slice(0,7),wasEdit=!!d.id,newMonth=!S.months[ym];arr(M(ym),d.type).push({id:d.id||uid(),date:d.date,time:d.time||'',name:String(d.name).trim(),amount:a,labelId:d.labelId});
   save();B.closeSheet();ui.open[d.date]=true;
   if(ym!==ui.ym){ui.ym=ym;}
-  keep(render);toast((wasEdit?'Aangepast':isIn?'Ontvangen':'Toegevoegd')+' · '+(isIn?'+':'')+fm(a)+' op '+dLabel(d.date));};
+  keep(render);toast((wasEdit?'Aangepast':isIn?'Ontvangen':'Toegevoegd')+' · '+(isIn?'+':'')+fm(a)+' op '+dLabel(d.date)+(newMonth?' · budget '+MND[+ym.slice(5,7)-1]+' gestart':''));};
 B.delExpense=function(){var id=B.d.id;B.closeSheet();B.quickDel(id);};
 var lastDel=null;
 B.quickDel=function(id){var e=findExp(id);if(!e)return;var ym=e.date.slice(0,7),t=e._t||'out';removeById(id);
@@ -21906,7 +21930,7 @@ window.variaOpen=function(name){
   var sub=document.getElementById('subtab-budget'),det=document.getElementById('variaDetail'),tile=document.getElementById('vt-budget');
   if(sub)sub.style.display=name==='budget'?'block':'none';
   if(tile)tile.classList.toggle('vt-active',name==='budget');
-  if(name==='budget'){if(det)det.style.overflowY='visible';ui.ym=ymOf(today());ui.dashDay=TK();ui.open[TK()]=true;render();var s=scroller();if(s)s.scrollTop=0;}
+  if(name==='budget'){if(det)det.style.overflowY='visible';if(!B._entered){B._entered=true;}ui.dashDay=ui.ym===ymOf(today())?TK():ui.ym+'-01';ui.open[TK()]=true;render();var s=scroller();if(s)s.scrollTop=0;}
   else if(det)det.style.overflowY='auto';
   syncBar();};
 window.variaBack=function(){if(typeof _back==='function')_back();var sub=document.getElementById('subtab-budget');if(sub)sub.style.display='none';
