@@ -4094,7 +4094,11 @@ textarea.za-input{ resize:none; line-height:1.45; }
 :is(#budRoot,#budSheetBg,#calListView) .grp-item em{text-transform:none;letter-spacing:0;font-size:10px;}
 #ohBudBtn .ob-plus{font-family:var(--grotesk);font-size:22px;}
 #budAddBar button b{font-size:13px;font-family:var(--grotesk);}
+#calListView{padding-bottom:28px;}
 
+
+/* homepagina: geen hoek-icoontjes meer op de tegels */
+.oh-deco-icon,.mmd-tile-spark{display:none !important;}
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -4243,7 +4247,6 @@ function qtSkateLoaderHtml(text){
 
       <!-- Training card -->
       <div class="oh-card oh-card-train" id="ohCardTrain" onclick="openDetailSheet('training')">
-        <div class="oh-deco-icon" style="top:10px;right:12px"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"><path d="M4 9v6M2 10v4M20 9v6M22 10v4M6 12h12"/></svg></div>
         <div class="oh-card-icon" id="ohTrainIcon" style="background:#e9f1e4;font-size:28px">💪</div>
         <div class="oh-card-body">
           <div class="oh-card-label" id="ohTrainLabel">Training</div>
@@ -4267,7 +4270,6 @@ function qtSkateLoaderHtml(text){
             <div class="oh-agenda-ghost-icon">🗓</div>
           </div>
           <div class="oh-card oh-card-sm" id="ohCardAgenda" onclick="openDetailSheet('agenda')" style="position:relative;z-index:3">
-            <div class="oh-deco-icon" style="top:10px;right:10px"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg></div>
             <div class="oh-agenda-check" id="ohAgendaCheck">✓</div>
             <div class="oh-agenda-urgent" id="ohAgendaUrgent">☢️</div>
             <div class="oh-card-icon" style="background:#e9f1e4">🗓</div>
@@ -4280,7 +4282,6 @@ function qtSkateLoaderHtml(text){
           </div>
         </div>
         <div class="oh-card oh-card-sm" id="ohCardWaste" onclick="openDetailSheet('waste')">
-          <div class="oh-deco-icon" style="top:10px;right:10px"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"><path d="M4 20c8 0 15-6 16-16C11 5 4 11 4 20Z"/></svg></div>
           <div class="oh-card-icon" style="background:#e3edf7;color:#0a3d62">♻︎</div>
           <div class="oh-card-body">
             <div class="oh-card-label" id="ohWasteLabel">Afval</div>
@@ -4293,7 +4294,6 @@ function qtSkateLoaderHtml(text){
       <!-- Avondmaal card -->
       <!-- Maaltijdkaart — zelfde lay-out als de andere kaarten (icoon + label + titel + sub) -->
       <div class="oh-card" id="ohCardMeal" onclick="qtrHomeTap()">
-        <div class="oh-deco-icon" style="top:10px;right:12px"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"><path d="M4 10h16l-1.5 9h-13L4 10Z"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
         <div class="oh-card-icon" style="background:#e9f1e4;font-size:24px">🍽️</div>
         <div class="oh-card-body">
           <div class="oh-card-label">Avondmaal<span id="ohMealTijd"></span></div>
@@ -4310,7 +4310,6 @@ function qtSkateLoaderHtml(text){
       <!-- Zanglessen + Make my Day: half-breedte tegels naast elkaar -->
       <div class="oh-2col">
         <div class="oh-card oh-card-sm" id="ohCardZang" onclick="openZangPage()" style="cursor:pointer">
-          <div class="oh-deco-icon" style="top:10px;right:10px"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div>
           <div class="oh-card-icon" style="background:#f0e0f5;font-size:20px">🎤</div>
           <div class="oh-card-body">
             <div class="oh-card-label">Zanglessen</div>
@@ -4319,8 +4318,6 @@ function qtSkateLoaderHtml(text){
           </div>
         </div>
         <div class="oh-card oh-card-sm mmd-tile" id="ohCardMMD" onclick="openMakeMyDay()" style="cursor:pointer;background:var(--ocean);border-color:var(--brut-ink,#0a0a0a);position:relative;overflow:hidden">
-          <div class="oh-deco-icon" style="top:10px;right:10px"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0a0a0a" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.6 4.6l2 2M17.4 17.4l2 2M4.6 19.4l2-2M17.4 6.6l2-2"/></svg></div>
-          <div class="mmd-tile-spark">✨</div>
           <div class="oh-card-icon" style="background:var(--gold,#d4a030);font-size:18px">☀️</div>
           <div class="oh-card-body">
             <div class="oh-card-label" style="color:rgba(245,237,224,.6)">Vandaag</div>
@@ -4416,8 +4413,8 @@ function qtSkateLoaderHtml(text){
     <div style="height:28px;background:var(--cream)"></div>
   </div>
 
-    </div><!-- calMain -->
     <div id="calListView"></div>
+    </div><!-- calMain -->
 
     <!-- ══ PROGRESS ══ -->
   
@@ -22071,6 +22068,217 @@ var _conf=window.calPersonSelectorConfirm;
 window.calPersonSelectorConfirm=function(){var lv=document.getElementById('calListView');if(lv)lv.style.display='none';return _conf.apply(this,arguments);};
 })();
 
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   RECEPTSCORES — score (1–10) + opmerking per keer gemaakt,
+   gemiddelde als inktstempel op de receptfoto (lijst + detail, niet
+   op de homepagina), filter/sorteer op score, afvinkbare ingrediënten.
+   Opslag: wf_qtr_scores  { receptId: { 'YYYY-MM-DD': {s, c, extra} } }
+           wf_qtr_ingcheck { receptId: { index: true } }
+   ═══════════════════════════════════════════════════════════════ */
+(function(){
+if(typeof qtrDtRender!=='function'||typeof qtrCardHtml!=='function')return;
+var RS=window.qtrRs={};
+function load(k){try{var v=JSON.parse(localStorage.getItem(k));return v&&typeof v==='object'?v:{};}catch(e){return {};}}
+function saveK(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+var SC=load('wf_qtr_scores'),CK=load('wf_qtr_ingcheck');
+var sf={score:'all',sort:'naam',open:false};
+
+function today(){return qtrTodayKey();}
+function scoresOf(id){return SC[id]||{};}
+function attempts(id){var m={},sc=scoresOf(id);qtrPlannedDates(id).forEach(function(k){m[k]=1;});Object.keys(sc).forEach(function(k){m[k]=1;});return Object.keys(m).sort();}
+function scoredList(id){var sc=scoresOf(id);return Object.keys(sc).filter(function(k){return sc[k]&&sc[k].s;}).sort().map(function(k){return{d:k,s:sc[k].s,c:sc[k].c||''};});}
+function avg(id){var l=scoredList(id);if(!l.length)return null;return l.reduce(function(t,a){return t+a.s;},0)/l.length;}
+function madeCount(id){var t=today();return attempts(id).filter(function(k){return k<=t;}).length;}
+function todoCount(id){var t=today(),sc=scoresOf(id);return attempts(id).filter(function(k){return k<=t&&!(sc[k]&&sc[k].s);}).length;}
+function f1(n){return (Math.round(n*10)/10).toFixed(1).replace('.',',');}
+function tierLbl(v){return v>=8?'Topper':v>=6?'Goed':'Kan beter';}
+function scCol(v){return v>=8?'#ffe14d':v>=6?'#5ee0e0':'#ffd6d2';}
+function ink(v){return v>=8?'#12463c':v>=6?'#1d5a96':'#a8401a';}
+RS.avg=avg;
+
+/* ── Artwork: inktstempel (voorstel E) ── */
+var uidN=0;
+function stamp(v,n,size){var c=ink(v),id='qrsG'+(++uidN),rid='qrsR'+uidN,G='font-family="Space Grotesk,sans-serif" font-weight="700"';
+  return '<div class="qrs-stamp '+size+'" aria-label="Gemiddelde score '+f1(v)+' op 10"><svg viewBox="0 0 120 120" overflow="visible"><defs>'+
+    '<filter id="'+id+'"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" result="t"/><feColorMatrix in="t" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.55 1.12" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>'+
+    '<path id="'+rid+'" d="M60 60 m-41 0 a41 41 0 1 1 82 0 a41 41 0 1 1 -82 0"/></defs>'+
+    '<g transform="rotate(-13 60 60)" filter="url(#'+id+')"><circle cx="60" cy="60" r="53" fill="rgba(255,255,255,.92)" stroke="'+c+'" stroke-width="4.5"/>'+
+    '<circle cx="60" cy="60" r="33" fill="none" stroke="'+c+'" stroke-width="2"/>'+
+    '<text '+G+' font-size="8.6" letter-spacing="1.1" fill="'+c+'"><textPath href="#'+rid+'">★ QT KEUKEN ★ '+n+'× GEMAAKT ★ SCORE</textPath></text>'+
+    '<text x="60" y="68" text-anchor="middle" font-family="Anton,Outfit,sans-serif" font-size="26" fill="'+c+'">'+f1(v)+'</text>'+
+    '<text x="60" y="80" text-anchor="middle" '+G+' font-size="8" fill="'+c+'">/ 10</text></g></svg></div>';}
+function stampFor(id,size){var v=avg(id);return v==null?'':stamp(v,scoredList(id).length,size);}
+
+/* ── CSS ── */
+var css=[
+ '.qrs-stamp{position:absolute;z-index:3;pointer-events:none;opacity:.97;}',
+ '.qrs-stamp svg{width:100%;height:100%;display:block;overflow:visible;}',
+ '.qrs-stamp.sm{width:52px;height:52px;top:-14px;right:-7px;}',
+ '.qrs-stamp.lg{width:116px;height:116px;top:-22px;right:-14px;}',
+ '.qrs-thumbwrap{position:relative;flex-shrink:0;}',
+ '.qrs-todo{margin-top:6px;font-size:11px;font-weight:800;color:#8a3a12;}',
+ '.qrs-none{margin-top:6px;font-size:11px;font-weight:700;color:#7a7a70;}',
+ '.qrs-ck{display:grid;grid-template-columns:1fr;gap:6px;margin-top:8px;}',
+ '.qrs-ci{display:flex;align-items:center;gap:10px;background:#fff;border:2.5px solid #0a0a0a;border-radius:10px;padding:8px 10px;cursor:pointer;font-weight:700;font-size:14px;line-height:1.25;}',
+ '.qrs-cb{width:24px;height:24px;flex-shrink:0;border:2.5px solid #0a0a0a;border-radius:7px;background:#fff;display:flex;align-items:center;justify-content:center;}',
+ '.qrs-ci.on{background:#d3ecd0;} .qrs-ci.on .qrs-cb{background:#1F7A6C;} .qrs-ci.on .qrs-ct{text-decoration:line-through;opacity:.55;}',
+ '.qrs-clear{margin-top:8px;background:none !important;border:none !important;box-shadow:none !important;font-weight:700;font-size:11px !important;text-decoration:underline;cursor:pointer;color:#0a0a0a;padding:0 !important;text-transform:none !important;letter-spacing:0 !important;}',
+ '.qrs-hist{margin-top:26px;padding-top:14px;border-top:3px dashed #0a0a0a;}',
+ '.qrs-bars{display:flex;align-items:flex-end;gap:6px;height:52px;margin-top:18px;}',
+ '.qrs-bars i{flex:1;max-width:46px;border:2px solid #0a0a0a;border-radius:4px 4px 0 0;display:block;position:relative;}',
+ '.qrs-bars i em{position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-style:normal;font-size:9px;font-weight:800;}',
+ '.qrs-barl{display:flex;gap:6px;margin-top:3px;} .qrs-barl span{flex:1;max-width:46px;text-align:center;font-size:8.5px;font-weight:700;color:#3a3a3a;}',
+ '.qrs-best{display:flex;gap:10px;align-items:flex-start;border:3px solid #0a0a0a;border-radius:14px;padding:10px 12px;background:#cdf3e8;margin-top:10px;font-size:13px;line-height:1.4;}',
+ '.qrs-att{border:3px solid #0a0a0a;border-radius:12px;background:#fff;margin-bottom:8px;overflow:hidden;}',
+ '.qrs-att.click{cursor:pointer;} .qrs-att.todo{border-style:dashed;} .qrs-att.fut{opacity:.55;} .qrs-att.best{box-shadow:4px 4px 0 #1F7A6C;border-color:#12463c;}',
+ '.qrs-ah{display:flex;align-items:center;gap:10px;padding:9px 10px;}',
+ '.qrs-ad{width:46px;flex-shrink:0;text-align:center;border:2px solid #0a0a0a;border-radius:9px;background:#fff1bf;padding:2px 0 3px;}',
+ '.qrs-ad b{display:block;font-family:Anton,Outfit,sans-serif;font-size:19px;line-height:1;font-weight:400;}',
+ '.qrs-ad i{font-style:normal;font-size:8px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block;}',
+ '.qrs-am{flex:1;min-width:0;} .qrs-at{font-weight:800;font-size:13.5px;} .qrs-as{font-size:11.5px;color:#3a3a3a;margin-top:2px;}',
+ '.qrs-sc{flex-shrink:0;width:44px;height:44px;border:3px solid #0a0a0a;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:Anton,Outfit,sans-serif;font-size:19px;box-shadow:2px 2px 0 #0a0a0a;background:#fff;}',
+ '.qrs-att.todo .qrs-sc,.qrs-att.fut .qrs-sc{border-style:dashed;box-shadow:none;font-size:18px;}',
+ '.qrs-note{border-top:2px dashed #c8bba0;padding:8px 10px 10px 66px;font-size:13px;line-height:1.4;position:relative;background:#fffdf5;}',
+ '.qrs-note::before{content:"\\201C";position:absolute;left:20px;top:-2px;font-family:"Playfair Display",serif;font-size:46px;line-height:1;color:#1F7A6C;}',
+ '.qrs-btag{font-size:8.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#ffe14d;border:2px solid #0a0a0a;border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle;}',
+ '.qrs-scale{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:8px;}',
+ '.qrs-scale button{height:50px;border:3px solid #0a0a0a;border-radius:12px;background:#fff;font-family:Anton,Outfit,sans-serif !important;font-size:22px;cursor:pointer;color:#0a0a0a;padding:0;}',
+ '.qrs-scale button.on{box-shadow:3px 3px 0 #0a0a0a;transform:translateY(-2px);}',
+ '.qrs-prev{display:flex;align-items:center;gap:14px;margin-top:12px;padding:10px 12px;border:3px solid #0a0a0a;border-radius:14px;background:#fff1bf;}',
+ '.qrs-pr{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}',
+ '.qrs-pr button{border:2px dashed #0a0a0a !important;border-radius:999px !important;box-shadow:none !important;background:#fff;font-weight:700;font-size:11px;padding:3px 10px;cursor:pointer;color:#0a0a0a;text-transform:none !important;letter-spacing:0 !important;}',
+ '.qrs-extra{text-transform:none !important;letter-spacing:0 !important;}',
+ '.qrs-fchips .qtr-chip,.qrs-sort .qtr-chip{text-transform:none !important;letter-spacing:0 !important;}',
+ '.qrs-scale button{box-shadow:none !important;border-radius:12px !important;border:3px solid #0a0a0a !important;}',
+ '.qrs-scale button.on{box-shadow:3px 3px 0 #0a0a0a !important;}',
+ '.qrs-fchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}'
+].join('\n');
+var _inj=window.qtrInjectCss;
+window.qtrInjectCss=function(){_inj();if(!document.getElementById('qrsCss')){var s=document.createElement('style');s.id='qrsCss';s.textContent=css;document.head.appendChild(s);}};
+
+/* ── Bibliotheek: filter + sorteren op score ── */
+var _ids=window.qtrFilteredIds;
+window.qtrFilteredIds=function(){var ids=_ids.apply(this,arguments);
+  ids=ids.filter(function(id){var v=avg(id);
+    if(sf.score==='top')return v!=null&&v>=8; if(sf.score==='goed')return v!=null&&v>=6&&v<8;
+    if(sf.score==='laag')return v!=null&&v<6; if(sf.score==='geen')return v==null; return true;});
+  if(sf.sort==='score')ids=ids.slice().sort(function(a,b){var x=avg(a),y=avg(b);return (y==null?-1:y)-(x==null?-1:x);});
+  return ids;};
+var OPTS=[['all','Alle'],['top','★ 8 – 10','#ffe14d'],['goed','6 – 7,9','#5ee0e0'],['laag','Onder 6','#ffd6d2'],['geen','Nog geen score','#ece0d0']];
+function scoreFilterHtml(){var cur=OPTS.filter(function(o){return o[0]===sf.score;})[0];
+  var h='<button class="qtr-bar y" style="margin-top:8px" onclick="qtrRs.toggleF()"><span style="display:flex;align-items:center;gap:8px">⭐ '+(sf.score!=='all'?'Score · '+cur[1]:'Filter op score')+(sf.sort==='score'?' · hoogste eerst':'')+'</span>'+(sf.open?QTR_IC.up:QTR_IC.down)+'</button>';
+  if(sf.open){h+='<div class="qrs-fchips">'+OPTS.map(function(o){var on=sf.score===o[0];
+      return '<button class="qtr-chip" style="background:'+(on?(o[2]||'#fff'):'#fff')+';'+(on?'box-shadow:2px 2px 0 #0a0a0a':'')+'" onclick="qtrRs.setF(\''+o[0]+'\')">'+(on?QTR_IC.check:'')+o[1]+'</button>';}).join('')+'</div>'+
+    '<div class="qrs-sort" style="display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap"><span class="qtr-lbl">Sorteer</span>'+
+    '<button class="qtr-chip sm" style="cursor:pointer;background:'+(sf.sort==='naam'?'#ffe14d':'#fff')+'" onclick="qtrRs.setSort(\'naam\')">A – Z</button>'+
+    '<button class="qtr-chip sm" style="cursor:pointer;background:'+(sf.sort==='score'?'#ffe14d':'#fff')+'" onclick="qtrRs.setSort(\'score\')">Hoogste score eerst</button></div>';}
+  return h;}
+var _head=window.qtrLibHeadHtml;
+window.qtrLibHeadHtml=function(){var h=_head.apply(this,arguments),a='<button class="qtr-bar" style="margin-top:8px" onclick="qtrToggleBeheer()">';
+  return h.indexOf(a)>=0?h.replace(a,scoreFilterHtml()+a):h+scoreFilterHtml();};
+RS.toggleF=function(){sf.open=!sf.open;qtrRenderLib();};
+RS.setF=function(v){sf.score=v;qtrRenderLib();};
+RS.setSort=function(v){sf.sort=v;qtrRenderLib();};
+
+/* ── Lijstkaart: stempel rechtsboven op de foto ── */
+var _card=window.qtrCardHtml;
+window.qtrCardHtml=function(r){var h=_card.apply(this,arguments);if(!r)return h;
+  var m=h.match(/<div class="qtr-thumb" data-qtr-ph="[^"]*">[\s\S]*?<\/div>/);
+  if(m)h=h.replace(m[0],'<div class="qrs-thumbwrap">'+m[0]+stampFor(r.id,'sm')+'</div>');
+  var t=todoCount(r.id),v=avg(r.id),extra=t?'<div class="qrs-todo">⭐ '+t+'× nog te scoren</div>':(v==null&&madeCount(r.id)===0?'':'');
+  if(extra)h=h.replace(/<\/div><\/div>$/,extra+'</div></div>');
+  return h;};
+
+/* ── Detail: foto + stempel → ingrediënten (afvinkbaar) → stappen → scores & opmerkingen ── */
+window.qtrDtRender=function(keepScroll){
+  var r=qtrRecipe(qtrView.ids[qtrView.idx]);
+  if(!r){qtrOvClose();return;}
+  var n=qtrView.ids.length,tags=(r.tags||[]).map(qtrTag).filter(Boolean),nxt=qtrNextDate(r.id);
+  var prevScroll=0,oldBody=qtrEl('qtrDtBody');if(oldBody&&keepScroll)prevScroll=oldBody.scrollTop;
+  var h='<div class="qtr-ov-top"><div style="display:flex;align-items:center;justify-content:space-between;gap:10px">'+
+    '<div style="display:flex;align-items:center;gap:10px;min-width:0"><button class="qtr-round" aria-label="Terug" onclick="qtrOvClose()">'+QTR_IC.back+'</button><div class="qtr-kick">Recepten</div></div>'+
+    '<div class="qtr-badge" style="font-size:12px;padding:4px 10px;align-self:center">'+(qtrView.idx+1)+' van '+n+'</div></div></div>';
+  h+='<div class="qtr-ov-body" id="qtrDtBody"><div class="qtr-dt-card" id="qtrDtCard">';
+  h+='<div style="position:relative;margin-top:24px"><div class="qtr-dt-photo" id="qtrDtPhoto"><img id="qtrDtImg" alt=""><span id="qtrDtPh">'+QTR_IC.cam.replace('width="26" height="26"','width="54" height="54"')+'</span></div>'+stampFor(r.id,'lg')+'</div>';
+  if(n>1){h+='<div class="qtr-dots">';if(n<=12){for(var i=0;i<n;i++)h+='<i class="'+(i===qtrView.idx?'on':'')+'"></i>';}h+='<span style="font-size:11px;color:#3a3a3a;margin-left:6px">swipe voor vorig / volgend</span></div>';}
+  h+='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-top:14px">'+
+    '<div><div class="qtr-h1" style="font-size:26px">'+qtrEsc(r.naam)+'</div>'+
+    '<div style="font-size:13px;color:#3a3a3a;margin-top:4px">'+qtrEsc([(r.tijd?r.tijd+' min':''),(r.porties?r.porties+' porties':''),((r.ing||[]).length+' ingrediënten')].filter(Boolean).join(' · '))+'</div></div>'+
+    '<div class="qtr-badge'+(nxt?' on':'')+'">'+(nxt?qtrDayShort(nxt):'Niet gepland')+'</div></div>';
+  if(tags.length)h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">'+tags.map(function(t){return qtrTagChip(t,false);}).join('')+'</div>';
+  // ingrediënten — afvinkbaar
+  var ing=r.ing||[],ck=CK[r.id]||{},done=ing.filter(function(x,i){return ck[i];}).length;
+  h+='<div class="qtr-box" style="background:#fff1bf"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><div class="qtr-lbl" style="color:#4a3a00">Ingrediënten · voor '+(r.porties||2)+'</div>'+
+    (ing.length?'<span class="qtr-badge'+(done===ing.length?' on':'')+'" style="font-size:11px;align-self:center">🛒 '+done+' / '+ing.length+'</span>':'')+'</div>'+
+    '<div class="qrs-ck">'+ing.map(function(x,i){return '<div class="qrs-ci'+(ck[i]?' on':'')+'" onclick="qtrRs.tick(\''+r.id+'\','+i+')"><span class="qrs-cb">'+(ck[i]?QTR_IC.check.replace(/stroke="#0a0a0a"/,'stroke="#fff"'):'')+'</span><span class="qrs-ct">'+qtrEsc(qtrIngText(x))+'</span></div>';}).join('')+'</div>'+
+    (done?'<button class="qrs-clear" onclick="qtrRs.clearTicks(\''+r.id+'\')">Wis vinkjes</button>':(ing.length?'<div style="font-size:11px;color:#3a3a3a;margin-top:6px">Tik een ingrediënt aan als het in je kar ligt of al in huis is.</div>':''))+'</div>';
+  if(r.bereiding&&r.bereiding.trim()){var sts=r.bereiding.split(/\n+/).map(function(x){return x.trim();}).filter(Boolean);
+    h+='<div class="qtr-lbl" style="margin-top:14px">Stappenplan · '+sts.length+(sts.length===1?' stap':' stappen')+'</div><div style="margin-top:6px">'+
+      sts.map(function(t,i){return '<div class="qtr-dstep" onclick="this.classList.toggle(\'done\')"><div class="qtr-stn">'+(i+1)+'</div><div class="qtr-dt">'+qtrEsc(t)+'</div></div>';}).join('')+
+      '</div><div style="font-size:11px;color:#3a3a3a;margin-top:4px">Tik een stap aan om hem af te vinken tijdens het koken.</div>';}
+  h+=histHtml(r);
+  h+='</div></div>';
+  h+='<div class="qtr-ov-foot"><button class="qtr-btn" style="width:54px;min-height:54px;padding:0" aria-label="Bewerken" onclick="qtrDtEdit()">'+QTR_IC.edit+'</button>'+
+    '<button class="qtr-btn y big" style="flex:1" onclick="qtrDtLink()">'+QTR_IC.cal+'Koppel aan een dag</button></div>';
+  qtrOvOpen(h);
+  var body=qtrEl('qtrDtBody');if(body&&prevScroll)body.scrollTop=prevScroll;
+  qtrFillPhoto(qtrEl('qtrDtImg'),r.id,{onFound:function(){var p=qtrEl('qtrDtPh');if(p)p.style.display='none';}});
+  qtrDtBindSwipe();
+};
+function histHtml(r){var t=today(),sc=scoresOf(r.id),list=scoredList(r.id),v=avg(r.id),att=attempts(r.id),made=madeCount(r.id);
+  var best=list.slice().sort(function(a,b){return b.s-a.s;})[0];
+  var h='<div class="qrs-hist"><div style="display:flex;justify-content:space-between;align-items:flex-end;gap:8px"><div class="qtr-lbl">Scores &amp; opmerkingen · '+made+'× gemaakt</div>'+
+    (v!=null?'<div style="font-weight:800;font-size:12px;white-space:nowrap">Gemiddeld <span style="font-family:Anton,Outfit,sans-serif;font-size:16px;font-weight:400">'+f1(v)+'</span> / 10</div>':'')+'</div>';
+  if(list.length>1){h+='<div class="qrs-bars">'+list.map(function(a){return '<i style="height:'+(a.s*10)+'%;background:'+scCol(a.s)+'"><em>'+a.s+'</em></i>';}).join('')+'</div>'+
+    '<div class="qrs-barl">'+list.map(function(a){return '<span>'+qtrEsc(qtrDayShort(a.d).replace(/^\S+\s/,''))+'</span>';}).join('')+'</div>';}
+  if(best&&list.length>1&&best.c)h+='<div class="qrs-best">💡<div><b>Beste keer ('+best.s+'/10, '+qtrEsc(qtrDayShort(best.d))+'):</b> “'+qtrEsc(best.c)+'”</div></div>';
+  h+='<div style="margin-top:10px">';
+  if(!att.length)h+='<div style="font-size:12.5px;color:#3a3a3a;padding:6px 2px 10px">Nog niet ingepland of gemaakt. Koppel het recept aan een dag; vanaf die dag kan je het hier scoren.</div>';
+  att.slice().reverse().forEach(function(k){var e=sc[k],has=e&&e.s,fut=k>t,isB=best&&has&&best.d===k&&list.length>1,d=qtrDateFromKey(k);
+    var dw=d.toLocaleDateString('nl-NL',{weekday:'short'}).replace('.',''),mo=d.toLocaleDateString('nl-NL',{month:'short'}).replace('.','');
+    h+='<div class="qrs-att'+(isB?' best':'')+(fut?' fut':(has?' click':' todo click'))+'"'+(fut?'':' onclick="qtrRs.openScore(\''+r.id+'\',\''+k+'\')"')+'><div class="qrs-ah">'+
+      '<div class="qrs-ad"><i>'+qtrEsc(dw)+'</i><b>'+d.getDate()+'</b><i>'+qtrEsc(mo)+'</i></div>'+
+      '<div class="qrs-am"><div class="qrs-at">'+(fut?'Ingepland':has?tierLbl(e.s):'Nog geen score')+(isB?'<span class="qrs-btag">Beste keer</span>':'')+(e&&e.extra?' <span style="font-size:10px;font-weight:600;color:#3a3a3a">· niet gepland</span>':'')+'</div>'+
+      '<div class="qrs-as">'+(fut?'Vanaf die dag kan je een score geven':has?'Tik om aan te passen':'Tik om te scoren en een opmerking toe te voegen')+'</div></div>'+
+      '<div class="qrs-sc" style="'+(has?'background:'+scCol(e.s):'')+'">'+(fut?'📅':has?e.s:'＋')+'</div></div>'+
+      (e&&e.c?'<div class="qrs-note">'+qtrEsc(e.c)+'</div>':'')+'</div>';});
+  h+='<button class="qtr-btn qrs-extra" style="width:100%;margin-top:4px;border-style:dashed;box-shadow:none;font-size:14px" onclick="qtrRs.openScore(\''+r.id+'\',null)">'+QTR_IC.plus+'Ook gemaakt op een niet-geplande dag</button></div></div>';
+  return h;}
+RS.tick=function(id,i){var c=CK[id]||(CK[id]={});if(c[i])delete c[i];else c[i]=true;saveK('wf_qtr_ingcheck',CK);qtrDtRender(true);};
+RS.clearTicks=function(id){delete CK[id];saveK('wf_qtr_ingcheck',CK);qtrDtRender(true);};
+
+/* ── Score-sheet ── */
+var S=null;
+RS.openScore=function(id,k){var e=k?scoresOf(id)[k]:null;S={id:id,k:k,s:e&&e.s?e.s:null,c:e&&e.c?e.c:'',date:k||today()};sheet();};
+function previewAvg(){var t=0,n=0,sc=scoresOf(S.id);Object.keys(sc).forEach(function(k){if(k===S.date)return;if(sc[k]&&sc[k].s){t+=sc[k].s;n++;}});if(S.s){t+=S.s;n++;}return n?t/n:null;}
+function sheet(){var r=qtrRecipe(S.id);if(!r)return;var sel=S.s,isNew=!S.k;
+  var h='<div class="qtr-grab"></div><div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px"><div><div class="qtr-kick">'+(isNew?'Extra keer gemaakt':'Score geven · '+qtrEsc(qtrDayShort(S.k)))+'</div><div class="qtr-h1" style="font-size:22px;margin-top:4px">'+qtrEsc(r.naam)+'</div></div>'+
+    '<button class="qtr-round" aria-label="Sluiten" onclick="qtrSheetClose()">'+QTR_IC.close+'</button></div>';
+  if(isNew)h+='<div class="qtr-lbl" style="margin-top:14px">Wanneer gemaakt?</div><input type="date" class="qtr-input sm" id="qrsDate" style="margin-top:6px" value="'+S.date+'" max="'+today()+'" onchange="qtrRs.setDate(this.value)">';
+  h+='<div class="qtr-lbl" style="margin-top:14px">Hoeveel punten op 10?</div><div class="qrs-scale">';
+  for(var i=1;i<=10;i++)h+='<button class="'+(sel===i?'on':'')+'" style="background:'+(sel===i?scCol(i):'#fff')+'" onclick="qtrRs.pick('+i+')">'+i+'</button>';
+  h+='</div><div style="display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:#3a3a3a;margin-top:6px"><span>1 · mislukt</span><span>10 · perfect</span></div>';
+  if(sel){var pa=previewAvg();h+='<div class="qrs-prev"><div style="position:relative;width:72px;height:72px;flex-shrink:0">'+stamp(sel,1,'sm').replace('class="qrs-stamp sm"','class="qrs-stamp" style="inset:0;width:72px;height:72px"')+'</div>'+
+    '<div style="font-size:13px;line-height:1.4"><b>'+tierLbl(sel)+'</b><br>Nieuw gemiddelde: <b>'+f1(pa)+'</b> / 10</div></div>';}
+  h+='<div class="qtr-lbl" style="margin-top:14px">Opmerking · wat deed je deze keer anders?</div><textarea class="qtr-area" id="qrsC" rows="4" style="margin-top:6px" placeholder="bv. saus langer laten inkoken, extra look, andere kaas…" oninput="qtrRs.setC(this.value)">'+qtrEsc(S.c)+'</textarea>'+
+    '<div class="qrs-pr">'+['Langer gegaard','Meer kruiden','Minder zout','Andere groente','Dubbele portie'].map(function(p){return '<button onclick="qtrRs.prompt(\''+p+'\')">＋ '+p+'</button>';}).join('')+'</div>';
+  h+='<div style="display:flex;gap:10px;margin-top:16px">'+(S.k&&scoresOf(S.id)[S.k]&&scoresOf(S.id)[S.k].s?'<button class="qtr-btn r" onclick="qtrRs.clearScore()">Wis</button>':'')+
+    '<button class="qtr-btn y big" style="flex:1"'+(sel?'':' disabled')+' onclick="qtrRs.save()">'+QTR_IC.check+'Bewaar score</button></div>';
+  qtrSheetOpen(h);}
+RS.pick=function(i){var t=qtrEl('qrsC');if(t)S.c=t.value;S.s=i;var y=qtrEl('qtrSheet')?qtrEl('qtrSheet').scrollTop:0;sheet();if(qtrEl('qtrSheet'))qtrEl('qtrSheet').scrollTop=y;};
+RS.setC=function(v){S.c=v;};
+RS.setDate=function(v){if(v)S.date=v;};
+RS.prompt=function(p){var t=qtrEl('qrsC');if(!t)return;var v=t.value.trim();t.value=(v?v+(/[.!?]$/.test(v)?' ':'. '):'')+p;S.c=t.value;};
+function afterChange(){qtrSheetClose();try{qtrRenderLib();}catch(e){}var ov=qtrEl('qtrOv');if(ov&&ov.classList.contains('open')&&qtrView.mode==='detail')qtrDtRender(true);}
+RS.save=function(){if(!S||!S.s)return;var t=qtrEl('qrsC');if(t)S.c=t.value;var k=S.k||S.date;if(!k||k>today()){if(typeof showSkipToast==='function')showSkipToast('Kies een dag die al voorbij is');return;}
+  var m=SC[S.id]||(SC[S.id]={}),prev=m[k];m[k]={s:S.s,c:(S.c||'').trim()};if(!S.k&&qtrPlan[k]!==S.id)m[k].extra=true;else if(prev&&prev.extra)m[k].extra=true;
+  saveK('wf_qtr_scores',SC);var v=avg(S.id);afterChange();if(typeof showToast==='function')showToast('Score '+m[k].s+'/10 bewaard · gemiddelde '+f1(v));};
+RS.clearScore=function(){if(!S||!S.k)return;var m=SC[S.id]||{};var e=m[S.k];if(e&&e.extra)delete m[S.k];else delete m[S.k];if(!Object.keys(m).length)delete SC[S.id];saveK('wf_qtr_scores',SC);afterChange();if(typeof showToast==='function')showToast('Score gewist');};
+})();
+
+try{qtrInjectCss();}catch(e){}
 </script>
 </body>
 </html>
