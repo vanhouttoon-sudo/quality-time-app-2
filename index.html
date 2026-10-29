@@ -4096,6 +4096,31 @@ textarea.za-input{ resize:none; line-height:1.45; }
 #budAddBar button b{font-size:13px;font-family:var(--grotesk);}
 #calListView{padding-bottom:28px;}
 
+/* ── Homepagina-tegel: dagbudget in een kamertje met meter (variant C) ── */
+#ohBudBtn{align-items:stretch !important;transition:background-color .4s;}
+#ohBudBtn .ob-plus,#ohBudBtn .ob-mid{align-self:center;}
+#ohBudBtn .ob-plus{position:relative;}
+#ohBudBtn .ob-side{display:flex;align-items:flex-start;flex-shrink:0;}
+#ohBudBtn .ob-day{display:block;font-family:var(--grotesk);font-size:20px;font-weight:700;line-height:1;letter-spacing:.2px;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:center;min-width:78px;
+  color:var(--c);background:var(--box,#fff);border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:9px;padding:6px 10px 8px;box-shadow:2.5px 2.5px 0 var(--brut-ink,#0a0a0a);transition:color .4s,background-color .4s;}
+#ohBudBtn .ob-num{display:block;}
+#ohBudBtn .ob-meter{display:block;height:7px;margin-top:6px;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:4px;background:#fff;overflow:hidden;position:relative;}
+#ohBudBtn .ob-meter > span{position:absolute;left:0;top:0;bottom:0;width:var(--p);background:var(--c);transition:width .4s;}
+#ohBudBtn .ob-meter.neg > span{background:repeating-linear-gradient(-45deg,var(--c) 0 4px,var(--c2) 4px 8px);}
+#ohBudBtn .ob-meter.alarm > span{background:repeating-linear-gradient(-45deg,var(--c) 0 4px,var(--c2) 4px 8px) 0 0/11.3px 11.3px;animation:obStripes .6s linear infinite;}
+@keyframes obStripes{from{background-position:0 0}to{background-position:11.3px 0}}
+#ohBudBtn .ob-day:empty,#ohBudBtn .ob-side:has(.ob-day:empty){display:none;}
+/* vanaf −20: volledige tegel rood + uitroepteken op het €-rondje */
+#ohBudBtn.alarm{background:var(--tile,#d81f2e) !important;}
+#ohBudBtn.alarm .ob-k{color:rgba(255,255,255,.78) !important;}
+#ohBudBtn.alarm .ob-t{color:#fff !important;}
+#ohBudBtn.alarm .ob-s{color:rgba(255,255,255,.92) !important;}
+#ohBudBtn .ob-warn{position:absolute;top:-7px;right:-8px;display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;
+  background:#fff;color:#d1001c;border:1.5px solid var(--brut-ink,#0a0a0a);box-shadow:1.5px 1.5px 0 var(--brut-ink,#0a0a0a);font-family:var(--grotesk);font-size:14px;font-weight:700;line-height:1;
+  animation:obWarnIn .5s cubic-bezier(.34,1.7,.55,1) both,obWarnPulse 2.4s ease-in-out .6s infinite;}
+@keyframes obWarnIn{from{transform:scale(0) rotate(-30deg)}to{transform:none}}
+@keyframes obWarnPulse{0%,82%,100%{transform:none}88%{transform:scale(1.18) rotate(-8deg)}94%{transform:scale(1) rotate(6deg)}}
+
 
 /* homepagina: geen hoek-icoontjes meer op de tegels */
 .oh-deco-icon,.mmd-tile-spark{display:none !important;}
@@ -4339,7 +4364,7 @@ function qtSkateLoaderHtml(text){
       <button id="ohBudBtn" onclick="qtBud.openExpense()">
         <span class="ob-plus">€</span>
         <span class="ob-mid"><span class="ob-k" style="display:block">Uitgaven</span><span class="ob-t" style="display:block">Voeg uitgave toe</span><span class="ob-s" id="ohBudSub" style="display:block"></span></span>
-        <span class="ob-r" id="ohBudRest"></span>
+        <span class="ob-side"><span class="ob-day" id="ohBudDay"></span></span>
       </button>
     </div><!-- /oh-body -->
 
@@ -21868,12 +21893,53 @@ function render(){
 }
 B.render=render;
 /* ── Homepagina-knop ── */
+// kleur van "rest / dagbudget": groen (niets uitgegeven) → oranje (op) → diep rood (ver eronder)
+// ── Dagbudget op de homepagina (enkel informatief) ──
+// Boven nul: groen (vol) → blauwgroen → blauw (0); de meter loopt leeg.
+// Onder nul: rood dat steeds feller wordt; de meter bouwt rood op tot hij vol is bij −20.
+// Vanaf −20 (€20 over je dagbudget): volledige tegel rood + uitroepteken; dieper → donkerder rood (max. bij −40).
+var DAY_ALARM=-20,DAYPOS=[[0,216,82,34],[0.5,182,88,22],[1,142,70,22]];
+function hslS(h,s,l){h=((h%360)+360)%360;return 'hsl('+h.toFixed(1)+','+s.toFixed(1)+'%,'+l.toFixed(1)+'%)';}
+function mixN(a,b,t){return a+(b-a)*t;}
+function dayState(sal,daily){
+  var o={};
+  if(sal>=0){var r=Math.min(1,sal/daily),c=DAYPOS[2].slice(1);
+    for(var i=1;i<DAYPOS.length;i++){var a=DAYPOS[i-1],b=DAYPOS[i];if(r<=b[0]){var f=(r-a[0])/(b[0]-a[0]);c=[mixN(a[1],b[1],f),mixN(a[2],b[2],f),mixN(a[3],b[3],f)];break;}}
+    o.c=hslS(c[0],c[1],c[2]);o.c2=o.c;o.box='#fff';o.p=r*100;o.neg=false;}
+  else{var t=Math.min(1,-sal/(-DAY_ALARM));
+    o.c=hslS(mixN(6,-8,t),mixN(58,100,t),mixN(47,37,t));
+    o.c2=hslS(mixN(6,-8,t),mixN(70,100,t),mixN(86,74,t));
+    o.box=hslS(355,100,mixN(100,91,t));o.p=t*100;o.neg=true;}
+  o.alarm=sal<=DAY_ALARM+1e-9;
+  if(o.alarm){var u=Math.min(1,(DAY_ALARM-sal)/20);o.tile=hslS(mixN(-4,-10,u),mixN(86,92,u),mixN(47,29,u));}
+  return o;
+}
+B.dayState=dayState;
 function homeRefresh(){var el=document.getElementById('ohBudSub');if(!el)return;var ym=ymOf(today()),m=S.months[ym];
-  if(!m){el.textContent='Budget nog niet gestart voor '+MND[today().getMonth()];var r1=document.getElementById('ohBudRest');if(r1)r1.textContent='';return;}
+  var dEl=document.getElementById('ohBudDay'),btn=document.getElementById('ohBudBtn');
+  function setAlarm(st,sal){if(!btn)return;var on=!!(st&&st.alarm);btn.classList.toggle('alarm',on);
+    if(on)btn.style.setProperty('--tile',st.tile);else btn.style.removeProperty('--tile');
+    var pl=btn.querySelector('.ob-plus');if(!pl)return;var w=pl.querySelector('.ob-warn');
+    if(on&&!w){w=document.createElement('span');w.className='ob-warn';w.textContent='!';pl.appendChild(w);}
+    if(!on&&w)w.remove();
+    if(w&&on)w.title='Al '+fm(-sal)+' over je dagbudget';}
+  function noDay(){if(dEl){dEl.innerHTML='';dEl.removeAttribute('style');dEl.removeAttribute('title');}setAlarm(null);}
+  if(!m){el.textContent='Budget nog niet gestart voor '+MND[today().getMonth()];noDay();return;}
   var c=calc(ym),tk=TK(),tot=m.expenses.filter(function(e){return e.date===tk;}).reduce(function(s,e){return s+e.amount;},0),sal=c.daily-tot;
-  if(!m.net&&!c.inc){el.innerHTML='Vandaag '+fm(tot)+' uitgegeven · <b>stel je nettobedrag in</b>';var r0=document.getElementById('ohBudRest');if(r0)r0.textContent='';return;}
-  el.innerHTML='Vandaag '+fm(tot)+' van '+fm(c.daily)+' · <b style="color:'+(sal>=0?'#12463C':'#8a3a12')+'">'+(sal>=0?'▲ over ':'▼ in de min ')+fm(Math.abs(sal))+'</b>';
-  var r=document.getElementById('ohBudRest');if(r)r.textContent='Prognose '+fk(c.prognose);}
+  if(!m.net&&!c.inc){el.innerHTML='Vandaag '+fm(tot)+' uitgegeven · <b>stel je nettobedrag in</b>';noDay();return;}
+  el.innerHTML='Vandaag '+fm(tot)+' uitgegeven van '+fm(c.daily);
+  if(!dEl)return;
+  if(!(c.daily>0)){noDay();return;}
+  var rest=Math.floor(sal+1e-9),day=Math.floor(c.daily+1e-9),st=dayState(sal,c.daily);   // zelfde afronding → begin van de dag altijd x/x
+  dEl.innerHTML='<span class="ob-num">'+(rest<0?'−'+Math.abs(rest):String(rest))+'/'+day+'</span><span class="ob-meter'+(st.neg?' neg':'')+(st.alarm?' alarm':'')+'"><span></span></span>';
+  dEl.style.setProperty('--c',st.c);dEl.style.setProperty('--c2',st.c2);dEl.style.setProperty('--box',st.box);dEl.style.setProperty('--p',st.p.toFixed(1)+'%');
+  dEl.title=sal>=0?'Nog '+fm(sal)+' over van je dagbudget van '+fm(c.daily):'Al '+fm(-sal)+' over je dagbudget van '+fm(c.daily)+' (uitgegeven: '+fm(tot)+')';
+  setAlarm(st,sal);
+}
+// dag gewisseld terwijl de app openstond → opnieuw berekenen
+var _hrDay=TK();
+document.addEventListener('visibilitychange',function(){if(!document.hidden){_hrDay=TK();homeRefresh();}});
+setInterval(function(){var k=TK();if(k!==_hrDay){_hrDay=k;homeRefresh();}},60000);
 B.homeRefresh=homeRefresh;
 /* ── Budgetstatus voor andere onderdelen (bv. receptsuggesties) ── */
 // Geeft null als het budget voor die maand (of de huidige) nog niet gestart of ingevuld is.
