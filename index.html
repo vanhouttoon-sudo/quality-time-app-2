@@ -4361,7 +4361,7 @@ function qtSkateLoaderHtml(text){
       </div>
 
       <!-- Uitgaven: snelknop -->
-      <button id="ohBudBtn" onclick="qtBud.openExpense()">
+      <button id="ohBudBtn" onclick="qtBud.openExpenseHome()">
         <span class="ob-plus">€</span>
         <span class="ob-mid"><span class="ob-k" style="display:block">Uitgaven</span><span class="ob-t" style="display:block">Voeg uitgave toe</span><span class="ob-s" id="ohBudSub" style="display:block"></span></span>
         <span class="ob-side"><span class="ob-day" id="ohBudDay"></span></span>
@@ -5420,7 +5420,7 @@ function qtSkateLoaderHtml(text){
 </div>
 
   <!-- ══ UITGAVEN: vaste knop onderaan ══ -->
-  <div id="budAddBar"><button onclick="qtBud.openExpense()"><b>€</b>Voeg uitgave toe</button></div>
+  <div id="budAddBar"><button onclick="qtBud.openExpenseHere()"><b>€</b>Voeg uitgave toe</button></div>
   <div class="tabs">
     <button class="tab active" onclick="switchTab('today',this)"><span style="font-size:11px">📅</span>Vandaag</button>
     <button class="tab" onclick="switchTab('calendar',this)"><span style="font-size:11px">🗓</span>Agenda</button>
@@ -21830,7 +21830,9 @@ function migrate(s){
   Object.keys(s.months||{}).forEach(function(k){var m=s.months[k];if(!m.incomes)m.incomes=[];if(!m.dailyMode)m.dailyMode=(m.daily>0?'manual':'auto');});
   return s;}
 function load(){try{var j=store.get(KEY);if(j)return migrate(JSON.parse(j));}catch(e){}return null;}
-function save(){store.set(KEY,JSON.stringify(S));}
+function save(){store.set(KEY,JSON.stringify(S));swipeStale();}
+// gewijzigde uitgaven → de vooraf getekende buurdagen van de homepagina opnieuw laten tekenen
+function swipeStale(){try{if(window.todaySwipe&&!todaySwipe.wrap&&!todaySwipe.busy){todaySwipe.cache={};if(typeof tsSchedulePrerender==='function')tsSchedulePrerender(400);}}catch(e){}}
 S=load();if(S){save();}else{S=migrate(fresh());}
 
 var UIKEY='qtBudget_ui';function loadUi(){try{var j=JSON.parse(store.get(UIKEY)||'null');if(j&&/^\d{4}-\d{2}$/.test(j.ym))return j;}catch(e){}return null;}
@@ -21915,7 +21917,14 @@ function dayState(sal,daily){
   return o;
 }
 B.dayState=dayState;
-function homeRefresh(){var el=document.getElementById('ohBudSub');if(!el)return;var ym=ymOf(today()),m=S.months[ym];
+// de dag die op de homepagina getoond wordt (na swipen bv. een dag in november), anders vandaag
+function homeKey(){try{if(typeof qtrHomeKey==='function'){var k=qtrHomeKey();if(/^\d{4}-\d{2}-\d{2}$/.test(k))return k;}}catch(e){}return TK();}
+B.homeKey=homeKey;
+function homeDayLbl(k){if(k===TK())return 'Vandaag';try{if(typeof todaySwipeLabel==='function'){var l=todaySwipeLabel(pd(k));return /^[A-Z]/.test(l)?l:l.charAt(0).toUpperCase()+l.slice(1);}}catch(e){}return dLabel(k);}
+B.openExpenseHome=function(){B.openExpense(null,homeKey());};
+// knop onderaan de Uitgaven-pagina: bekijk je een andere maand, dan staat de nieuwe uitgave op een dag van die maand
+B.openExpenseHere=function(){var k=TK();if(ui.ym&&ui.ym!==ymOf(today())){k=(ui.dashDay&&ui.dashDay.slice(0,7)===ui.ym)?ui.dashDay:ui.ym+'-01';}B.openExpense(null,k);};
+function homeRefresh(){var el=document.getElementById('ohBudSub');if(!el)return;var hk=homeKey(),ym=hk.slice(0,7),m=S.months[ym],lbl=homeDayLbl(hk);
   var dEl=document.getElementById('ohBudDay'),btn=document.getElementById('ohBudBtn');
   function setAlarm(st,sal){if(!btn)return;var on=!!(st&&st.alarm);btn.classList.toggle('alarm',on);
     if(on)btn.style.setProperty('--tile',st.tile);else btn.style.removeProperty('--tile');
@@ -21924,16 +21933,16 @@ function homeRefresh(){var el=document.getElementById('ohBudSub');if(!el)return;
     if(!on&&w)w.remove();
     if(w&&on)w.title='Al '+fm(-sal)+' over je dagbudget';}
   function noDay(){if(dEl){dEl.innerHTML='';dEl.removeAttribute('style');dEl.removeAttribute('title');}setAlarm(null);}
-  if(!m){el.textContent='Budget nog niet gestart voor '+MND[today().getMonth()];noDay();return;}
-  var c=calc(ym),tk=TK(),tot=m.expenses.filter(function(e){return e.date===tk;}).reduce(function(s,e){return s+e.amount;},0),sal=c.daily-tot;
-  if(!m.net&&!c.inc){el.innerHTML='Vandaag '+fm(tot)+' uitgegeven · <b>stel je nettobedrag in</b>';noDay();return;}
-  el.innerHTML='Vandaag '+fm(tot)+' uitgegeven van '+fm(c.daily);
+  if(!m){el.textContent='Budget nog niet gestart voor '+MND[+ym.slice(5,7)-1];noDay();return;}
+  var c=calc(ym),tk=hk,tot=m.expenses.filter(function(e){return e.date===tk;}).reduce(function(s,e){return s+e.amount;},0),sal=c.daily-tot;
+  if(!m.net&&!c.inc){el.innerHTML=lbl+' '+fm(tot)+' uitgegeven · <b>stel je nettobedrag in voor '+MND[+ym.slice(5,7)-1]+'</b>';noDay();return;}
+  el.innerHTML=lbl+' '+fm(tot)+' uitgegeven van '+fm(c.daily);
   if(!dEl)return;
   if(!(c.daily>0)){noDay();return;}
   var rest=Math.floor(sal+1e-9),day=Math.floor(c.daily+1e-9),st=dayState(sal,c.daily);   // zelfde afronding → begin van de dag altijd x/x
   dEl.innerHTML='<span class="ob-num">'+(rest<0?'−'+Math.abs(rest):String(rest))+'/'+day+'</span><span class="ob-meter'+(st.neg?' neg':'')+(st.alarm?' alarm':'')+'"><span></span></span>';
   dEl.style.setProperty('--c',st.c);dEl.style.setProperty('--c2',st.c2);dEl.style.setProperty('--box',st.box);dEl.style.setProperty('--p',st.p.toFixed(1)+'%');
-  dEl.title=sal>=0?'Nog '+fm(sal)+' over van je dagbudget van '+fm(c.daily):'Al '+fm(-sal)+' over je dagbudget van '+fm(c.daily)+' (uitgegeven: '+fm(tot)+')';
+  dEl.title=lbl+': '+(sal>=0?'nog '+fm(sal)+' over van je dagbudget van '+fm(c.daily):'al '+fm(-sal)+' over je dagbudget van '+fm(c.daily)+' (uitgegeven: '+fm(tot)+')');
   setAlarm(st,sal);
 }
 // dag gewisseld terwijl de app openstond → opnieuw berekenen
@@ -21941,6 +21950,8 @@ var _hrDay=TK();
 document.addEventListener('visibilitychange',function(){if(!document.hidden){_hrDay=TK();homeRefresh();}});
 setInterval(function(){var k=TK();if(k!==_hrDay){_hrDay=k;homeRefresh();}},60000);
 B.homeRefresh=homeRefresh;
+// de tegel volgt de dag op de homepagina: na elke (ook vooraf getekende) weergave bijwerken
+(function(){var _r=window.renderTodayPage;if(typeof _r!=='function'||_r.__bud)return;var w=function(){var r=_r.apply(this,arguments);try{homeRefresh();}catch(e){}return r;};w.__bud=true;window.renderTodayPage=w;})();
 /* ── Budgetstatus voor andere onderdelen (bv. receptsuggesties) ── */
 // Geeft null als het budget voor die maand (of de huidige) nog niet gestart of ingevuld is.
 B.budgetState=function(key){try{
