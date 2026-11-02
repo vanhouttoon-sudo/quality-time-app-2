@@ -4297,6 +4297,8 @@ textarea.za-input{ resize:none; line-height:1.45; }
 #ohHero .oh-nav-back{display:table !important;margin:3px auto 0;font-size:9px !important;font-weight:800;letter-spacing:1.2px !important;color:#0a0a0a !important;background:rgba(243,237,224,.85);border:1.5px solid #0a0a0a;border-radius:20px;padding:2px 10px;}
 #ohHero .oh-nav-back[style*="none"]{display:none !important;}
 
+.wc-unavail{color:#7a6a50 !important;line-height:1.35;}.wc-unavail u{text-underline-offset:2px;}.wc-unavail .wc-why{font-size:9px;opacity:.8;margin-top:3px;letter-spacing:.2px;}
+
 /* ═══ Budgettegel v2 ═══ */
 #ohBudBtn{position:relative;isolation:isolate;overflow:hidden;min-height:90px;padding:13px 14px 13px 14px !important;
   --ink:#0b2a1f;
@@ -4491,7 +4493,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v02/11/26 · korrel</div>
+    <div class="oh-version-tag" id="ohVersionTag">v02/11/26 · weer</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -11050,8 +11052,7 @@ function fetchWeather(dateStr, callback) {
       + '&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode,sunshine_duration'
       + '&hourly=temperature_2m,precipitation_probability,precipitation,weathercode'
       + '&timezone=Europe%2FBrussels&past_days=2&forecast_days=14';
-    fetch(url)
-      .then(function(r){ return r.json(); })
+    (window.qtWFetch?window.qtWFetch(url):fetch(url).then(function(r){ return r.json(); }))
       .then(function(data) {
         weatherCache = {}; // wis oude cache, bouw volledig opnieuw met verse data
         weatherCacheTimestamp = Date.now();
@@ -11098,7 +11099,7 @@ function fetchWeather(dateStr, callback) {
         window._weatherRawHourly = (data.hourly || {});
         callback(weatherCache[dateStr] || null);
       })
-      .catch(function(){ callback(weatherCache[dateStr] || null); });
+      .catch(function(e){ if(!window.qtWeerLastErr)window.qtWeerLastErr=String((e&&e.message)||e||''); callback(weatherCache[dateStr] || null); });
   }
 
   // Altijd een verse locatie opvragen — niet de vorige sessie hergebruiken
@@ -11132,7 +11133,7 @@ function renderWeatherCard(dateStr, containerId) {
   el.setAttribute('data-wdate', dateStr);
   fetchWeather(dateStr, function(w) {
     if(el.getAttribute('data-wdate') !== dateStr) return;
-    if(!w) { el.innerHTML = '<div class="wc-unavail">🌤️ Niet beschikbaar</div>'; return; }
+    if(!w) { el.innerHTML = '<div class="wc-unavail" onclick="qtWeerRetry(this)" style="cursor:pointer">🌤️ Niet beschikbaar — <u>tik om opnieuw te proberen</u><div class="wc-why">'+((window.qtWeerReason&&window.qtWeerReason())||'')+'</div></div>'; return; }
     var isEve = el.getAttribute('data-evening') === '1';
     var isMain = containerId === 'todayWeatherCard';
     var periods = [
@@ -23847,14 +23848,75 @@ window.zaClosePlayer=function(){hideBub();return _close.apply(this,arguments);};
 
 </script>
 <script>
-/* ═══ Weer: betrouwbaarder (1 aanvraag tegelijk, laatste goede data bewaren, ook gisteren) ═══ */
+/* ═══ Weer: betrouwbaarder v2 ═══
+   – GPS blokkeert de aanvraag niet meer (na 2,5 s: laatst bekende plek of Edegem; komt GPS later en je zit elders: verversen)
+   – de aanvraag heeft een time-out, een herpoging en valt terug op de nieuwe API-naam weather_code
+   – te late antwoorden verversen de tegel alsnog
+   – "Niet beschikbaar" toont de reden en je kan tikken om opnieuw te proberen; ook automatisch opnieuw
+     (met oplopende wachttijd, bij terug online en bij terugkeren naar de app) */
 (function(){
-  var LS='qt_weather_cache_v1', inflight=null, retryT=null;
+  var LS='qt_weather_cache_v1', LSG='qt_weer_lastgps', inflight=null, retryT=null, retryN=0;
   function persist(){try{if(Object.keys(weatherCache).length>2)localStorage.setItem(LS,JSON.stringify({ts:weatherCacheTimestamp||Date.now(),cache:weatherCache,raw:window._weatherRawHourly||null}));}catch(e){}}
   function restore(){try{var o=JSON.parse(localStorage.getItem(LS)||'null');if(o&&o.cache&&Date.now()-o.ts<36*3600*1000){weatherCache=o.cache;if(o.raw)window._weatherRawHourly=o.raw;return true;}}catch(e){}return false;}
   var lastTs=null;
   function persistNew(){if(weatherCacheTimestamp&&weatherCacheTimestamp!==lastTs&&Object.keys(weatherCache).length>2){lastTs=weatherCacheTimestamp;persist();}}
   function isFresh(){return weatherCacheTimestamp&&(Date.now()-weatherCacheTimestamp)<=weatherCacheMaxAge;}
+
+  /* — aanvraag met time-out + herpoging + naam-fallback — */
+  function norm(d){try{if(d&&d.daily&&!d.daily.weathercode&&d.daily.weather_code)d.daily.weathercode=d.daily.weather_code;
+    if(d&&d.hourly&&!d.hourly.weathercode&&d.hourly.weather_code)d.hourly.weathercode=d.hourly.weather_code;}catch(e){}return d;}
+  function tryUrl(u,ms){return new Promise(function(res,rej){
+    var done=false,ctrl=window.AbortController?new AbortController():null;
+    var t=setTimeout(function(){if(done)return;done=true;try{if(ctrl)ctrl.abort();}catch(e){}var er=new Error('timeout');er.net=true;rej(er);},ms);
+    fetch(u,ctrl?{signal:ctrl.signal}:{}).then(function(r){return r.json().then(function(j){return {ok:r.ok,st:r.status,j:j};});}).then(function(o){
+      if(done)return;done=true;clearTimeout(t);
+      if(!o.ok||!o.j||!o.j.daily||!o.j.daily.time){var er=new Error((o.j&&o.j.reason)?('API: '+o.j.reason):('HTTP '+o.st));er.api=true;rej(er);}
+      else res(norm(o.j));
+    }).catch(function(e){if(done)return;done=true;clearTimeout(t);if(e&&!e.api)e.net=true;rej(e);});
+  });}
+  window.qtWFetch=function(url){
+    function fail(e){window.qtWeerLastErr=String((e&&e.message)||e||'onbekend');throw e;}
+    return tryUrl(url,9000).catch(function(e1){
+      if(e1&&e1.api){ // de dienst antwoordde met een fout: probeer de nieuwe variabelenaam
+        return tryUrl(url.replace(/weathercode/g,'weather_code'),9000).catch(fail);}
+      // netwerkfout/time-out: één herpoging
+      return new Promise(function(r){setTimeout(r,1000);}).then(function(){return tryUrl(url,9000);}).catch(fail);
+    });
+  };
+  window.qtWeerReason=function(){var m=String(window.qtWeerLastErr||'');
+    if(!m)return 'geen gegevens ontvangen';
+    if(/timeout|abort/i.test(m))return 'de weerdienst reageert niet';
+    if(/failed to fetch|networkerror|load failed|network/i.test(m))return 'geen verbinding met de weerdienst';
+    if(/^API:/.test(m))return 'de weerdienst meldt: '+m.slice(4).trim().slice(0,90);
+    return 'fout: '+m.slice(0,80);};
+
+  /* — locatie: nooit langer dan 2,5 s op GPS wachten — */
+  var _gc=window.getWeerCoords;
+  function readG(){try{var o=JSON.parse(localStorage.getItem(LSG)||'null');if(o&&o.lat!=null&&o.lon!=null)return o;}catch(e){}return null;}
+  function writeG(lat,lon){if(Math.abs(lat-51.1528)<1e-4&&Math.abs(lon-4.4486)<1e-4)return;try{localStorage.setItem(LSG,JSON.stringify({lat:lat,lon:lon,naam:(typeof weerLocatieHuidigeNaam==='string'?weerLocatieHuidigeNaam:'')||'',ts:Date.now()}));}catch(e){}}
+  function km(a,b,c,d){var r=Math.PI/180,x=Math.sin((c-a)*r/2),y=Math.sin((d-b)*r/2),h=x*x+Math.cos(a*r)*Math.cos(c*r)*y*y;return 12742*Math.asin(Math.sqrt(h));}
+  window.getWeerCoords=function(cb){
+    if(typeof weerLocatie!=='undefined'&&weerLocatie&&weerLocatie.lat!=null&&weerLocatie.lon!=null)return _gc(cb);
+    var used=null,t=null;
+    function use(lat,lon){if(used)return;used={lat:lat,lon:lon};cb(lat,lon);}
+    t=setTimeout(function(){var g=readG();if(g){weerLocatieHuidigeNaam=g.naam||'Mijn locatie';use(g.lat,g.lon);}else{weerLocatieHuidigeNaam='Edegem';use(51.1528,4.4486);}},2500);
+    _gc(function(lat,lon){
+      clearTimeout(t);
+      if(!used){use(lat,lon);}
+      else if(km(used.lat,used.lon,lat,lon)>5){weatherCacheTimestamp=null;setTimeout(refreshTile,50);}   // GPS kwam te laat en je zit elders
+      writeG(lat,lon);setTimeout(function(){writeG(lat,lon);},4000);                                   // plaatsnaam komt iets later binnen
+    });
+  };
+
+  /* — tegel verversen / opnieuw proberen — */
+  function tileEl(){return document.getElementById('todayWeatherCard');}
+  function tileBad(){var e=tileEl();return !!(e&&!e.querySelector('.wc-card')&&/niet beschikbaar|laden/i.test(e.textContent||''));}
+  function refreshTile(){try{var e=tileEl();if(e&&typeof renderWeatherCard==='function'&&typeof qtrHomeKey==='function')renderWeatherCard(qtrHomeKey(),'todayWeatherCard');}catch(x){}}
+  window.qtWeerRetry=function(btn){try{var el=(btn&&btn.parentElement)||tileEl();if(!el)return;var d=el.getAttribute('data-wdate');weatherCacheTimestamp=null;retryN=0;renderWeatherCard(d,el.id);}catch(e){}};
+  function kick(){if(tileBad()){weatherCacheTimestamp=null;refreshTile();}}
+  window.addEventListener('online',kick);
+  document.addEventListener('visibilitychange',function(){if(!document.hidden)kick();});
+
   var _fw=window.fetchWeather;
   window.fetchWeather=function(d,cb){
     persistNew();
@@ -23868,14 +23930,15 @@ window.zaClosePlayer=function(){hideBub();return _close.apply(this,arguments);};
     function finish(){
       if(done)return;done=true;inflight=null;
       var ok=Object.keys(weatherCache).length>2&&isFresh();
-      if(ok){persistNew();}
+      if(ok){persistNew();retryN=0;}
       else{ if(!Object.keys(weatherCache).length)restore();
-        clearTimeout(retryT);retryT=setTimeout(function(){try{var el=document.getElementById('todayWeatherCard');if(el&&typeof renderWeatherCard==='function'&&typeof qtrHomeKey==='function')renderWeatherCard(qtrHomeKey(),'todayWeatherCard');}catch(e){}},20000);
+        var wait=[8000,20000,45000,90000][Math.min(retryN,3)]+(retryN>3?90000:0);retryN++;
+        clearTimeout(retryT);retryT=setTimeout(refreshTile,wait);
       }
       q.forEach(function(x){try{x[1](weatherCache[x[0]]||null);}catch(e){}});
     }
-    var safety=setTimeout(finish,14000);                           // nooit eindeloos "laden"
-    _fw.call(this,d,function(){clearTimeout(safety);finish();});
+    var safety=setTimeout(finish,16000);                           // nooit eindeloos "laden"
+    _fw.call(this,d,function(){clearTimeout(safety);if(done){if(isFresh())setTimeout(refreshTile,0);}else finish();});   // te laat? toch nog tonen
   };
 })();
 
