@@ -4297,7 +4297,7 @@ textarea.za-input{ resize:none; line-height:1.45; }
 #ohHero .oh-nav-back{display:table !important;margin:3px auto 0;font-size:9px !important;font-weight:800;letter-spacing:1.2px !important;color:#0a0a0a !important;background:rgba(243,237,224,.85);border:1.5px solid #0a0a0a;border-radius:20px;padding:2px 10px;}
 #ohHero .oh-nav-back[style*="none"]{display:none !important;}
 
-.wc-unavail{color:#7a6a50 !important;line-height:1.35;}.wc-unavail u{text-underline-offset:2px;}.wc-unavail .wc-why{font-size:9px;opacity:.8;margin-top:3px;letter-spacing:.2px;}
+.wc-empty .wc-period-icon,.wc-empty .wc-period-temp,.wc-empty .wc-period-rain,.wc-empty .wc-date-sub,.wc-empty .wc-date-icon{visibility:hidden}
 
 /* ═══ Budgettegel v2 ═══ */
 #ohBudBtn{position:relative;isolation:isolate;overflow:hidden;min-height:90px;padding:13px 14px 13px 14px !important;
@@ -11129,11 +11129,10 @@ function renderWeatherCard(dateStr, containerId) {
   // Evening mode after 21h
   var isEvening = new Date().getHours() >= 21;
   el.setAttribute('data-evening', isEvening ? '1' : '');
-  el.innerHTML = '<div class="wc-loading">⏳ Weerbericht laden…</div>';
   el.setAttribute('data-wdate', dateStr);
-  fetchWeather(dateStr, function(w) {
-    if(el.getAttribute('data-wdate') !== dateStr) return;
-    if(!w) { el.innerHTML = '<div class="wc-unavail" onclick="qtWeerRetry(this)" style="cursor:pointer">🌤️ Niet beschikbaar — <u>tik om opnieuw te proberen</u><div class="wc-why">'+((window.qtWeerReason&&window.qtWeerReason())||'')+'</div></div>'; return; }
+  var paint = function(w, loading) {
+    var _empty = !w;
+    if(_empty) w = {max:'0',min:'0',morningIcon:'⛅',afternoonIcon:'⛅',eveningIcon:'⛅',morningTemp:'0°',afternoonTemp:'0°',eveningTemp:'0°',morningRain:0,afternoonRain:0,eveningRain:0};
     var isEve = el.getAttribute('data-evening') === '1';
     var isMain = containerId === 'todayWeatherCard';
     var periods = [
@@ -11163,6 +11162,20 @@ function renderWeatherCard(dateStr, containerId) {
     });
     html += '</div>';
     el.innerHTML = html;
+    if(_empty){
+      var _c = el.querySelector('.wc-card');
+      if(_c){
+        _c.classList.add('wc-empty'); _c.classList.add(loading ? 'wc-loadingcard' : 'wc-failed');
+        _c.removeAttribute('title');
+        if(loading){ _c.removeAttribute('onclick'); _c.style.cursor='default'; }
+        else { _c.setAttribute('onclick','qtWeerRetry(this)'); }
+      }
+    }
+  };
+  paint(null, true);
+  fetchWeather(dateStr, function(w) {
+    if(el.getAttribute('data-wdate') !== dateStr) return;
+    paint(w);
   });
 }
 
@@ -23910,7 +23923,7 @@ window.zaClosePlayer=function(){hideBub();return _close.apply(this,arguments);};
 
   /* — tegel verversen / opnieuw proberen — */
   function tileEl(){return document.getElementById('todayWeatherCard');}
-  function tileBad(){var e=tileEl();return !!(e&&!e.querySelector('.wc-card')&&/niet beschikbaar|laden/i.test(e.textContent||''));}
+  function tileBad(){var e=tileEl();return !!(e&&(e.querySelector('.wc-card.wc-failed')||(!e.querySelector('.wc-card')&&/niet beschikbaar|laden/i.test(e.textContent||''))));}
   function refreshTile(){try{var e=tileEl();if(e&&typeof renderWeatherCard==='function'&&typeof qtrHomeKey==='function')renderWeatherCard(qtrHomeKey(),'todayWeatherCard');}catch(x){}}
   window.qtWeerRetry=function(btn){try{var el=(btn&&btn.parentElement)||tileEl();if(!el)return;var d=el.getAttribute('data-wdate');weatherCacheTimestamp=null;retryN=0;renderWeatherCard(d,el.id);}catch(e){}};
   function kick(){if(tileBad()){weatherCacheTimestamp=null;refreshTile();}}
