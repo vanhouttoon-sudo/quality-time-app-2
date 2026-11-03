@@ -4395,6 +4395,20 @@ body #trRow.alarm .tr-more{background:#3b0a12;color:#ffe9c8;}
 /* ═══ Korrel op tegels ═══ */
 .kn-r{position:relative;}
 .kn-b::before,.kn-a::after{content:"";position:absolute;inset:0;border-radius:inherit;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27160%27%20height=%27160%27%3E%3Cfilter%20id=%27n%27%20color-interpolation-filters=%27sRGB%27%3E%3CfeTurbulence%20type=%27fractalNoise%27%20baseFrequency=%271.05%27%20numOctaves=%272%27%20seed=%279%27%20stitchTiles=%27stitch%27/%3E%3CfeColorMatrix%20values=%270%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35%27/%3E%3C/filter%3E%3Crect%20width=%27160%27%20height=%27160%27%20filter=%27url%28%23n%29%27/%3E%3C/svg%3E") 0 0/160px 160px;opacity:.11;pointer-events:none;z-index:0;}
+
+.qtr-btn.qtr-gpt{width:100%;margin-top:18px;min-height:54px;font-size:16px;}
+
+#budSheetBg .bud-choice{display:flex;flex-direction:column;gap:12px;margin-top:4px;}
+#budSheetBg .bc{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px;min-height:78px;border:1.5px solid var(--brut-ink,#0a0a0a);border-radius:6px;box-shadow:3px 3px 0 var(--brut-ink,#0a0a0a);cursor:pointer;font-family:var(--grotesk);color:#0a0a0a;}
+#budSheetBg .bc:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--brut-ink,#0a0a0a);}
+#budSheetBg .bc-add{background:var(--brut-yellow,#ffe14d);}
+#budSheetBg .bc-dash{background:var(--brut-cyan,#5ee0e0);}
+#budSheetBg .bc-ic{width:46px;height:46px;border-radius:50%;background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;flex-shrink:0;}
+#budSheetBg .bc-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+#budSheetBg .bc-tx b{font-size:16px;font-weight:700;text-transform:uppercase;line-height:1.15;}
+#budSheetBg .bc-tx em{font-style:normal;text-transform:none;font-family:var(--body);font-size:11.5px;font-weight:500;color:#2c1208;line-height:1.35;}
+#budSheetBg .bc-tx em strong{font-weight:800;}
+#budSheetBg .bc-go{font-size:24px;font-weight:700;flex-shrink:0;line-height:1;}
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -21038,6 +21052,75 @@ function qtrOpenForDate(key) {
   var r = qtrPlanGet(key);
   if(r) qtrOpenDetail(r.id, false, key); else qtrChoose(key);
 }
+// ═══ Ask ChatGPT: recept (ingrediënten + bereiding) als startbericht in een nieuwe chat ═══
+function qtrGptPrompt(r) {
+  var L = [];
+  L.push('Ik wil je vragen stellen over onderstaand recept (bv. over hoeveelheden, porties of wijzigingen). Gebruik dit recept als basis voor ons hele gesprek.');
+  L.push('');
+  L.push('## ' + r.naam);
+  var meta = [];
+  if(r.porties) meta.push('Porties: ' + r.porties);
+  if(r.tijd) meta.push('Bereidingstijd: ' + r.tijd + ' min');
+  var tg = (typeof qtrTagNames === 'function') ? qtrTagNames(r) : [];
+  if(tg.length) meta.push('Labels: ' + tg.join(', '));
+  if(meta.length) L.push(meta.join(' · '));
+  L.push('');
+  L.push('### Ingrediënten' + (r.porties ? ' (voor ' + r.porties + ' porties)' : ''));
+  (r.ing || []).forEach(function(i) { L.push('- ' + qtrIngText(i)); });
+  var sts = String(r.bereiding || '').split(/\n+/).map(function(x) { return x.trim(); }).filter(Boolean);
+  L.push('');
+  if(sts.length) {
+    L.push('### Bereiding');
+    sts.forEach(function(t, k) { L.push((k + 1) + '. ' + t); });
+  } else {
+    L.push('### Bereiding');
+    L.push('(Nog geen stappen ingevuld. Help me indien nodig een logisch stappenplan op te stellen.)');
+  }
+  L.push('');
+  L.push('Antwoord in het Nederlands en gebruik metrieke maten. Als ik het aantal porties of een ingrediënt wijzig, reken dan alle hoeveelheden opnieuw door en geef de volledige aangepaste lijst, met eventuele gevolgen voor bereidingstijd of kruiding. Verzin geen ingrediënten of stappen zonder dat te vermelden.');
+  L.push('');
+  L.push('Bevestig in één zin dat je het recept "' + r.naam + '" hebt en vraag wat ik wil weten.');
+  return L.join('\n');
+}
+function qtrGptCopyOld(txt) {
+  var ok = false;
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = txt; ta.setAttribute('readonly', '');
+    ta.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0';
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, txt.length);
+    ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+  } catch(e) {}
+  return ok;
+}
+function qtrGptCopy(txt) {
+  try {
+    if(navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(txt).catch(function() { qtrGptCopyOld(txt); });
+      return true;
+    }
+  } catch(e) {}
+  return qtrGptCopyOld(txt);
+}
+function qtrGptOpen() {
+  var r = (typeof qtrView !== 'undefined' && qtrView) ? qtrRecipe(qtrView.ids[qtrView.idx]) : null;
+  if(!r) return;
+  var p = qtrGptPrompt(r);
+  window.qtLastGptPrompt = p;
+  qtrGptCopy(p);                                   // reservekopie op het klembord (binnen dezelfde tik)
+  var url = 'https://chatgpt.com/?q=' + encodeURIComponent(p);
+  var tooLong = url.length > 6500;                 // te lang voor een link → alleen ChatGPT openen, prompt staat op het klembord
+  if(tooLong) url = 'https://chatgpt.com/';
+  try {
+    var a = document.createElement('a');
+    a.href = url; a.target = '_blank'; a.rel = 'noopener';
+    a.style.display = 'none';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  } catch(e) { try { window.open(url, '_blank'); } catch(e2) {} }
+  if(typeof showSkipToast === 'function') showSkipToast(tooLong ? 'Recept gekopieerd — plak het in ChatGPT' : 'ChatGPT opent met je recept · ook gekopieerd');
+}
+
 function qtrDtRender(keepScroll) {
   var r = qtrRecipe(qtrView.ids[qtrView.idx]);
   if(!r) { qtrOvClose(); return; }
@@ -22240,7 +22323,27 @@ B.dayState=dayState;
 function homeKey(){try{if(typeof qtrHomeKey==='function'){var k=qtrHomeKey();if(/^\d{4}-\d{2}-\d{2}$/.test(k))return k;}}catch(e){}return TK();}
 B.homeKey=homeKey;
 function homeDayLbl(k){if(k===TK())return 'Vandaag';try{if(typeof todaySwipeLabel==='function'){var l=todaySwipeLabel(pd(k));return /^[A-Z]/.test(l)?l:l.charAt(0).toUpperCase()+l.slice(1);}}catch(e){}return dLabel(k);}
-B.openExpenseHome=function(){B.openExpense(null,homeKey());};
+B.openExpenseHome=function(){
+  var k=homeKey(),m=S.months[k.slice(0,7)],n=0,tot=0;
+  if(m)m.expenses.forEach(function(e){if(e.date===k){n++;tot+=e.amount;}});
+  var stat=m?(n?n+' uitgave'+(n>1?'n':'')+' · '+fm(tot):'Nog geen uitgaven'):'Budget nog niet gestart';
+  B.chKey=k;
+  sheetOpen('<div class="sheet-h"><div><div class="eyebrow" style="margin-bottom:2px">'+esc(dLabel(k,true))+'</div><div class="sheet-t">Uitgaven · '+esc(homeDayLbl(k))+'</div></div><button class="varia-close-x" onclick="qtBud.closeSheet()" aria-label="Sluiten">✕</button></div>'+
+    '<div class="bud-choice">'+
+    '<button class="bc bc-add" onclick="qtBud.chooseAdd()"><span class="bc-ic">€</span><span class="bc-tx"><b>Voeg uitgave toe</b><em>Nieuwe uitgave op '+esc(dLabel(k))+'</em></span><span class="bc-go">›</span></button>'+
+    '<button class="bc bc-dash" onclick="qtBud.chooseDash()"><span class="bc-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0a0a0a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-6"/></svg></span><span class="bc-tx"><b>Dashboards</b><em><strong>'+stat+'</strong><br>Uitgaven, verdeling &amp; vergelijking van deze dag</em></span><span class="bc-go">›</span></button>'+
+    '</div>');
+};
+B.chooseAdd=function(){B.openExpense(null,B.chKey||homeKey());};
+B.chooseDash=function(){var k=B.chKey||homeKey();B.closeSheet();B.goDay(k);};
+// naar Instellingen › Uitgaven, meteen op het dag-dashboard van die dag
+B.goDay=function(k){
+  B.deep=k;
+  var tabs=[].slice.call(document.querySelectorAll('.tab[onclick*="settings"]'));
+  try{switchTab('settings',tabs[0]||null);}catch(e){}
+  tabs.slice(1).forEach(function(t){t.classList.add('active');});
+  try{settingsShowPanel(12);}catch(e){}
+};
 // knop onderaan de Uitgaven-pagina: bekijk je een andere maand, dan staat de nieuwe uitgave op een dag van die maand
 B.openExpenseHere=function(){var k=TK();if(ui.ym&&ui.ym!==ymOf(today())){k=(ui.dashDay&&ui.dashDay.slice(0,7)===ui.ym)?ui.dashDay:ui.ym+'-01';}B.openExpense(null,k);};
 function homeRefresh(){var el=document.getElementById('ohBudSub');if(!el)return;var hk=homeKey(),ym=hk.slice(0,7),m=S.months[ym],lbl=homeDayLbl(hk);
@@ -22608,7 +22711,12 @@ function inSettings(){var pg=document.getElementById('page-settings'),p=document
 function syncBar(){var bar=document.getElementById('budAddBar'),on=inSettings();
   if(bar)bar.style.display=on?'block':'none';if(!on){var t=document.getElementById('budTip');if(t)t.style.display='none';}}
 B.syncBar=syncBar;
-function enter(){ui.dashDay=ui.ym===ymOf(today())?TK():ui.ym+'-01';ui.open[TK()]=true;render();var s=scroller();if(s)s.scrollTop=0;}
+function enter(){var g=B.deep;B.deep=null;
+  if(g){if(!B.deepPrev)B.deepPrev={tab:ui.tab,dash:ui.dash,ym:ui.ym};ui.ym=g.slice(0,7);ui.dashDay=g;ui.tab='dashboard';ui.dash='dag';ui.open[g]=true;}
+  else{if(B.deepPrev){ui.tab=B.deepPrev.tab;ui.dash=B.deepPrev.dash;ui.ym=B.deepPrev.ym;B.deepPrev=null;}
+    ui.dashDay=ui.ym===ymOf(today())?TK():ui.ym+'-01';ui.open[TK()]=true;}
+  render();var s=scroller();if(s){s.scrollTop=0;
+    if(g){var pn=document.getElementById('stPanel-12');if(pn)s.scrollTop=Math.max(0,pn.getBoundingClientRect().top-s.getBoundingClientRect().top+s.scrollTop-2);}}}
 var _sp=window.settingsShowPanel,_sg=window.settingsShowGrid,_switch=window.switchTab;
 window.settingsShowPanel=function(n){if(typeof _sp==='function')_sp.apply(this,arguments);if(+n===12)enter();syncBar();};
 window.settingsShowGrid=function(){if(typeof _sg==='function')_sg.apply(this,arguments);syncBar();};
@@ -22909,6 +23017,7 @@ window.qtrDtRender=function(keepScroll){
     h+='<div class="qtr-lbl" style="margin-top:14px">Stappenplan · '+sts.length+(sts.length===1?' stap':' stappen')+'</div><div style="margin-top:6px">'+
       sts.map(function(t,i){return '<div class="qtr-dstep" onclick="this.classList.toggle(\'done\')"><div class="qtr-stn">'+(i+1)+'</div><div class="qtr-dt">'+qtrEsc(t)+'</div></div>';}).join('')+
       '</div><div style="font-size:11px;color:#3a3a3a;margin-top:4px">Tik een stap aan om hem af te vinken tijdens het koken.</div>';}
+  h+='<button class="qtr-btn c qtr-gpt" onclick="qtrGptOpen()"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0a0a0a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.2A8 8 0 1 1 20 12z"/><path d="M9 11h6M9 14h4"/></svg>Ask ChatGPT</button>';
   h+=histHtml(r);
   h+='</div></div>';
   var tgt=scoreTarget(r.id);
@@ -23977,7 +24086,7 @@ function test(e){
   if(cs.display==='none'||cs.visibility==='hidden'||cs.position==='fixed'||cs.position==='sticky')return;
   var r=e.getBoundingClientRect();
   if(Math.min(r.width,r.height)<40||r.height>900)return;
-  var tg=e.tagName;if((tg==='BUTTON'||tg==='A')&&(r.width<150||r.height<44))return;
+  var tg=e.tagName,bigB=e.classList.contains('qtr-btn');if((tg==='BUTTON'||tg==='A')&&(r.width<(bigB?50:150)||r.height<44))return;
   if((cs.overflowY==='auto'||cs.overflowY==='scroll')&&r.height>220)return;
   var bw=parseFloat(cs.borderTopWidth)||0,rad=parseFloat(cs.borderTopLeftRadius)||0;
   if(rad>=Math.min(r.width,r.height)/2-1)return;
