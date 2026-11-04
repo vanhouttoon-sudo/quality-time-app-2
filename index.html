@@ -4835,6 +4835,14 @@ body>.tabs{display:none !important;}
 .kdm-gh{padding:7px 12px;font-size:9.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#7a5a38;background:#ffe9a8;border-bottom:1.5px solid #ece0d0;}
 .kdm-gh:not(:first-child){border-top:1.5px solid #ece0d0;}
 
+
+/* ═══ Afspraak bewerken / verwijderen vanuit het detailvenster ═══ */
+.qt-evact .ds-ev-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.qt-evact .qt-ev-b{flex:1;min-width:120px;padding:11px 10px;font-size:11.5px;position:relative;overflow:hidden;}
+.qt-evact .qt-ev-del{border-color:var(--terra,#c05818);color:var(--terra,#c05818);}
+.qt-ev-hint{margin-top:9px;font-family:var(--body);font-size:10.5px;font-style:italic;color:var(--stone2,#a08060);line-height:1.4;}
+.qt-evact .qt-ev-b::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.12;pointer-events:none;}
+
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -26012,6 +26020,166 @@ var _rc=window.renderCalendar;
 window.renderCalendar=function(){var r=_rc.apply(this,arguments);try{hearts();}catch(e){}return r;};
 if(typeof renderDayPanel==='function'){var _rd=window.renderDayPanel;window.renderDayPanel=function(date){var r=_rd.apply(this,arguments);try{addTile(date);}catch(e){}return r;};}
 try{if(document.getElementById('calGrid')&&document.getElementById('calGrid').children.length)hearts();}catch(e){}
+})();
+
+</script>
+<script>
+/* ═══ Bestaande afspraken wijzigen / verwijderen vanuit de kalender (ook Google Kalender) ═══ */
+(function(){
+if(typeof openEventDetail!=='function'||typeof localEvents==='undefined'||typeof isGcalConnected!=='function')return;
+var cur=null,listEvs=[];
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function sameIcs(a,ev){return (a.title===ev.title&&(a.start||'')===(ev.start||''))||(ev.gcalId&&a.gcalId===ev.gcalId&&(a.start||'')===(ev.start||''));}
+function agendaOf(k){try{return getAgendaForDate(k)||[];}catch(e){return [];}}
+function inKey(k,ev){
+  var hit;
+  if(ev.id){
+    hit=(localEvents[k]||[]).find(function(e){return e.id===ev.id;});if(hit)return {key:k,src:'local',ev:hit};
+    hit=(kidsEvents[k]||[]).find(function(e){return e.id===ev.id;});if(hit)return {key:k,src:'kids',ev:hit};
+  }
+  hit=agendaOf(k).find(function(a){return sameIcs(a,ev);});if(hit)return {key:k,src:'ics',ev:hit};
+  return null;
+}
+function locate(ev){
+  var ks=[],r,i;
+  function add(k){if(k&&ks.indexOf(k)<0)ks.push(k);}
+  try{add(dpAgendaStackKey);}catch(e){}
+  try{add(dk(selDay));}catch(e){}
+  try{add(dk(new Date()));}catch(e){}
+  for(i=0;i<ks.length;i++){r=inKey(ks[i],ev);if(r)return r;}
+  var all=Object.keys(localEvents).concat(Object.keys(kidsEvents),Object.keys(icsCache));
+  for(i=0;i<all.length;i++){r=inKey(all[i],ev);if(r)return r;}
+  return null;
+}
+/* ── detailvenster van één afspraak: bron + knoppen ── */
+var _oed=window.openEventDetail;
+window.openEventDetail=function(ev){
+  var r=_oed.apply(this,arguments);
+  try{decorate(ev);}catch(e){}
+  return r;
+};
+function actionsHtml(c){
+  var canEdit=c.src==='local'||(c.src==='ics'&&c.ev.gcalId);
+  var label=c.src==='local'?(c.ev.gcalId?'✓ Google Kalender':'Eigen afspraak'):(c.src==='kids'?'Kinderafspraak':(c.ev.gcalId?'Google Kalender':'Alleen-lezen kalender (Outlook/ICS)'));
+  var delLbl=(c.src==='ics'&&!c.ev.gcalId)?'🙈 Verberg':'🗑 Verwijder';
+  var h='<div class="ds-section qt-evact"><div class="ds-ev-synced" style="margin-bottom:8px">'+esc(label)+'</div><div class="ds-ev-actions">';
+  if(canEdit)h+='<button class="ds-ev-edit qt-ev-b" onclick="qtEv.edit()">✏ Bewerk</button>';
+  h+='<button class="ds-ev-edit qt-ev-b qt-ev-del" onclick="qtEv.del()">'+delLbl+'</button></div>';
+  if(c.src==='ics'&&!c.ev.gcalId)h+='<div class="qt-ev-hint">Deze afspraak komt uit een alleen-lezen kalenderlink en kan niet gewijzigd worden; verbergen kan wel.</div>';
+  return h+'</div>';
+}
+function decorate(ev){
+  var body=document.getElementById('dsBody');if(!body)return;
+  cur=locate(ev);if(!cur)return;
+  if(cur.src==='local'&&cur.ev.notes&&!body.querySelector('.qt-ev-notes')){
+    var sec=body.querySelector('.ds-section');
+    if(sec){var nd=document.createElement('div');nd.className='ds-ev-detail qt-ev-notes';nd.innerHTML='<span class="ds-ev-icon">📝</span><span>'+esc(cur.ev.notes)+'</span>';
+      var ph=sec.querySelector('div[style*="italic"]');if(ph)ph.remove();sec.appendChild(nd);}
+  }
+  body.insertAdjacentHTML('beforeend',actionsHtml(cur));
+}
+/* ── lijstvenster "Afspraken": ook Google-afspraken bewerkbaar ── */
+if(typeof openDetailSheet==='function'){
+  var _ods=window.openDetailSheet;
+  window.openDetailSheet=function(kind,overrideDate){
+    var r=_ods.apply(this,arguments);
+    try{
+      if(kind==='agenda'){
+        var date=overrideDate?new Date(overrideDate):getTodayViewDate(),key=dk(date);
+        var loc=getLocalEventsForDate(key,true),ics=getAgendaForDate(key);
+        listEvs=loc.map(function(e){return Object.assign({},e,{src:'local'});}).concat(ics.filter(function(e){return !loc.find(function(l){return l.title===e.title&&l.start===e.start;});}).map(function(e){return Object.assign({},e,{src:'ics'});}))
+          .sort(function(a,b){return agendaSortKey(key,a).localeCompare(agendaSortKey(key,b));});
+        listEvs.key=key;
+        document.querySelectorAll('#dsBody .ds-event-row').forEach(function(row,i){
+          var e=listEvs[i],acts=row.querySelector('.ds-ev-actions');
+          if(e&&e.src==='ics'&&e.gcalId&&acts&&!acts.querySelector('.qt-ev-b'))acts.insertAdjacentHTML('beforeend','<button class="ds-ev-edit qt-ev-b" onclick="qtEv.editListEv('+i+')">✏ Bewerk</button>');
+        });
+      }
+    }catch(e){}
+    return r;
+  };
+}
+/* ── Google-afspraak bewerken: eerst volledig ophalen, dan als eigen (gekoppelde) afspraak openen in het bewerkvenster ── */
+function persistCache(){try{localStorage.setItem('wf_ics_cache',JSON.stringify(icsCache));}catch(e){}}
+function dropFromCache(gid){Object.keys(icsCache).forEach(function(k){icsCache[k]=(icsCache[k]||[]).filter(function(e){return e.gcalId!==gid;});if(!icsCache[k].length)delete icsCache[k];});persistCache();}
+function findLocalByG(gid){var r=null;Object.keys(localEvents).forEach(function(k){(localEvents[k]||[]).forEach(function(e){if(!r&&e.gcalId===gid)r={k:k,e:e};});});return r;}
+async function editGoogle(key,e){
+  var have=findLocalByG(e.gcalId);
+  if(have){closeDetailSheet();dropFromCache(e.gcalId);var f0=have.e.spanId&&have.e.spanStart?have.e.spanStart:have.k;var fe=have.e;
+    if(have.e.spanId&&have.e.spanStart){var ff=(localEvents[f0]||[]).find(function(x){return x.spanId===have.e.spanId;});if(ff)fe=ff;}
+    renderCalendar();openEventModal(f0,fe.id);return;}
+  if(!isGcalConnected()){showToast('Verbind eerst met Google Kalender om deze afspraak te wijzigen');return;}
+  showToast('Afspraak ophalen uit Google…');
+  var g;
+  try{g=await gcalFetch('/calendars/'+GCAL_CALENDAR_ID+'/events/'+encodeURIComponent(e.gcalId));}
+  catch(err){showToast('Ophalen uit Google mislukt ('+(err&&err.message||'fout')+')');return;}
+  if(!g||g.status==='cancelled'||!g.start){showToast('Deze afspraak bestaat niet meer in Google');return;}
+  var allDay=!!g.start.date,sd,ed,st='',et='';
+  if(allDay){sd=g.start.date;ed=(g.end&&g.end.date&&g.end.date>sd)?qtDayAdd(g.end.date,-1):sd;}
+  else{
+    sd=g.start.dateTime.substring(0,10);st=g.start.dateTime.substring(11,16);
+    var ea=g.end&&g.end.dateTime;et=ea?ea.substring(11,16):'';ed=ea?ea.substring(0,10):sd;
+    if(ed>sd&&et==='00:00')ed=qtDayAdd(ed,-1);if(ed<sd)ed=sd;
+  }
+  var base={location:g.location||'',notes:g.description||'',gcalId:g.id,synced:true,created:new Date().toISOString(),isKidsEvent:false,voorWie:['toon']};
+  var title=g.summary||'Afspraak',firstId;
+  if(ed<=sd){
+    firstId='ev_'+Date.now();
+    (localEvents[sd]=localEvents[sd]||[]).push(Object.assign({id:firstId,title:title,start:allDay?'':(st||'09:00'),end:allDay?'':et,allDay:allDay},base));
+  }else{
+    var days=[sd],k=sd,i=0;while(k<ed&&i<60){k=qtDayAdd(k,1);days.push(k);i++;}
+    var n=days.length,spanId='sp_'+Date.now();
+    days.forEach(function(d,j){
+      var ad=allDay||(j>0&&j<n-1);
+      var ev=Object.assign({id:'ev_'+Date.now()+'_'+j,title:title+' · dag '+(j+1)+'/'+n,baseTitle:title,start:ad?'':(j===0?(st||'09:00'):'00:00'),end:ad?'':(j===0?'':et),allDay:ad,
+        spanId:spanId,spanStart:sd,spanEnd:days[n-1],spanSt:st||'09:00',spanEt:et||'10:00',spanAll:allDay},base);
+      (localEvents[d]=localEvents[d]||[]).push(ev);if(j===0)firstId=ev.id;
+    });
+  }
+  saveLocalEvents();dropFromCache(g.id);
+  closeDetailSheet();renderCalendar();
+  openEventModal(sd,firstId);
+}
+function afterChange(){
+  closeDetailSheet();
+  try{if(typeof renderToday==='function')renderToday();}catch(e){}
+  try{if(typeof renderTodayPage==='function')renderTodayPage();}catch(e){}
+  try{renderCalendar();}catch(e){}
+  try{renderDayPanel(selDay);if(document.getElementById('dp2Panel_agenda'))dp2ShowDetail('agenda');}catch(e){}
+}
+async function doDelete(){
+  var c=cur;if(!c)return;var ev=c.ev;
+  if(c.src==='kids'){
+    if(!confirm('Kinderafspraak verwijderen?'))return;
+    kidsEvents[c.key]=(kidsEvents[c.key]||[]).filter(function(x){return x.id!==ev.id;});if(!kidsEvents[c.key].length)delete kidsEvents[c.key];
+    localStorage.setItem('wf_kids_events',JSON.stringify(kidsEvents));showToast('Afspraak verwijderd');afterChange();return;
+  }
+  await deleteAgendaEvent(c.key,agendaEventKey(c.key,ev),c.src==='local'?'local':'ics',ev.id||'',ev.gcalId||'');
+  var still=inKey(c.key,ev);
+  if(!still)afterChange();     // verdwenen: sluit het venster en ververs de dag (bij annuleren blijft alles staan)
+}
+window.qtEv={
+  edit:function(){
+    var c=cur;if(!c)return;
+    if(c.src==='local'){var e=c.ev,k=c.key;if(e.spanId&&e.spanStart){k=e.spanStart;var f=(localEvents[k]||[]).find(function(x){return x.spanId===e.spanId;});if(f)e=f;}closeDetailSheet();openEventModal(k,e.id);}
+    else if(c.src==='ics'&&c.ev.gcalId)editGoogle(c.key,c.ev);
+  },
+  del:doDelete,
+  editListEv:function(i){var e=listEvs[i];if(e)editGoogle(listEvs.key,e);}
+};
+/* ── Google: wijzigen met PATCH (behoudt deelnemers/herinneringen) en lege velden echt leegmaken ── */
+var _gf=window.gcalFetch;
+if(typeof _gf==='function'){
+  window.gcalFetch=function(path,method,body){
+    if(method==='PUT'&&body&&/\/events\/[^\/?]+$/.test(String(path))){
+      method='PATCH';
+      if(body.location===undefined)body.location='';
+      if(body.description===undefined)body.description='';
+      ['start','end'].forEach(function(f){var o=body[f];if(!o)return;if(o.date&&!o.dateTime)o.dateTime=null;else if(o.dateTime&&!o.date)o.date=null;});
+    }
+    return _gf.call(this,path,method,body);
+  };
+}
 })();
 
 </script>
