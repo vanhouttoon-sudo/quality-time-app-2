@@ -8000,7 +8000,7 @@ function renderLocalEventsToday(dateStr) {
 
   const all = [
     ...local.map(e => ({...e, source:'local'})),
-    ...ics.filter(e => !local.find(l => l.title === e.title && l.start === e.start))
+    ...ics.filter(e => !local.find(l => qtSameAppt(l,e)))
            .map(e => ({...e, source:'google'}))
   ].sort((a,b) => {
     if(a.allDay) return -1; if(b.allDay) return 1;
@@ -8580,6 +8580,8 @@ async function deleteAgendaEvent(dateStr, evKey, evSrc, evId, evGcalId) {
 
 
 // ── GET EVENTS FOR A DATE ──
+// Dezelfde afspraak? (lokale kopie en teruggelezen Google-kopie): zelfde titel+start, of zelfde Google-id op dezelfde dag
+function qtSameAppt(l,e){ return !!(l&&e)&&((l.title===e.title&&(l.start||'')===(e.start||''))||(!!e.gcalId&&l.gcalId===e.gcalId)); }
 function getAgendaForDate(dateStr) {
   return (icsCache[dateStr] || []).filter(function(ev){
     // Zangles-items die ooit (vóór de fix in syncAllToGcal) naar Google
@@ -13596,7 +13598,7 @@ function renderTodayPage() {
   var localEvs = getLocalEventsForDate(key, true);
   var icsEvs   = getAgendaForDate(key);
   var allEvs = localEvs.concat(icsEvs.filter(function(e){
-    return !localEvs.find(function(l){ return l.title===e.title && l.start===e.start; });
+    return !localEvs.find(function(l){ return qtSameAppt(l,e); });
   })).sort(function(a,b){ return agendaSortKey(key,a).localeCompare(agendaSortKey(key,b)); });
 
   if(allEvs.length > 1) {
@@ -13731,7 +13733,7 @@ function openDetailSheet(kind, overrideDate) {
     const icsEvs   = getAgendaForDate(key);
     const allEvs = [
       ...localEvs.map(ev=>({...ev,src:'local'})),
-      ...icsEvs.filter(ev=>!localEvs.find(l=>l.title===ev.title&&l.start===ev.start)).map(ev=>({...ev,src:'ics'}))
+      ...icsEvs.filter(ev=>!localEvs.find(l=>qtSameAppt(l,ev))).map(ev=>({...ev,src:'ics'}))
     ].sort((a,b)=>agendaSortKey(key,a).localeCompare(agendaSortKey(key,b)));
 
     body.innerHTML = `
@@ -14468,7 +14470,7 @@ function renderCalendar() {
     // Kleur dient enkel nog om afspraken aan te duiden: hoe meer afspraken, hoe
     // donkerder groen (1 licht, 2 midden, 3+ donker). Kleine bolletjes tonen het type
     // (groen = eigen, roze = kinderen). Training/afval/notities geven geen kleur meer.
-    var nEigen = showEigen ? ((icsCache[key]||[]).filter(function(ev){return !isZangTitledEvent(ev);}).length + (localEvents[key]||[]).filter(function(ev){return !isZangSyncedEvent(ev);}).length) : 0;
+    var nEigen = showEigen ? (function(){ var Lc=(localEvents[key]||[]).filter(function(ev){return !isZangSyncedEvent(ev);}); return Lc.length+getAgendaForDate(key).filter(function(e){return !Lc.find(function(l){return qtSameAppt(l,e);});}).length; })() : 0;
     var nKids = (showKids && kidsEvents[key]) ? kidsEvents[key].length : 0;
     var nApp = nEigen + nKids;
     el.classList.add('has');
@@ -14744,7 +14746,7 @@ function renderDayPanel(date) {
   var kidsEvs  = (kidsEvents[key] || []).map(function(ev){ return Object.assign({}, ev, {isKidsEvent:true}); });
 
   // Filter op basis van actieve kalenderfilter
-  var ownEvs = localEvs.concat(icsEvs.filter(function(e){ return !localEvs.find(function(l){return l.title===e.title&&l.start===e.start;}); }));
+  var ownEvs = localEvs.concat(icsEvs.filter(function(e){ return !localEvs.find(function(l){return qtSameAppt(l,e);}); }));
   var allEvs;
   if(calFilter === 'mine') {
     allEvs = ownEvs;
@@ -26087,7 +26089,7 @@ if(typeof openDetailSheet==='function'){
       if(kind==='agenda'){
         var date=overrideDate?new Date(overrideDate):getTodayViewDate(),key=dk(date);
         var loc=getLocalEventsForDate(key,true),ics=getAgendaForDate(key);
-        listEvs=loc.map(function(e){return Object.assign({},e,{src:'local'});}).concat(ics.filter(function(e){return !loc.find(function(l){return l.title===e.title&&l.start===e.start;});}).map(function(e){return Object.assign({},e,{src:'ics'});}))
+        listEvs=loc.map(function(e){return Object.assign({},e,{src:'local'});}).concat(ics.filter(function(e){return !loc.find(function(l){return qtSameAppt(l,e);});}).map(function(e){return Object.assign({},e,{src:'ics'});}))
           .sort(function(a,b){return agendaSortKey(key,a).localeCompare(agendaSortKey(key,b));});
         listEvs.key=key;
         document.querySelectorAll('#dsBody .ds-event-row').forEach(function(row,i){
