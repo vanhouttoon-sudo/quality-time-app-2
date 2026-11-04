@@ -4878,6 +4878,25 @@ body>.tabs{display:none !important;}
 .kwl i+i{border-left:1px solid #0a0a0a;}
 .kwl::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.18;}
 
+
+/* ═══ Afspraak-modal: "Voor wie" als duidelijke pillen + voorbeeld van de kalenderlijn ═══ */
+#evVoorWieRow{gap:5px !important;flex-wrap:nowrap !important;margin-top:6px !important;}
+#evVoorWieRow .ev-voor-wie-btn{--c:#2d1a10;position:relative;display:inline-flex;align-items:center;gap:5px;border:1.5px solid var(--c);background:#fff;color:#8f8070;border-radius:999px;padding:7px 9px 7px 7px;font:700 12px/1 'Space Grotesk',sans-serif;letter-spacing:.01em;box-shadow:none;transition:background .15s,color .15s,box-shadow .15s;-webkit-tap-highlight-color:transparent;overflow:hidden;}
+#evVoorWieRow .ev-voor-wie-btn::before{content:"";width:15px;height:15px;border-radius:50%;border:1.5px solid var(--c);background:#fff;box-sizing:border-box;flex:none;font-size:10px;line-height:12px;text-align:center;color:#fff;}
+#evVoorWieRow .ev-voor-wie-btn[data-wie="toon"]{--c:#2d1a10;}
+#evVoorWieRow .ev-voor-wie-btn[data-wie="janne"]{--c:#e87cb0;}
+#evVoorWieRow .ev-voor-wie-btn[data-wie="cyriel"]{--c:#5baae0;}
+#evVoorWieRow .ev-voor-wie-btn[data-wie="leslie"]{--c:#8a8a8a;}
+#evVoorWieRow .ev-voor-wie-btn.ev-voor-wie-active{background:var(--c);color:#fff;border-color:#0a0a0a;box-shadow:2px 2px 0 #0a0a0a;}
+#evVoorWieRow .ev-voor-wie-btn.ev-voor-wie-active::before{content:"✓";background:#fff;color:var(--c);border-color:#fff;font-weight:800;}
+#evVoorWieRow .ev-voor-wie-btn.ev-voor-wie-active::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.12;pointer-events:none;}
+.qtvw-hint{margin-top:10px;display:flex;align-items:center;gap:11px;background:#fbf4de;border:1.5px solid #0a0a0a;border-radius:12px;padding:9px 11px;box-shadow:2px 2px 0 #0a0a0a;position:relative;overflow:hidden;}
+.qtvw-hint::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.08;pointer-events:none;}
+.qtvw-cell{width:38px;height:38px;flex:none;border:1.5px solid #0a0a0a;border-radius:8px;background:#cfe8c8;position:relative;display:grid;place-items:center;font:700 13px 'Space Grotesk',sans-serif;color:#3a1a0c;}
+.qtvw-cell .kwl{left:5px;right:5px;bottom:-2px;}
+.qtvw-t{min-width:0;font:600 12px/1.35 'Outfit',sans-serif;color:#7a5a3a;}
+.qtvw-t b{display:block;font:800 13px 'Space Grotesk',sans-serif;color:#2d1a10;letter-spacing:.01em;}
+
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -4976,7 +4995,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 12</div>
+    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 13</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -5915,10 +5934,10 @@ function qtSkateLoaderHtml(text){
       <div style="margin-bottom:11px">
         <div class="ev-label">Voor wie *</div>
         <div id="evVoorWieRow" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
-          <button type="button" class="ev-voor-wie-btn ev-voor-wie-active" data-wie="toon"   onclick="toggleEvVoorWie(this)">👤 Toon</button>
-          <button type="button" class="ev-voor-wie-btn"                    data-wie="janne"  onclick="toggleEvVoorWie(this)">👧 Janne</button>
-          <button type="button" class="ev-voor-wie-btn"                    data-wie="cyriel" onclick="toggleEvVoorWie(this)">👦 Cyriel</button>
-          <button type="button" class="ev-voor-wie-btn"                    data-wie="leslie" onclick="toggleEvVoorWie(this)">👤 Leslie</button>
+          <button type="button" class="ev-voor-wie-btn ev-voor-wie-active" data-wie="toon"   onclick="toggleEvVoorWie(this)">Toon</button>
+          <button type="button" class="ev-voor-wie-btn"                    data-wie="janne"  onclick="toggleEvVoorWie(this)">Janne</button>
+          <button type="button" class="ev-voor-wie-btn"                    data-wie="cyriel" onclick="toggleEvVoorWie(this)">Cyriel</button>
+          <button type="button" class="ev-voor-wie-btn"                    data-wie="leslie" onclick="toggleEvVoorWie(this)">Leslie</button>
         </div>
       </div>
 
@@ -6300,84 +6319,7 @@ function qtSkateLoaderHtml(text){
 
 
 <!-- ══ AFSPRAAK MODAL ══ -->
-<div class="modal-backdrop" id="eventModal" onclick="if(event.target===this)closeEventModal()">
-  <div class="modal" id="eventModalInner">
-    <div class="modal-drag"></div>
-    <div style="padding:0 18px 12px;border-bottom:1px solid var(--sand3);display:flex;justify-content:space-between;align-items:flex-start">
-      <div>
-        <div class="modal-kicker" id="eventModalMode">Nieuwe afspraak</div>
-        <div class="modal-title" id="eventModalDateTitle"></div>
-      </div>
-      <button onclick="closeEventModal()" style="background:#fff;border:1.5px solid var(--brut-ink,#0a0a0a);color:var(--brut-ink,#0a0a0a);width:32px;height:32px;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
-    </div>
-    <div style="padding:14px 18px">
 
-      <!-- Voor wie -->
-      <div style="margin-bottom:11px">
-        <div class="ev-label">Voor wie *</div>
-        <div id="evVoorWieRow" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
-          <button type="button" class="ev-voor-wie-btn ev-voor-wie-active" data-wie="toon"   onclick="toggleEvVoorWie(this)">👤 Toon</button>
-          <button type="button" class="ev-voor-wie-btn"                    data-wie="janne"  onclick="toggleEvVoorWie(this)">👧 Janne</button>
-          <button type="button" class="ev-voor-wie-btn"                    data-wie="cyriel" onclick="toggleEvVoorWie(this)">👦 Cyriel</button>
-          <button type="button" class="ev-voor-wie-btn"                    data-wie="leslie" onclick="toggleEvVoorWie(this)">👤 Leslie</button>
-        </div>
-      </div>
-
-      <!-- Title -->
-      <div style="margin-bottom:11px">
-        <div class="ev-label">Titel *</div>
-        <input class="ev-input" id="evTitle" type="text" placeholder="Vergadering, afspraak, ...">
-      </div>
-
-      <!-- All day toggle -->
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px">
-        <div class="ev-label" style="margin-bottom:0">Hele dag</div>
-        <div class="ev-toggle" id="evAlldayToggle" onclick="toggleAllday()">
-          <div class="ev-toggle-knob" id="evAlldayKnob"></div>
-        </div>
-        <span id="evAlldayLabel" style="font-family:var(--cond);font-size:9px;color:var(--stone2);letter-spacing:1px">UIT</span>
-      </div>
-
-      <!-- Time row -->
-      <div id="evTimeRow" style="display:flex;gap:10px;margin-bottom:11px">
-        <div style="flex:1">
-          <div class="ev-label">Van</div>
-          <input class="ev-input" id="evStart" type="time" value="09:00" onchange="evSyncEndTime(this.value)">
-        </div>
-        <div style="flex:1">
-          <div class="ev-label">Tot</div>
-          <input class="ev-input" id="evEnd" type="time" value="10:00">
-        </div>
-      </div>
-
-      <!-- Location -->
-      <div style="margin-bottom:11px">
-        <div class="ev-label">Locatie</div>
-        <input class="ev-input" id="evLocation" type="text" placeholder="Adres of naam van locatie">
-      </div>
-
-      <!-- Notes -->
-      <div style="margin-bottom:14px">
-        <div class="ev-label">Notities</div>
-        <textarea class="ev-input" id="evNotes" rows="3" placeholder="Extra info..." style="resize:none;line-height:1.5"></textarea>
-      </div>
-
-      <!-- Google sync status -->
-      <div id="evGcalStatus" style="display:none;padding:7px 10px;background:rgba(66,133,244,.08);border:1px solid rgba(66,133,244,.2);margin-bottom:10px;font-family:var(--cond);font-size:8px;letter-spacing:1px;color:#4285f4"></div>
-
-      <!-- Buttons -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="save-btn" style="flex:1;margin-top:0" id="evSaveBtn" onclick="saveEvent()">Opslaan</button>
-        <button id="evGcalBtn" onclick="syncToGcal()" style="display:none;background:rgba(66,133,244,.1);border:1px solid rgba(66,133,244,.3);color:#4285f4;padding:11px 14px;font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer;white-space:nowrap">
-          <img src="https://www.gstatic.com/images/branding/product/1x/calendar_2020q4_48dp.png" style="width:14px;height:14px;vertical-align:middle;margin-right:4px">Google
-        </button>
-        <button id="evDeleteBtn" onclick="deleteEvent()" style="display:none;background:rgba(194,88,32,.08);border:1px solid rgba(194,88,32,.25);color:var(--terra);padding:11px 14px;font-family:var(--cond);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;cursor:pointer">Verwijder</button>
-      </div>
-    </div>
-
-
-  </div>
-</div>
 
 
 
@@ -26370,8 +26312,8 @@ function lines(){
   var grid=document.getElementById('calGrid');if(!grid)return;
   grid.querySelectorAll('.kwl').forEach(function(e){e.remove();});
   var fl=(typeof calFilters!=='undefined'&&calFilters)?calFilters:['toon'];
-  var showEigen=fl.indexOf('toon')>=0||fl.indexOf('all')>=0;
-  var showKids=fl.indexOf('janne')>=0||fl.indexOf('cyriel')>=0||fl.indexOf('kids')>=0||fl.indexOf('all')>=0;
+  // de kleurlijn is een markering: altijd tonen, ook in je eigen (Toon-)weergave
+  var showEigen=true,showKids=true;
   var yr=calDate.getFullYear(),mn=calDate.getMonth();
   grid.querySelectorAll('.cal-cell:not(.empty)').forEach(function(c){
     var n=c.querySelector('.cal-num');if(!n)return;
@@ -26383,6 +26325,38 @@ function lines(){
 var _rc=window.renderCalendar;
 window.renderCalendar=function(){var r=_rc.apply(this,arguments);try{lines();}catch(e){}return r;};
 try{if(document.getElementById('calGrid')&&document.getElementById('calGrid').children.length)lines();}catch(e){}
+})();
+
+</script>
+<script>
+/* ═══ Afspraak-modal: "Voor wie" – duidelijke pillen + voorbeeld van de kalenderlijn ═══ */
+(function(){
+var row=document.getElementById('evVoorWieRow');if(!row)return;
+var COL={janne:'#e87cb0',cyriel:'#5baae0',samen:'#ffd94a'};
+var NAAM={toon:'Toon',janne:'Janne',cyriel:'Cyriel',leslie:'Leslie'};
+function sel(){var w=[];row.querySelectorAll('.ev-voor-wie-btn.ev-voor-wie-active').forEach(function(b){w.push(b.dataset.wie);});return w;}
+var hint=document.createElement('div');hint.className='qtvw-hint';hint.id='qtVwHint';
+hint.innerHTML='<div class="qtvw-cell" id="qtVwCell"></div><div class="qtvw-t" id="qtVwTxt"></div>';
+row.insertAdjacentElement('afterend',hint);
+function upd(){
+  var w=sel(),leeg=!w.length;if(leeg)w=['toon'];
+  var t=w.indexOf('toon')>=0,j=w.indexOf('janne')>=0,c=w.indexOf('cyriel')>=0;
+  var cols=[],tekst;
+  if(j&&c&&t){cols=[COL.samen];tekst='Gele lijn · iedereen samen';}
+  else if(j&&c){cols=[COL.janne,COL.cyriel];tekst='Half roze, half blauw';}
+  else if(j){cols=[COL.janne];tekst='Roze lijn in de kalender';}
+  else if(c){cols=[COL.cyriel];tekst='Blauwe lijn in de kalender';}
+  else tekst='Geen kleurlijn (geen afspraak van de kinderen)';
+  var namen=w.map(function(x){return NAAM[x]||x;}).join(' + ');
+  var cell=document.getElementById('qtVwCell'),txt=document.getElementById('qtVwTxt');if(!cell||!txt)return;
+  var dag='';try{if(typeof eventModalDate!=='undefined'&&eventModalDate)dag=String(+eventModalDate.slice(8,10));}catch(e){}
+  cell.innerHTML=dag+(cols.length?'<div class="kwl">'+cols.map(function(x){return '<i style="background:'+x+'"></i>';}).join('')+'</div>':'');
+  txt.innerHTML='<b>Telt voor: '+namen+'</b>'+(leeg?'Niets gekozen – wordt jouw afspraak<br>':'')+tekst;
+}
+try{new MutationObserver(upd).observe(row,{attributes:true,attributeFilter:['class'],subtree:true});}catch(e){}
+var _o=window.openEventModal;
+if(typeof _o==='function')window.openEventModal=function(){var r=_o.apply(this,arguments);try{upd();}catch(e){}return r;};
+upd();
 })();
 
 </script>
