@@ -4871,6 +4871,13 @@ body>.tabs{display:none !important;}
 .vhm-btn.y{background:#ffd94a;}
 .vhm-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #0a0a0a;}
 
+
+/* ═══ Kleurlijn onderaan de dag: Janne roze · Cyriel blauw · samen geel ═══ */
+.kwl{position:absolute;left:8px;right:8px;bottom:-2px;height:4px;display:flex;border-radius:3px;overflow:hidden;z-index:4;pointer-events:none;}
+.kwl i{flex:1;}
+.kwl i+i{border-left:1px solid #0a0a0a;}
+.kwl::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.18;}
+
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -4969,7 +4976,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 11</div>
+    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 12</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -26333,6 +26340,49 @@ window.qtVh={
 try{if(document.getElementById('verblijfPatroonGrid'))render();}catch(e){}
 /* bij het laden werden de hartjes/dagen nog met het oude patroon getekend: opnieuw tekenen als er historiek is */
 try{if(vers().length){if(typeof renderCalendar==='function')renderCalendar();if(typeof renderToday==='function')renderToday();}}catch(e){}
+})();
+
+</script>
+<script>
+/* ═══ Kalender: kleurlijn onderaan de dag voor afspraken van Janne en/of Cyriel ═══ */
+(function(){
+if(typeof renderCalendar!=='function'||typeof localEvents==='undefined')return;
+var COL={janne:'#e87cb0',cyriel:'#5baae0',samen:'#ffd94a'};
+function pad(n){return (n<10?'0':'')+n;}
+function who(ev,isKidsStore){var w=ev.voorWie;if(!w||!w.length)w=isKidsStore?['janne','cyriel']:['toon'];return w;}
+function lineFor(key,showEigen,showKids,fl){
+  var kids={},samen=false;
+  function add(ev,ks){
+    var w=who(ev,ks),j=w.indexOf('janne')>=0,c=w.indexOf('cyriel')>=0,t=w.indexOf('toon')>=0;
+    if(j&&c&&t)samen=true;
+    if(j)kids.janne=1;if(c)kids.cyriel=1;
+  }
+  if(showEigen)(localEvents[key]||[]).forEach(function(ev){if(typeof isZangSyncedEvent==='function'&&isZangSyncedEvent(ev))return;add(ev,false);});
+  if(showKids)(kidsEvents[key]||[]).forEach(function(ev){add(ev,true);});
+  // kinderfilter: enkel de gekozen kinderen (tenzij "alle"/"kinderen")
+  var onlySel=!(fl.indexOf('all')>=0||fl.indexOf('kids')>=0||fl.indexOf('toon')>=0);
+  if(onlySel){if(fl.indexOf('janne')<0)delete kids.janne;if(fl.indexOf('cyriel')<0)delete kids.cyriel;}
+  if(samen&&kids.janne&&kids.cyriel)return [COL.samen];
+  var r=[];if(kids.janne)r.push(COL.janne);if(kids.cyriel)r.push(COL.cyriel);
+  return r;
+}
+function lines(){
+  var grid=document.getElementById('calGrid');if(!grid)return;
+  grid.querySelectorAll('.kwl').forEach(function(e){e.remove();});
+  var fl=(typeof calFilters!=='undefined'&&calFilters)?calFilters:['toon'];
+  var showEigen=fl.indexOf('toon')>=0||fl.indexOf('all')>=0;
+  var showKids=fl.indexOf('janne')>=0||fl.indexOf('cyriel')>=0||fl.indexOf('kids')>=0||fl.indexOf('all')>=0;
+  var yr=calDate.getFullYear(),mn=calDate.getMonth();
+  grid.querySelectorAll('.cal-cell:not(.empty)').forEach(function(c){
+    var n=c.querySelector('.cal-num');if(!n)return;
+    var key=yr+'-'+pad(mn+1)+'-'+pad(+n.textContent);
+    var cols=lineFor(key,showEigen,showKids,fl);if(!cols.length)return;
+    c.insertAdjacentHTML('beforeend','<div class="kwl" aria-hidden="true">'+cols.map(function(x){return '<i style="background:'+x+'"></i>';}).join('')+'</div>');
+  });
+}
+var _rc=window.renderCalendar;
+window.renderCalendar=function(){var r=_rc.apply(this,arguments);try{lines();}catch(e){}return r;};
+try{if(document.getElementById('calGrid')&&document.getElementById('calGrid').children.length)lines();}catch(e){}
 })();
 
 </script>
