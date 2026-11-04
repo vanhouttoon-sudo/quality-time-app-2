@@ -4437,8 +4437,6 @@ body>.tabs{display:none !important;}
 @media (prefers-reduced-motion:reduce){.tabs.nv .nv-t{transition:none;}}
 
 /* ═══ LAY OUT: weer-zegels ═══ */
-#weerDetailInner{background:#e9f1e4 !important;border:3px solid #0a0a0a;border-radius:20px !important;box-shadow:0 3px 0 rgba(10,10,10,.6),0 30px 70px rgba(0,0,0,.6) !important;}
-#weerDetailContent{background:#e9f1e4;}
 .wx{--ink:#0a0a0a;--or:#ffdfa7;--p:12px;--r:3px;padding:14px 14px 18px;font-family:var(--grotesk);color:#0a0a0a;}
 .wxs{filter:drop-shadow(1.1px 0 0 #0a0a0a) drop-shadow(-1.1px 0 0 #0a0a0a) drop-shadow(0 1.1px 0 #0a0a0a) drop-shadow(0 -1.1px 0 #0a0a0a) drop-shadow(0 3px 0 rgba(10,10,10,.6));transition:transform .5s cubic-bezier(.2,1.7,.35,1),filter .4s;}
 .wxs:active{transform:translateY(2.4px) scale(.96);filter:drop-shadow(1.1px 0 0 #0a0a0a) drop-shadow(-1.1px 0 0 #0a0a0a) drop-shadow(0 1.1px 0 #0a0a0a) drop-shadow(0 -1.1px 0 #0a0a0a) drop-shadow(0 .4px 0 rgba(10,10,10,.6));transition-duration:.08s;}
@@ -4805,6 +4803,35 @@ body>.tabs{display:none !important;}
 .tabs:not(.nv){background:#e9f1e4 !important;border:0 !important;border-top:3px solid #0a0a0a !important;border-radius:0 !important;box-shadow:none !important;margin:0 !important;padding:9px 0 11px !important;min-height:78px;}
 .tabs:not(.nv)>*{visibility:hidden !important;}
 
+
+/* ═══ Kinderdagen: hartje in de kalender + tegel "Extra kinderdag" ═══ */
+#calGrid .cal-cell{position:relative;}
+.kd-h{position:absolute;top:2px;right:2px;width:9px;height:8px;filter:drop-shadow(0 .5px 0 rgba(10,10,10,.35));pointer-events:none;z-index:2;}
+.dp2-tile.kd-on{background:#ffd94a !important;}
+.dp2-tile .dp2-tile-ic .kd-big{width:30px;height:27px;display:block;margin:0 auto;}
+.dp2-tile.kd-off{opacity:.9;}
+
+/* pop-up: afspraken controleren bij een extra kinderdag */
+.kdm-bg{position:fixed;inset:0;background:rgba(10,10,10,.55);z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px;}
+.kdm{position:relative;width:100%;max-width:350px;max-height:85vh;overflow:auto;background:#fff7cf;border:2.5px solid #0a0a0a;border-radius:16px;box-shadow:4px 4px 0 #0a0a0a;padding:16px 16px 14px;font-family:var(--grotesk);color:#0a0a0a;}
+.kdm::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.12;pointer-events:none;}
+.kdm>*{position:relative;z-index:1;}
+.kdm-hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.kdm-kick{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#7a5a38;}
+.kdm h2{margin:4px 0 0;font-family:"Anton",var(--cond);font-weight:400;font-size:25px;text-transform:uppercase;letter-spacing:.3px;line-height:1.05;}
+.kdm-x{width:34px;height:34px;flex:none;border:2.5px solid #0a0a0a;border-radius:10px;background:#ffdfa7;box-shadow:2px 2px 0 #0a0a0a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;cursor:pointer;padding:0;color:#0a0a0a;}
+.kdm-q{font-size:12.5px;font-weight:600;line-height:1.45;margin:12px 0 10px;}
+.kdm-list{background:#fffaf0;border:2.5px solid #0a0a0a;border-radius:12px;overflow:hidden;}
+.kdm-it{display:flex;gap:12px;align-items:center;padding:10px 12px;border-bottom:1.5px solid #ece0d0;}
+.kdm-it:last-child{border-bottom:none;}
+.kdm-tm{font-size:11px;font-weight:700;color:#12463C;width:74px;flex:none;}
+.kdm-tt{font-size:13.5px;font-weight:700;}
+.kdm-ls{font-family:var(--body);font-size:10.5px;color:#a08060;margin-top:2px;}
+.kdm-row{display:flex;gap:10px;margin-top:14px;}
+.kdm-btn{flex:1;text-align:center;border:2.5px solid #0a0a0a;border-radius:12px;box-shadow:3px 3px 0 #0a0a0a;font-family:var(--grotesk);font-size:11.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:12px 6px;background:#fff;cursor:pointer;color:#0a0a0a;position:relative;overflow:hidden;}
+.kdm-btn.y{background:#ffd94a;}
+.kdm-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #0a0a0a;}
+
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -4903,7 +4930,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 4</div>
+    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 8</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -10152,7 +10179,7 @@ function exportQualityTimeData() {
                'wf_notes','wf_done','wf_liked','wf_rejected','wf_settings',
                'wf_gcal_tokens','wf_events','wf_kids_events','wf_kal_afwijking',
                'wf_ics_cache','wf_diff','wf_shop','wf_profielen','qtZangSessionLog',
-               'wf_qtr_recipes','wf_qtr_tags','wf_qtr_plan','wf_hz_places','wf_hz_plan','wf_hz_labels','wf_undated_events'];
+               'wf_qtr_recipes','wf_qtr_tags','wf_qtr_plan','wf_hz_places','wf_hz_plan','wf_hz_labels','wf_undated_events','wf_verblijf'];
   var data = {};
   keys.forEach(function(k){
     var v = localStorage.getItem(k);
@@ -25466,7 +25493,7 @@ function regenBody(dateStr,isToday,nowH){
   return h;
 }
 
-window._renderWeerDetail=function(){
+var _wxNewDetail=function(){   /* nieuwe zegelstijl: bewust uitgeschakeld, vorige look weer actief */
   var dateStr=weerDetailDate,modal=document.getElementById('weerDetailModal'),content=document.getElementById('weerDetailContent');
   if(!modal||!content)return;
   var w=weatherCache[dateStr];
@@ -25527,9 +25554,7 @@ window._renderWeerDetail=function(){
     setTimeout(function(){var el=content.querySelector('.wxB-grid .wxp.g');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});},140);
   }else content.scrollTop=0;
 };
-window.renderRegenGrafiek=function(ds){var n=new Date();return regenBody(ds,ds===dk(n),n.getHours());};
-var _cwd=window.closeWeerDetail;
-window.closeWeerDetail=function(){window._wxPrevTab=null;_cwd();};
+var _wxNewRegen=function(ds){var n=new Date();return regenBody(ds,ds===dk(n),n.getHours());};
 
 /* ── locatie wijzigen ── */
 function buildLocModal(){
@@ -25658,24 +25683,45 @@ function renderChoice(){
 }
 /* ── nog te plannen ── */
 function seg(on){return '<div class="nt-seg"><span class="'+(on==='list'?'on':'')+'" onclick="qtAgList.showList()">Lijstvorm</span><span class="'+(on==='undated'?'on':'')+'" onclick="qtAgList.showUndated()">'+lbl()+'<b class="nt-cnt" style="margin-left:5px">'+und.length+'</b></span></div>';}
+function srcCol(u){var k=(u.voorWie||[]).some(function(w){return w==='janne'||w==='cyriel';});return k?'#e87cb0':'#1F7A6C';}
 function renderUndated(){
-  var h='<div class="nt-wrap"><div class="nt-bar"><b>🗓 Afspraken</b><button class="nt-x" onclick="qtAgList.close()" aria-label="Terug naar kalender">✕</button></div>'+seg('undated')
-   +'<button class="nt-cta" onclick="qtAgList.newU()">+ Nieuwe afspraak zonder datum</button>';
-  if(!und.length)h+='<div class="nt-empty">Niets in te plannen.<br>Voeg een afspraak toe zonder datum; de datum kies je later.</div>';
-  und.forEach(function(u){
-    var wie=(u.voorWie||[]).map(function(w){return '<span class="nt-chip">'+(WIE[w]||esc(w))+'</span>';}).join('');
-    h+='<div class="nt-card"><span class="nt-tag">NOG TE PLANNEN</span><h4>'+esc(u.title)+'</h4>'
-     +(u.location?'<div class="sub">📍 '+esc(u.location)+'</div>':'')
-     +(u.notes?'<div class="sub">'+esc(u.notes.length>140?u.notes.slice(0,140)+'…':u.notes)+'</div>':'')
-     +(wie?'<div>'+wie+'</div>':'')
-     +'<div class="nt-row"><div class="nt-sm y" onclick="qtAgList.plan(\''+u.id+'\')">📅 Datum kiezen</div><div class="nt-sm" onclick="qtAgList.editU(\''+u.id+'\')">✎ Wijzigen</div></div></div>';
-  });
-  view().innerHTML=h+'</div>';
+  var lv=$('calListView');if(!lv)return;
+  var h='<div class="varia-back-bar" style="margin:12px 12px 0;border:1.5px solid var(--brut-ink);border-radius:6px 6px 0 0;border-bottom:none">'
+   +'<div class="varia-back-title">🗓 Afspraken</div><button class="varia-close-x" onclick="qtAgList.close()" aria-label="Terug">✕</button></div>'
+   +'<div id="agSwitch" class="nt-swrap">'+seg('undated')+'</div>'
+   +'<div class="bud-head" style="margin:0 12px;display:flex;gap:8px;align-items:center"><button class="btn yellow" style="flex:1" onclick="qtAgList.newU()">+ Nieuw zonder datum</button></div>'
+   +'<div class="wrap" style="gap:10px">';
+  if(!und.length)h+='<div class="bcard c2" style="text-align:center"><div class="ctitle">Niets in te plannen</div><div class="muted" style="margin-top:4px">Voeg een afspraak toe zonder datum; de datum kies je later.</div></div>';
+  else{
+    h+='<div class="ag-month"><span>Zonder datum</span><em>'+und.length+' afspra'+(und.length===1?'ak':'ken')+'</em></div>'
+     +'<div class="ag-day"><div class="ag-day-h"><span class="ag-dn">?</span><span class="ag-dw">Nog te plannen</span></div>';
+    und.forEach(function(u){
+      h+='<div class="ag-item" onclick="qtAgList.detailU(\''+u.id+'\')"><div class="ag-time">Geen datum</div>'
+       +'<div class="ag-mid"><div class="ag-title"><i style="background:'+srcCol(u)+'"></i>'+esc(u.title||'(zonder titel)')+'</div>'
+       +(u.location?'<div class="ag-sub">📍 '+esc(u.location)+'</div>':'')+'</div><span class="ag-go">›</span></div>';
+    });
+    h+='</div>';
+  }
+  lv.innerHTML=h+'</div>';
 }
+function sheetU(html){var bg=$('budSheetBg');if(!bg)return;bg.querySelector('.sheet').innerHTML=html;bg.classList.add('open');}
+A.detailU=function(id){var u=findU(id);if(!u)return;
+  var wie=(u.voorWie||[]).map(function(w){return '<span class="chip on" style="cursor:default">'+(WIE[w]||esc(w))+'</span>';}).join('');
+  sheetU('<div class="sheet-h"><div><div class="eyebrow" style="margin-bottom:2px">Zonder datum</div><div class="sheet-t">'+esc(u.title||'(zonder titel)')+'</div></div><button class="varia-close-x" onclick="qtAgList.closeSheet()" aria-label="Sluiten">✕</button></div>'
+   +'<div class="ag-det"><div class="ag-det-row"><span>📅</span><div><b>Nog geen datum</b></div></div>'
+   +(u.location?'<div class="ag-det-row"><span>📍</span><div>'+esc(u.location)+'</div></div>':'')
+   +(u.notes?'<div class="ag-det-row"><span>📝</span><div style="white-space:pre-wrap">'+esc(u.notes)+'</div></div>':'')
+   +(wie?'<div class="ag-det-row"><span>👥</span><div class="chips">'+wie+'</div></div>':'')+'</div>'
+   +'<div class="sheet-actions" style="margin-top:14px"><button class="btn yellow" onclick="qtAgList.planS(\''+u.id+'\')">📅 Datum kiezen</button></div>'
+   +'<div class="sheet-actions" style="margin-top:8px"><button class="btn" onclick="qtAgList.delU(\''+u.id+'\')">Verwijderen</button><button class="btn dark" onclick="qtAgList.editS(\''+u.id+'\')">✎ Wijzigen</button></div>');
+};
+A.planS=function(id){A.closeSheet();A.plan(id);};
+A.editS=function(id){A.closeSheet();A.editU(id);};
+A.delU=function(id){if(!confirm('Afspraak verwijderen?'))return;und=und.filter(function(u){return u.id!==id;});persist();A.closeSheet();refresh();};
 function refresh(){
   updTile();
   if(cur==='choice'&&view().style.display==='block')renderChoice();
-  else if(cur==='undated'&&view().style.display==='block')renderUndated();
+  else if(cur==='undated'&&$('calListView')&&$('calListView').style.display==='block')renderUndated();
   else if(cur==='list')decorate();
 }
 /* ── wisselknop bovenaan de lijstvorm ── */
@@ -25688,14 +25734,14 @@ function decorate(){
 var _open=A.open,_mode=A.mode,_close=A.close,_isOpen=A.isOpen;
 A.open=function(){leaveVaria();hideAll();cur='choice';renderChoice();view().style.display='block';top();};
 A.showList=function(){hideAll();cur='list';_open.apply(A,arguments);decorate();};
-A.showUndated=function(){hideAll();cur='undated';renderUndated();view().style.display='block';top();};
+A.showUndated=function(){hideAll();cur='undated';var lv=$('calListView');if(lv)lv.style.display='block';renderUndated();top();};
 A.mode=function(){var r=_mode.apply(A,arguments);decorate();return r;};
 A.close=function(){
   if(ctx==='varia'){hideAll();cur='choice';renderChoice();view().style.display='block';top();return;}
   var v=$('calUndView');if(v)v.style.display='none';cur=null;return _close.apply(A,arguments);};
-A.isOpen=function(){var v=$('calUndView');return _isOpen.apply(A,arguments)||!!(v&&v.style.display==='block');};
+A.isOpen=function(){return cur==='list'&&_isOpen.apply(A,arguments);};
 (function(){var lv=$('calListView');if(!lv||!window.MutationObserver)return;
-  new MutationObserver(function(){if(lv.style.display==='block'&&!$('agSwitch'))decorate();}).observe(lv,{childList:true});})();
+  new MutationObserver(function(){if(cur==='list'&&lv.style.display==='block'&&!$('agSwitch'))decorate();}).observe(lv,{childList:true});})();
 A.newD=function(){window._qtPlan=null;openEventModal(todayKey());};
 A.newU=function(){window._qtPlan={mode:'new'};openEventModal(todayKey());};
 A.plan=function(id){if(!findU(id))return;window._qtPlan={mode:'plan',id:id};openEventModal(todayKey());};
@@ -25836,6 +25882,101 @@ window.deleteEvent=function(){
   return _d.apply(this,arguments);
 };
 window.qtUndated={list:function(){return und.slice();}};
+})();
+
+</script>
+<script>
+/* ═══ Kinderdagen: hartje in de kalender + tegel "Extra kinderdag" (wissel via verblijfspatroon-overrides) ═══ */
+(function(){
+if(typeof getVerblijf!=='function'||typeof verblijfPatroon==='undefined'||typeof renderCalendar!=='function')return;
+function pad(n){return (n<10?'0':'')+n;}
+var HEART="<svg class='kd-h' viewBox='0 0 24 22' aria-hidden='true'><path d='M12 21.2C5.2 15.4 1.6 12 1.6 7.6 1.6 4.4 4 2 7 2c2 0 3.9 1 5 2.8C13.1 3 15 2 17 2c3 0 5.4 2.4 5.4 5.6 0 4.4-3.6 7.8-10.4 13.6z' fill='#ea5d78' stroke='#0a0a0a' stroke-width='1.6' stroke-linejoin='round'/></svg>";
+function big(filled){return "<svg class='kd-big' viewBox='0 0 24 22' aria-hidden='true'><path d='M12 21.2C5.2 15.4 1.6 12 1.6 7.6 1.6 4.4 4 2 7 2c2 0 3.9 1 5 2.8C13.1 3 15 2 17 2c3 0 5.4 2.4 5.4 5.6 0 4.4-3.6 7.8-10.4 13.6z' fill='"+(filled?'#ea5d78':'none')+"' stroke='#0a0a0a' stroke-width='1.7' stroke-linejoin='round'/></svg>";}
+/* wat zegt het patroon (zonder losse wissels) */
+function patternOf(key){
+  var d=new Date(key+'T12:00:00'),dow=d.getDay(),idx=dow===0?6:dow-1,par=(getWeekNum(d)%2===0)?'even':'oneven';
+  return (verblijfPatroon[par]||{})[idx]||'papa';
+}
+function state(key){
+  var cur=getVerblijf(key),pat=patternOf(key),heart=cur==='papa',ov=cur!==pat;
+  if(!heart&&!ov)return 'a';   // gewone mama-dag
+  if(heart&&ov)return 'b';     // extra kinderdag
+  if(heart&&!ov)return 'c';    // patroondag
+  return 'd';                  // patroondag waarvan het hartje is afgehaald
+}
+function hearts(){
+  var f=(typeof calFilters!=='undefined'&&calFilters)?calFilters:['toon'];
+  if(!(f.indexOf('toon')>=0||f.indexOf('all')>=0))return;
+  var yr=calDate.getFullYear(),mn=calDate.getMonth();
+  document.querySelectorAll('#calGrid .cal-cell:not(.empty)').forEach(function(c){
+    var n=c.querySelector('.cal-num');if(!n)return;
+    var key=yr+'-'+pad(mn+1)+'-'+pad(+n.textContent);
+    c.querySelectorAll('.kd-h').forEach(function(e){e.remove();});
+    if(getVerblijf(key)==='papa')c.insertAdjacentHTML('afterbegin',HEART);
+  });
+}
+function tileHtml(key){
+  var s=state(key);
+  var lbl=(s==='a'||s==='b')?'Extra kinderdag':'Kinderdag';
+  var sub={a:'Tik om te markeren',b:'Gemarkeerd ✓',c:'Patroon · tik om te wisselen',d:'Gewisseld · tik = terug'}[s];
+  return '<div class="dp2-tile'+(s==='b'?' kd-on':'')+(s==='d'?' kd-off':'')+'" id="kdTile" onclick="qtKd.toggle(\''+key+'\')">'
+    +'<div class="dp2-tile-ic">'+big(s==='b'||s==='c')+'</div><div class="dp2-tile-lbl">'+lbl+'</div><div class="dp2-tile-sub">'+sub+'</div></div>';
+}
+function addTile(date){
+  var g=document.getElementById('dp2TileGrid');if(!g||g.querySelector('#kdTile'))return;
+  g.insertAdjacentHTML('beforeend',tileHtml(dk(date)));
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+/* eigen afspraken op een dag (eigen agenda + gekoppelde agenda), zonder zangles-synchronisatie en zonder dubbels */
+function ownEvents(key){
+  var out=[],seen={};
+  function add(ev){
+    var t=ev.baseTitle||ev.title||'(zonder titel)',id=t+'|'+(ev.start||'')+'|'+(ev.allDay?1:0);
+    if(seen[id])return;seen[id]=1;out.push({title:t,start:ev.start||'',end:ev.end||'',allDay:!!ev.allDay,location:ev.location||''});
+  }
+  (localEvents[key]||[]).forEach(function(ev){if(typeof isZangSyncedEvent==='function'&&isZangSyncedEvent(ev))return;add(ev);});
+  var ics=(typeof getAgendaForDate==='function')?getAgendaForDate(key):((typeof icsCache!=='undefined'&&icsCache[key])||[]);
+  (ics||[]).forEach(function(ev){if(typeof isZangTitledEvent==='function'&&isZangTitledEvent(ev))return;add(ev);});
+  out.sort(function(a,b){if(a.allDay!==b.allDay)return a.allDay?-1:1;return a.start.localeCompare(b.start);});
+  return out;
+}
+function timeLbl(e){if(e.allDay||!e.start)return 'Hele dag';return e.start+(e.end&&e.end!==e.start?' – '+e.end:'');}
+function closePop(){var p=document.getElementById('kdPop');if(p)p.remove();}
+function showPop(key,list){
+  closePop();
+  var d=new Date(key+'T12:00:00'),dag=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
+  var n=list.length;
+  var rows=list.map(function(e){return '<div class="kdm-it"><div class="kdm-tm">'+esc(timeLbl(e))+'</div><div><div class="kdm-tt">'+esc(e.title)+'</div>'+(e.location?'<div class="kdm-ls">📍 '+esc(e.location)+'</div>':'')+'</div></div>';}).join('');
+  var h='<div class="kdm-bg" id="kdPop" onclick="if(event.target===this)qtKd.cancel()"><div class="kdm" role="dialog" aria-modal="true"><div class="kdm-hd"><div><div class="kdm-kick">Extra kinderdag · '+esc(dag)+'</div><h2>Let op: er staat al iets</h2></div>'
+   +'<button class="kdm-x" onclick="qtKd.cancel()" aria-label="Sluiten">✕</button></div>'
+   +'<div class="kdm-q">Op deze dag '+(n===1?'staat 1 afspraak':'staan '+n+' afspraken')+' in je agenda. Kunnen de kinderen dan toch bij je zijn?</div>'
+   +'<div class="kdm-list">'+rows+'</div>'
+   +'<div class="kdm-row"><button class="kdm-btn" onclick="qtKd.cancel()">Annuleren</button><button class="kdm-btn y" onclick="qtKd.confirm(\''+key+'\')">Toch markeren ♥</button></div></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+window.qtKd={
+  cancel:closePop,
+  confirm:function(key){closePop();qtKd.apply(key);},
+  toggle:function(key){
+    var want=getVerblijf(key)==='papa'?'mama':'papa';
+    if(want==='papa'){var l=ownEvents(key);if(l.length){showPop(key,l);return;}}
+    qtKd.apply(key);
+  },
+  apply:function(key){
+    var ov=verblijfPatroon.overrides||(verblijfPatroon.overrides={});
+    var cur=getVerblijf(key),want=cur==='papa'?'mama':'papa',pat=patternOf(key);
+    if(want===pat)delete ov[key];else ov[key]=want;
+    saveVerblijf();
+    var d=new Date(key+'T12:00:00'),dag=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
+    if(typeof showToast==='function')showToast(want==='papa'?'Kinderen bij jou op '+dag:'Hartje van '+dag+' gehaald');
+    renderCalendar();
+  },
+  hearts:hearts
+};
+var _rc=window.renderCalendar;
+window.renderCalendar=function(){var r=_rc.apply(this,arguments);try{hearts();}catch(e){}return r;};
+if(typeof renderDayPanel==='function'){var _rd=window.renderDayPanel;window.renderDayPanel=function(date){var r=_rd.apply(this,arguments);try{addTile(date);}catch(e){}return r;};}
+try{if(document.getElementById('calGrid')&&document.getElementById('calGrid').children.length)hearts();}catch(e){}
 })();
 
 </script>
