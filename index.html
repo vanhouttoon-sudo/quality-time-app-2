@@ -4807,6 +4807,7 @@ body>.tabs{display:none !important;}
 /* ═══ Kinderdagen: hartje in de kalender + tegel "Extra kinderdag" ═══ */
 #calGrid .cal-cell{position:relative;}
 .kd-h{position:absolute;top:2px;right:2px;width:9px;height:8px;filter:drop-shadow(0 .5px 0 rgba(10,10,10,.35));pointer-events:none;z-index:2;}
+.kd-hl{left:2px;right:auto;}
 .dp2-tile.kd-on{background:#ffd94a !important;}
 .dp2-tile .dp2-tile-ic .kd-big{width:30px;height:27px;display:block;margin:0 auto;}
 .dp2-tile.kd-off{opacity:.9;}
@@ -4831,6 +4832,8 @@ body>.tabs{display:none !important;}
 .kdm-btn{flex:1;text-align:center;border:2.5px solid #0a0a0a;border-radius:12px;box-shadow:3px 3px 0 #0a0a0a;font-family:var(--grotesk);font-size:11.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:12px 6px;background:#fff;cursor:pointer;color:#0a0a0a;position:relative;overflow:hidden;}
 .kdm-btn.y{background:#ffd94a;}
 .kdm-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #0a0a0a;}
+.kdm-gh{padding:7px 12px;font-size:9.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:#7a5a38;background:#ffe9a8;border-bottom:1.5px solid #ece0d0;}
+.kdm-gh:not(:first-child){border-top:1.5px solid #ece0d0;}
 
 </style>
 <script>
@@ -4930,7 +4933,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 9</div>
+    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 10</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -25891,6 +25894,9 @@ window.qtUndated={list:function(){return und.slice();}};
 if(typeof getVerblijf!=='function'||typeof verblijfPatroon==='undefined'||typeof renderCalendar!=='function')return;
 function pad(n){return (n<10?'0':'')+n;}
 var HEART="<svg class='kd-h' viewBox='0 0 24 22' aria-hidden='true'><path d='M12 21.2C5.2 15.4 1.6 12 1.6 7.6 1.6 4.4 4 2 7 2c2 0 3.9 1 5 2.8C13.1 3 15 2 17 2c3 0 5.4 2.4 5.4 5.6 0 4.4-3.6 7.8-10.4 13.6z' fill='#ea5d78' stroke='#0a0a0a' stroke-width='1.6' stroke-linejoin='round'/></svg>";
+var HEART_L="<svg class='kd-h kd-hl' viewBox='0 0 24 22' aria-hidden='true'><path d='M12 21.2C5.2 15.4 1.6 12 1.6 7.6 1.6 4.4 4 2 7 2c2 0 3.9 1 5 2.8C13.1 3 15 2 17 2c3 0 5.4 2.4 5.4 5.6 0 4.4-3.6 7.8-10.4 13.6z' fill='#f7b9c6' stroke='#0a0a0a' stroke-opacity='.5' stroke-width='1.5' stroke-linejoin='round'/></svg>";
+function keyAdd(key,n){var d=new Date(key+'T12:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function dagLbl(key){return new Date(key+'T12:00:00').toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});}
 function big(filled){return "<svg class='kd-big' viewBox='0 0 24 22' aria-hidden='true'><path d='M12 21.2C5.2 15.4 1.6 12 1.6 7.6 1.6 4.4 4 2 7 2c2 0 3.9 1 5 2.8C13.1 3 15 2 17 2c3 0 5.4 2.4 5.4 5.6 0 4.4-3.6 7.8-10.4 13.6z' fill='"+(filled?'#ea5d78':'none')+"' stroke='#0a0a0a' stroke-width='1.7' stroke-linejoin='round'/></svg>";}
 /* wat zegt het patroon (zonder losse wissels) */
 function patternOf(key){
@@ -25913,6 +25919,7 @@ function hearts(){
     var key=yr+'-'+pad(mn+1)+'-'+pad(+n.textContent);
     c.querySelectorAll('.kd-h').forEach(function(e){e.remove();});
     if(getVerblijf(key)==='papa')c.insertAdjacentHTML('afterbegin',HEART);
+    else if(getVerblijf(keyAdd(key,-1))==='papa')c.insertAdjacentHTML('afterbegin',HEART_L);   // dag na de laatste markering: kinderen zijn er overdag, slapen er niet
   });
 }
 function tileHtml(key){
@@ -25942,14 +25949,22 @@ function ownEvents(key){
 }
 function timeLbl(e){if(e.allDay||!e.start)return 'Hele dag';return e.start+(e.end&&e.end!==e.start?' – '+e.end:'');}
 function closePop(){var p=document.getElementById('kdPop');if(p)p.remove();}
-function showPop(key,list){
+function showPop(key,groups){
   closePop();
-  var d=new Date(key+'T12:00:00'),dag=d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
-  var n=list.length;
-  var rows=list.map(function(e){return '<div class="kdm-it"><div class="kdm-tm">'+esc(timeLbl(e))+'</div><div><div class="kdm-tt">'+esc(e.title)+'</div>'+(e.location?'<div class="kdm-ls">📍 '+esc(e.location)+'</div>':'')+'</div></div>';}).join('');
-  var h='<div class="kdm-bg" id="kdPop" onclick="if(event.target===this)qtKd.cancel()"><div class="kdm" role="dialog" aria-modal="true"><div class="kdm-hd"><div><div class="kdm-kick">Extra kinderdag · '+esc(dag)+'</div><h2>Let op: er staat al iets</h2></div>'
+  var n=0,hasNext=false,hasSame=false;
+  groups.forEach(function(g){n+=g.list.length;if(g.next)hasNext=true;else hasSame=true;});
+  function item(e){return '<div class="kdm-it"><div class="kdm-tm">'+esc(timeLbl(e))+'</div><div><div class="kdm-tt">'+esc(e.title)+'</div>'+(e.location?'<div class="kdm-ls">📍 '+esc(e.location)+'</div>':'')+'</div></div>';}
+  var rows=groups.map(function(g){
+    return '<div class="kdm-gh">'+esc(dagLbl(g.key))+(g.next?' · ze zijn er nog overdag':'')+'</div>'+g.list.map(item).join('');
+  }).join('');
+  var nextKey=null;groups.forEach(function(g){if(g.next)nextKey=g.key;});
+  var q;
+  if(hasSame&&hasNext)q='Op deze dag en op de dag erna (de kinderen blijven slapen en zijn de volgende dag nog bij je) '+(n===1?'staat 1 afspraak':'staan '+n+' afspraken')+' in je agenda. Kunnen de kinderen dan toch bij je zijn?';
+  else if(hasNext)q='De kinderen blijven slapen en zijn de volgende dag nog bij je. Op '+esc(dagLbl(nextKey))+' '+(n===1?'staat 1 afspraak':'staan '+n+' afspraken')+' in je agenda. Kan dat toch?';
+  else q='Op deze dag '+(n===1?'staat 1 afspraak':'staan '+n+' afspraken')+' in je agenda. Kunnen de kinderen dan toch bij je zijn?';
+  var h='<div class="kdm-bg" id="kdPop" onclick="if(event.target===this)qtKd.cancel()"><div class="kdm" role="dialog" aria-modal="true"><div class="kdm-hd"><div><div class="kdm-kick">Extra kinderdag · '+esc(dagLbl(key))+'</div><h2>Let op: er staat al iets</h2></div>'
    +'<button class="kdm-x" onclick="qtKd.cancel()" aria-label="Sluiten">✕</button></div>'
-   +'<div class="kdm-q">Op deze dag '+(n===1?'staat 1 afspraak':'staan '+n+' afspraken')+' in je agenda. Kunnen de kinderen dan toch bij je zijn?</div>'
+   +'<div class="kdm-q">'+q+'</div>'
    +'<div class="kdm-list">'+rows+'</div>'
    +'<div class="kdm-row"><button class="kdm-btn" onclick="qtKd.cancel()">Annuleren</button><button class="kdm-btn y" onclick="qtKd.confirm(\''+key+'\')">Toch markeren ♥</button></div></div></div>';
   document.body.insertAdjacentHTML('beforeend',h);
@@ -25959,7 +25974,13 @@ window.qtKd={
   confirm:function(key){closePop();qtKd.apply(key);},
   toggle:function(key){
     var want=getVerblijf(key)==='papa'?'mama':'papa';
-    if(want==='papa'){var l=ownEvents(key);if(l.length){showPop(key,l);return;}}
+    if(want==='papa'){
+      var groups=[],l=ownEvents(key);
+      if(l.length)groups.push({key:key,list:l,next:false});
+      var nk=keyAdd(key,1);                                   // ze blijven slapen: ook de dag erna controleren (tenzij die zelf al een kinderdag is)
+      if(getVerblijf(nk)!=='papa'){var l2=ownEvents(nk);if(l2.length)groups.push({key:nk,list:l2,next:true});}
+      if(groups.length){showPop(key,groups);return;}
+    }
     qtKd.apply(key);
   },
   apply:function(key){
