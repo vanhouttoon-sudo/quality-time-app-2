@@ -4411,12 +4411,6 @@ body #trRow.alarm .tr-more{background:#3b0a12;color:#ffe9c8;}
 #budSheetBg .bc-go{font-size:24px;font-weight:700;flex-shrink:0;line-height:1;}
 
 /* ═══ Horeca ═══ */
-.hz-tile{grid-column:1/-1;display:flex;align-items:center;gap:12px;background:#ffe14d;border:3px solid #0a0a0a;border-radius:16px;padding:12px 14px;cursor:pointer;box-shadow:3px 3px 0 #0a0a0a;position:relative;}
-.hz-tile:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #0a0a0a;}
-.hz-tile-ic{width:50px;height:50px;border:3px solid #0a0a0a;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
-.hz-tile-t{font-family:var(--grotesk,"Space Grotesk",sans-serif);font-weight:800;font-size:19px;color:#0a0a0a;line-height:1.1;}
-.hz-tile-s{font-family:var(--grotesk,"Space Grotesk",sans-serif);font-weight:600;font-size:12px;color:#3a3a3a;margin-top:2px;}
-.hz-tile-go{font-size:26px;font-weight:800;color:#0a0a0a;}
 .hz-chips{display:flex;gap:8px;margin-top:6px;overflow-x:auto;padding:2px 2px 6px;-webkit-overflow-scrolling:touch;}
 .hz-chips::-webkit-scrollbar{display:none;}
 .hz-chips .qtr-chip{flex-shrink:0;}
@@ -4454,11 +4448,373 @@ body>.tabs{display:none !important;}
 .tabs.nv .nv-c,.tabs.nv .nv-g{position:absolute;left:0;top:0;width:100%;height:100%;display:block;pointer-events:none;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;}
 .tabs.nv .nv-clip,.tabs.nv .nv-live{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;}
 .tabs.nv .nv-live{overflow:hidden;}
+.tabs.nv .nv-grain{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27160%27%20height=%27160%27%3E%3Cfilter%20id=%27n%27%20color-interpolation-filters=%27sRGB%27%3E%3CfeTurbulence%20type=%27fractalNoise%27%20baseFrequency=%271.05%27%20numOctaves=%272%27%20seed=%279%27%20stitchTiles=%27stitch%27/%3E%3CfeColorMatrix%20values=%270%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35%27/%3E%3C/filter%3E%3Crect%20width=%27160%27%20height=%27160%27%20filter=%27url%28%23n%29%27/%3E%3C/svg%3E") 0 0/160px 160px;opacity:.12;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;}
 .tabs.nv .nv-sheen{position:absolute;top:-4%;height:108%;width:26%;left:0;opacity:0;pointer-events:none;background:linear-gradient(104deg,rgba(255,255,255,0) 0,rgba(255,255,255,.55) 50%,rgba(255,255,255,0) 100%);}
 .tabs.nv .tab{position:absolute !important;top:-6px;bottom:-8px;margin:0 !important;padding:0 !important;min-height:0 !important;flex:none !important;z-index:3;background:none !important;border:0 !important;border-radius:0 !important;box-shadow:none !important;transform:none !important;font-size:0 !important;color:transparent !important;-webkit-tap-highlight-color:transparent;outline:0;}
 .tabs.nv .tab>span,.tabs.nv .tab::before,.tabs.nv .tab::after{display:none !important;}
 .tabs.nv .tab.active,.tabs.nv .tab:active{background:none !important;box-shadow:none !important;transform:none !important;}
 @media (prefers-reduced-motion:reduce){.tabs.nv .nv-t{transition:none;}}
+
+/* ═══ LAY OUT: weer-zegels ═══ */
+#weerDetailInner{background:#e9f1e4 !important;border:3px solid #0a0a0a;border-radius:20px !important;box-shadow:0 3px 0 rgba(10,10,10,.6),0 30px 70px rgba(0,0,0,.6) !important;}
+#weerDetailContent{background:#e9f1e4;}
+.wx{--ink:#0a0a0a;--or:#ffdfa7;--p:12px;--r:3px;padding:14px 14px 18px;font-family:var(--grotesk);color:#0a0a0a;}
+.wxs{filter:drop-shadow(1.1px 0 0 #0a0a0a) drop-shadow(-1.1px 0 0 #0a0a0a) drop-shadow(0 1.1px 0 #0a0a0a) drop-shadow(0 -1.1px 0 #0a0a0a) drop-shadow(0 3px 0 rgba(10,10,10,.6));transition:transform .5s cubic-bezier(.2,1.7,.35,1),filter .4s;}
+.wxs:active{transform:translateY(2.4px) scale(.96);filter:drop-shadow(1.1px 0 0 #0a0a0a) drop-shadow(-1.1px 0 0 #0a0a0a) drop-shadow(0 1.1px 0 #0a0a0a) drop-shadow(0 -1.1px 0 #0a0a0a) drop-shadow(0 .4px 0 rgba(10,10,10,.6));transition-duration:.08s;}
+.wxp{position:relative;background:var(--or);
+ -webkit-mask-image:radial-gradient(circle at 50% 0,#0000 var(--r),#000 calc(var(--r) + .6px)),radial-gradient(circle at 50% 100%,#0000 var(--r),#000 calc(var(--r) + .6px)),radial-gradient(circle at 0 50%,#0000 var(--r),#000 calc(var(--r) + .6px)),radial-gradient(circle at 100% 50%,#0000 var(--r),#000 calc(var(--r) + .6px));
+ -webkit-mask-size:var(--p) 100%,var(--p) 100%,100% var(--p),100% var(--p);-webkit-mask-repeat:round no-repeat,round no-repeat,no-repeat round,no-repeat round;-webkit-mask-composite:source-in;
+ mask-image:radial-gradient(circle at 50% 0,#0000 var(--r),#000 calc(var(--r) + .6px)),radial-gradient(circle at 50% 100%,#0000 var(--r),#000 calc(var(--r) + .6px)),radial-gradient(circle at 0 50%,#0000 var(--r),#000 calc(var(--r) + .6px)),radial-gradient(circle at 100% 50%,#0000 var(--r),#000 calc(var(--r) + .6px));
+ mask-size:var(--p) 100%,var(--p) 100%,100% var(--p),100% var(--p);mask-repeat:round no-repeat,round no-repeat,no-repeat round,no-repeat round;mask-composite:intersect;}
+.wxp::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.13;pointer-events:none;}
+.wxp.o{background:radial-gradient(120% 90% at 20% 10%,rgba(255,244,214,.55),rgba(255,244,214,0) 60%),radial-gradient(90% 80% at 100% 100%,rgba(236,170,92,.35),rgba(236,170,92,0) 70%),var(--or);}
+.wxp.g{background:radial-gradient(circle at 50% 120%,rgba(255,255,255,.55),rgba(255,255,255,0) 55%),repeating-conic-gradient(from -90deg at 50% 120%,#bfe4bd 0 5deg,#fbf6df 5deg 10deg);}
+.wxp>*{position:relative;z-index:1;}
+.wxanton{font-family:"Anton",var(--cond);font-weight:400;}
+.wxcond{font-family:var(--cond);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;}
+/* kop */
+.wx-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
+.wx-loc{display:inline-block;}.wx-loc .wxp{padding:5px 13px 5px 11px;font-size:9px;white-space:nowrap;}
+.wx-title{font-family:"Anton",var(--cond);font-size:27px;line-height:1.02;letter-spacing:.3px;text-transform:uppercase;margin:9px 0 0;}
+.wx-x .wxp{width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;--p:9px;--r:2.6px;}
+.wx-hero .wxp{display:flex;align-items:center;justify-content:center;gap:16px;padding:14px 16px;--p:15px;--r:3.8px;}
+.wx-hero .ic{font-size:50px;line-height:1;}
+.wx-hero .tt{font-family:"Anton",var(--cond);font-size:34px;line-height:1;letter-spacing:.5px;}
+.wx-hero .lb{font-family:var(--cond);font-weight:700;font-size:8.5px;letter-spacing:2px;text-transform:uppercase;color:#6a4a2a;margin-top:5px;}
+/* tabs */
+.wx-tabs{display:flex;gap:12px;margin:15px 0 13px;}
+.wx-tabs .wxs{flex:1;}
+.wx-tabs .wxp{height:42px;display:flex;align-items:center;justify-content:center;gap:7px;font-family:var(--cond);font-weight:700;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;--p:12px;--r:3px;}
+/* dagnav */
+.wx-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px;}
+.wx-nav .mid{font-family:var(--cond);font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:6px;}
+.wx-nav .mid i{width:8px;height:8px;border-radius:50%;background:#d9602b;display:block;border:1.5px solid #0a0a0a;}
+.wx-nav .wxp{padding:7px 12px;display:flex;align-items:center;gap:8px;font-family:var(--cond);font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;--p:10px;--r:2.5px;}
+.wx-nav .wxp small{font-size:7.5px;letter-spacing:1.4px;color:#7a5a38;display:block;line-height:1.1;}
+.wx-nav .wxp b{font-size:18px;line-height:1;font-weight:400;font-family:"Anton",sans-serif;}
+/* A: rijen */
+.wxA-list{display:flex;flex-direction:column;gap:11px;}
+.wxA-list .wxp{display:grid;grid-template-columns:72px 36px 50px 1fr;align-items:center;padding:8px 18px 8px 16px;min-height:46px;--p:13px;--r:2.8px;}
+.wxA-list .tm{white-space:nowrap;font-family:var(--cond);font-weight:700;font-size:12.5px;letter-spacing:1px;color:#5a3c1e;}
+.wxA-list .ic{font-size:24px;text-align:center;line-height:1;}
+.wxA-list .tp{font-family:"Anton",var(--cond);font-size:21px;text-align:center;letter-spacing:.5px;}
+.wxA-list .rn{display:flex;align-items:center;gap:8px;}
+.wxA-list .rn b{font-family:var(--cond);font-size:10.5px;font-weight:700;width:28px;text-align:right;color:#3a2a1a;}
+.wxbar{flex:1;height:9px;border:1.6px solid #0a0a0a;border-radius:6px;background:rgba(255,255,255,.65);overflow:hidden;}
+.wxbar u{display:block;height:100%;background:linear-gradient(180deg,#6fbef0,#2d7fc0);border-right:1.6px solid #0a0a0a;box-sizing:content-box;text-decoration:none;}
+.wxnu{display:inline-block;background:#0a0a0a;color:#fff;font-family:var(--cond);font-size:8px;font-weight:700;letter-spacing:1.5px;padding:1px 5px 0;border-radius:4px;margin-left:5px;vertical-align:1px;}
+/* B: raster */
+.wxB-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 11px;}
+.wxB-grid .wxp{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:11px 6px 11px;height:112px;--p:12px;--r:3px;}
+.wxB-grid .tm{white-space:nowrap;font-family:var(--cond);font-weight:700;font-size:12px;letter-spacing:1.3px;color:#5a3c1e;}
+.wxB-grid .ic{font-size:31px;line-height:1;margin:5px 0 3px;}
+.wxB-grid .tp{font-family:"Anton",var(--cond);font-size:22px;line-height:1;letter-spacing:.5px;}
+.wxB-grid .rn{display:flex;align-items:center;gap:4px;margin-top:7px;width:100%;padding:0 6px;box-sizing:border-box;}
+.wxB-grid .rn b{font-family:var(--cond);font-weight:700;font-size:9.5px;color:#3a2a1a;width:24px;text-align:right;}
+.wxB-grid .wxbar{height:7px;border-width:1.4px;}
+/* B: schuifknop als tabs */
+.wxB-seg{position:relative;display:grid;grid-template-columns:1fr 1fr;border:2.5px solid #0a0a0a;border-radius:14px;background:var(--or);box-shadow:0 3px 0 rgba(10,10,10,.6);margin:14px 0 12px;overflow:hidden;}
+.wxB-seg::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.13;pointer-events:none;}
+.wxB-seg .th{position:absolute;top:0;bottom:0;width:50%;background:radial-gradient(circle at 50% 130%,rgba(255,255,255,.5),rgba(255,255,255,0) 55%),repeating-conic-gradient(from -90deg at 50% 130%,#bfe4bd 0 5deg,#fbf6df 5deg 10deg);border-right:2.5px solid #0a0a0a;border-left:0;}
+.wxB-seg .th.r{left:50%;border-left:2.5px solid #0a0a0a;border-right:0;}
+.wxB-seg span{position:relative;z-index:1;text-align:center;padding:11px 0 10px;font-family:var(--cond);font-weight:700;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;}
+.wxB-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.wxB-nav .arr{width:34px;height:34px;--p:9px;--r:2.6px;}
+.wxB-nav .arr .wxp{width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:700;line-height:1;}
+.wxB-nav .mid{text-align:center;font-family:var(--cond);font-weight:700;letter-spacing:2px;font-size:12px;text-transform:uppercase;}
+.wxB-nav .mid small{display:block;font-size:8px;letter-spacing:1.6px;color:#6a4a2a;margin-top:1px;}
+/* regen */
+.wxR-tog{display:flex;gap:11px;margin-bottom:12px;}
+.wxR-tog .wxs{flex:1;}
+.wxR-tog .wxp{height:34px;display:flex;align-items:center;justify-content:center;font-family:var(--cond);font-weight:700;font-size:11.5px;letter-spacing:1.3px;text-transform:uppercase;--p:10px;--r:2.5px;}
+.wxR-stats{display:flex;gap:11px;margin-bottom:13px;}
+.wxR-stats .wxs{flex:1;}
+.wxR-stats .wxp{padding:10px 8px 9px;text-align:center;--p:12px;--r:3px;}
+.wxR-stats .k{font-family:var(--cond);font-weight:700;font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:#6a4a2a;}
+.wxR-stats .v{font-family:"Anton",var(--cond);font-size:23px;line-height:1.15;margin-top:3px;letter-spacing:.4px;}
+.wxR-stats .v.s{font-size:16px;line-height:1.5;}
+.wxR-chart .wxp{padding:14px 10px 6px;background:#fffaf0;--p:14px;--r:3.4px;}
+.wxR-chart svg{display:block;width:100%;height:auto;}
+.wxR-src{margin-top:12px;text-align:center;font-family:var(--cond);font-weight:700;font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#6a7a64;}
+
+/* ═══ LAY OUT — de 13 "totaal andere" pagina's in de tegelstijl van het homescherm ═══ */
+:root{--lo-ink:#0a0a0a;--lo-cream:#fff7cf;--lo-paper:#fffaf0;--lo-sage:#e9f1e4;--lo-yel:#ffd94a;--lo-or:#ffdfa7;--lo-brown:#5a3c1e;}
+
+/* ── weer: kleinste teksten omhoog (min. 10 px) ── */
+.wx-loc .wxp{font-size:10px !important;}
+.wx-hero .lb{font-size:10px !important;}
+.wxB-grid .rn b{font-size:10px !important;}
+.wxB-nav .mid small{font-size:10px !important;}
+.wxR-stats .k{font-size:10px !important;}
+.wxR-src{font-size:10px !important;}
+.wxnu{font-size:9px;}
+.wxs[onclick],.wx-loc,.wxB-seg span,.wxB-nav .arr[onclick]{cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.wxB-seg .th{transition:left .38s cubic-bezier(.2,1.25,.35,1),border-width 0s;}
+.wxB-seg .th{left:0;}
+.wxB-seg .th.r{left:50%;}
+.wxB-seg span{user-select:none;-webkit-user-select:none;}
+.wxB-nav .mid .dot{color:#d9602b;}
+.wx-msg{padding:38px 18px;text-align:center;font-family:var(--cond);font-weight:700;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--lo-brown);}
+.wx-msg .big{font-size:34px;margin-bottom:10px;letter-spacing:0;}
+.wxR-blok{display:flex;align-items:center;justify-content:center;gap:12px;margin:-2px 0 12px;}
+.wxR-blok .wxs{width:36px;}
+.wxR-blok .wxp{height:34px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;--p:9px;--r:2.6px;}
+.wxR-blok .lbl{font-family:"Anton",var(--cond);font-size:20px;letter-spacing:.5px;min-width:96px;text-align:center;}
+.wxR-stats .v.dry{color:#2d6a4f;}
+
+/* ── weer: locatie wijzigen ── */
+#weerLocatieModal .lo-loc{--ink:#0a0a0a;--or:#ffdfa7;--p:12px;--r:3px;width:100%;max-width:360px;max-height:80vh;display:flex;flex-direction:column;background:var(--lo-sage);border:3px solid var(--lo-ink);border-radius:20px;box-shadow:0 3px 0 rgba(10,10,10,.6),0 30px 70px rgba(0,0,0,.6);overflow:hidden;pointer-events:all;font-family:var(--grotesk);color:var(--lo-ink);}
+.lo-loc .hd{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:16px 16px 10px;}
+.lo-loc .hd .wxs{width:34px;flex-shrink:0;}
+.lo-loc .hd .wxp{width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;--p:9px;--r:2.6px;}
+.lo-loc .eb{font-family:var(--cond);font-weight:700;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--lo-brown);}
+.lo-loc .ti{font-family:"Anton",var(--cond);font-size:26px;line-height:1.05;text-transform:uppercase;letter-spacing:.3px;margin-top:2px;}
+.lo-loc .sr{padding:0 16px 8px;}
+.lo-loc input{width:100%;box-sizing:border-box;padding:12px 14px;border:2.5px solid var(--lo-ink);border-radius:12px;background:var(--lo-paper);font-family:var(--grotesk);font-size:14px;font-weight:600;color:var(--lo-ink);box-shadow:inset 2px 2px 0 rgba(10,10,10,.1),3px 3px 0 var(--lo-ink);outline:none;}
+.lo-loc input:focus{background:#fff;}
+#weerLocatieResults{flex:1;overflow-y:auto;padding:6px 16px 10px;min-height:56px;}
+.lo-hint{font-family:var(--grotesk);font-size:12px;color:var(--lo-brown);padding:10px 2px;}
+.lo-res{padding:10px 12px;margin:6px 0;border:2px solid var(--lo-ink);border-radius:10px;background:var(--lo-paper);box-shadow:2px 2px 0 var(--lo-ink);cursor:pointer;}
+.lo-res:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--lo-ink);}
+.lo-res b{display:block;font-size:14px;font-weight:700;}
+.lo-res small{display:block;font-size:11px;color:var(--lo-brown);margin-top:1px;}
+.lo-loc .ft{padding:8px 16px 16px;}
+
+/* ── gedeelde gele knop (zelfde als "Kies voor mij") ── */
+.lo-cta,.pe-btn-primary,#tpaModal #tpaLock button,#vnDoneBtn{
+  background:var(--lo-yel) !important;color:var(--lo-ink) !important;border:2.5px solid var(--lo-ink) !important;border-radius:12px !important;
+  box-shadow:3px 3px 0 var(--lo-ink) !important;font-family:var(--grotesk) !important;font-weight:800 !important;font-size:12.5px !important;letter-spacing:.8px !important;text-transform:uppercase !important;cursor:pointer;
+}
+.lo-cta{width:100%;padding:12px;}
+.lo-cta:active,.pe-btn-primary:active,#tpaModal #tpaLock button:active,#vnDoneBtn:active{transform:translate(2px,2px) !important;box-shadow:1px 1px 0 var(--lo-ink) !important;}
+
+/* ── gedeelde sluitknop voor alle popups ── */
+.photo-modal-close,.ss-close-btn,.cc-close,#exVideoModal button[onclick*="closeExVideo"],.photo-edit-header .varia-close-x{
+  background:var(--lo-or) !important;border:2.5px solid var(--lo-ink) !important;border-radius:9px !important;box-shadow:2px 2px 0 var(--lo-ink) !important;
+  color:var(--lo-ink) !important;width:34px !important;height:34px !important;font-size:15px !important;font-weight:800 !important;
+}
+
+/* ── gedeeld kader voor alle popups: crème, rand, harde schaduw, korrel ── */
+.photo-edit-box,.slideshow-modal,.custom-compare-modal,.photo-compare-modal,#voiceNoteModal .photo-modal,#tpaModal .photo-modal,#photoDetailModal .photo-modal,#exVideoModal>div{
+  position:relative;background:var(--lo-cream) !important;border:2.5px solid var(--lo-ink) !important;border-radius:16px !important;
+  box-shadow:3px 3px 0 var(--lo-ink),0 26px 60px rgba(0,0,0,.5) !important;color:var(--lo-ink);overflow:hidden;
+}
+.photo-edit-box::after,.slideshow-modal::after,.custom-compare-modal::after,.photo-compare-modal::after,#voiceNoteModal .photo-modal::after,#tpaModal .photo-modal::after,#photoDetailModal .photo-modal::after,#exVideoModal>div::after{
+  content:"";position:absolute;inset:0;border-radius:inherit;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.12;pointer-events:none;z-index:3;
+}
+
+/* ── 8. foto bijsnijden ── */
+.photo-edit-box{max-width:350px !important;}
+.photo-edit-header{background:var(--lo-or);border-bottom:2.5px solid var(--lo-ink) !important;padding:12px 14px !important;}
+.photo-edit-title{font-family:"Anton",var(--cond) !important;font-size:21px !important;letter-spacing:.5px;text-transform:uppercase;color:var(--lo-ink) !important;font-weight:400 !important;}
+.photo-edit-stage{border:2.5px solid var(--lo-ink);border-radius:10px !important;box-shadow:3px 3px 0 var(--lo-ink);margin-top:16px !important;}
+.photo-edit-frame{border:2.5px solid var(--lo-yel) !important;border-radius:4px !important;}
+.photo-edit-controls{padding:18px 18px 6px !important;gap:12px !important;}
+.photo-edit-controls>span{font-size:0 !important;width:22px;height:22px;flex-shrink:0;background:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M15.5 15.5L21 21'/%3E%3C/svg%3E") center/22px no-repeat;}
+.photo-edit-controls input[type=range]{accent-color:var(--lo-ink) !important;}
+.pe-aspect-btn{background:var(--lo-paper) !important;border:2px solid var(--lo-ink) !important;border-radius:999px !important;box-shadow:2px 2px 0 var(--lo-ink) !important;font-family:var(--grotesk) !important;font-size:10.5px !important;font-weight:800 !important;padding:7px 12px !important;color:var(--lo-ink) !important;}
+.photo-edit-actions{padding:14px 18px 18px !important;gap:12px !important;}
+.pe-btn{border-radius:12px !important;font-family:var(--grotesk) !important;font-weight:800 !important;font-size:12.5px !important;letter-spacing:.8px;text-transform:uppercase;}
+.pe-btn-secondary{background:var(--lo-paper) !important;color:var(--lo-ink) !important;border:2.5px solid var(--lo-ink) !important;box-shadow:3px 3px 0 var(--lo-ink) !important;}
+
+/* ── 9. diavoorstelling ── */
+.slideshow-modal{max-width:380px !important;padding:10px;}
+.ss-img-wrap{border:2.5px solid var(--lo-ink);border-radius:10px;overflow:hidden;}
+.ss-progress{height:6px !important;background:var(--lo-yel) !important;border-right:2px solid var(--lo-ink);box-sizing:content-box;}
+.ss-label{font-size:13px !important;}
+.ss-dot{font-size:10.5px !important;}
+.ss-close-btn{top:18px !important;right:18px !important;}
+.ss-controls{border-top:0 !important;background:transparent !important;padding:14px 2px 6px !important;gap:11px !important;}
+.ss-btn{width:44px !important;height:44px !important;border-radius:12px !important;background:var(--lo-paper) !important;border:2.5px solid var(--lo-ink) !important;box-shadow:2px 2px 0 var(--lo-ink) !important;color:var(--lo-ink) !important;}
+.ss-btn.ss-play{width:50px !important;height:50px !important;background:var(--lo-yel) !important;color:var(--lo-ink) !important;box-shadow:3px 3px 0 var(--lo-ink) !important;}
+.ss-speed-btn{width:auto !important;height:auto !important;background:var(--lo-or) !important;border-radius:999px !important;padding:9px 13px !important;font-size:10.5px !important;}
+.ss-speed-btn.fast{background:#ffe8f5 !important;}
+
+/* ── 10. spraaknotitie ── */
+#voiceNoteModal .photo-modal{background:var(--lo-or) !important;max-width:360px;}
+#voiceNoteModal .photo-modal>div{position:relative;z-index:1;}
+#vnMicIcon{font-size:0 !important;width:78px;height:78px;margin:0 auto 18px !important;border:2.5px solid var(--lo-ink);border-radius:50%;background:var(--lo-paper) url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='3' width='6' height='11' rx='3'/%3E%3Cpath d='M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7'/%3E%3C/svg%3E") center/40px no-repeat;box-shadow:3px 3px 0 var(--lo-ink);}
+#vnMicIcon[data-rec="1"]{background-color:#ff9d84;animation:loPulse 1.1s ease-in-out infinite;}
+@keyframes loPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+@media (prefers-reduced-motion:reduce){#vnMicIcon[data-rec="1"]{animation:none;}}
+#vnStatus{color:var(--lo-ink) !important;font-family:var(--grotesk) !important;font-size:15px !important;font-weight:600;line-height:1.55 !important;}
+#vnTranscriptPreview{color:var(--lo-brown) !important;font-family:var(--grotesk) !important;font-size:12px !important;}
+#vnDoneBtn{padding:12px 22px !important;}
+
+/* ── 11. oefenvideo ── */
+#exVideoModal>div{background:var(--lo-or) !important;padding:10px;max-width:380px !important;}
+#exVideoModal>div>div:first-child{background:transparent !important;padding:2px 2px 10px !important;position:relative;z-index:4;}
+#exVideoTitle{font-family:"Anton",var(--cond) !important;font-size:18px !important;color:var(--lo-ink) !important;letter-spacing:.4px !important;text-transform:uppercase;font-weight:400 !important;}
+#exVideoModal>div>div:nth-child(2){border:2.5px solid var(--lo-ink);border-radius:10px;box-shadow:3px 3px 0 var(--lo-ink);}
+#exVideoTip{color:var(--lo-brown) !important;font-family:var(--grotesk) !important;font-size:12px !important;border-top:0 !important;padding:12px 2px 2px !important;}
+
+/* ── 12. foto-analyse (wachtwoord) ── */
+#tpaModal .photo-modal{background:var(--lo-or) !important;max-width:350px !important;}
+#tpaLock{position:relative;z-index:1;padding:44px 22px 26px !important;}
+#tpaLock>div:first-child{font-size:0 !important;width:78px;height:78px;margin:0 auto 18px !important;border:2.5px solid var(--lo-ink);border-radius:50%;background:var(--lo-paper) url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='5' y='10.5' width='14' height='10' rx='2.5'/%3E%3Cpath d='M8 10.5V8a4 4 0 0 1 8 0v2.5M12 15v2'/%3E%3C/svg%3E") center/38px no-repeat;box-shadow:3px 3px 0 var(--lo-ink);}
+#tpaLock>div:nth-child(2){color:var(--lo-ink) !important;font-family:"Anton",var(--cond) !important;font-size:19px !important;font-weight:400 !important;letter-spacing:.4px;text-transform:uppercase;}
+#tpaPassInput{background:var(--lo-paper) !important;color:var(--lo-ink) !important;border:2.5px solid var(--lo-ink) !important;border-radius:12px !important;font-family:var(--grotesk) !important;font-size:15px !important;font-weight:600;box-shadow:inset 2px 2px 0 rgba(10,10,10,.1);}
+#tpaPassInput::placeholder{color:var(--lo-brown);opacity:.7;}
+#tpaContent{position:relative;z-index:1;}
+#tpaImg{border-bottom:2.5px solid var(--lo-ink);}
+#tpaEmpty,#tpaLabel{color:var(--lo-brown) !important;font-family:var(--grotesk) !important;font-size:12.5px !important;}
+
+/* ── 13. foto's vergelijken (+ foto-detail) ── */
+.custom-compare-modal,.photo-compare-modal{width:100%;max-width:400px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 14px 16px;box-sizing:border-box;}
+.cc-header{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:0 44px 12px 0;position:relative;z-index:1;}
+.cc-title{font-family:"Anton",var(--cond);font-size:24px;letter-spacing:.4px;text-transform:uppercase;line-height:1;}
+.cc-hint{font-family:var(--grotesk);font-size:10.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;background:var(--lo-yel);border:2px solid var(--lo-ink);border-radius:999px;padding:4px 10px;box-shadow:2px 2px 0 var(--lo-ink);}
+.cc-close{top:14px !important;right:14px !important;z-index:6 !important;}
+.cc-picker{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:4px 0 14px;}
+.cc-thumb{position:relative;background:var(--lo-paper);border:2px solid var(--lo-ink);border-radius:10px;padding:4px;box-shadow:2px 2px 0 var(--lo-ink);cursor:pointer;transition:transform .12s,box-shadow .12s,background .12s;}
+.cc-thumb-img{aspect-ratio:3/4;background-size:cover;background-position:center;background-color:#1a1a1a;border:1.5px solid var(--lo-ink);border-radius:6px;}
+.cc-thumb-lbl{font-family:var(--grotesk);font-weight:800;font-size:10.5px;text-align:center;margin-top:4px;letter-spacing:.4px;text-transform:uppercase;}
+.cc-thumb.cc-selected{background:var(--lo-yel);transform:translate(1px,1px);box-shadow:1px 1px 0 var(--lo-ink);}
+.cc-thumb.cc-selected::after{content:"✓";position:absolute;top:-7px;right:-7px;width:20px;height:20px;border-radius:50%;background:var(--lo-ink);color:var(--lo-yel);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.cc-panel{position:relative;z-index:1;border-top:2.5px dashed var(--lo-ink);padding-top:14px;}
+.cc-compare-grid,.pc-grid{display:grid;grid-template-columns:1fr 4px 1fr;gap:9px;align-items:stretch;position:relative;z-index:1;}
+.cc-divider,.pc-divider{background:var(--lo-ink);border-radius:2px;}
+.cc-photo,.pc-photo{aspect-ratio:3/4;background-size:cover;background-position:center;background-color:#1a1a1a;border:2.5px solid var(--lo-ink);border-radius:10px;box-shadow:3px 3px 0 var(--lo-ink);}
+.cc-label-row{display:grid;grid-template-columns:1fr 4px 1fr;gap:9px;margin-top:12px;}
+.cc-label-row>div:nth-child(2){width:auto !important;background:transparent !important;}
+.cc-lbl,.pc-label{font-family:var(--grotesk);font-weight:800;font-size:11px;text-align:center;background:var(--lo-or);border:2px solid var(--lo-ink);border-radius:8px;padding:6px 4px;box-shadow:2px 2px 0 var(--lo-ink);}
+.pc-side{position:relative;z-index:1;}
+.photo-compare-modal .photo-modal-close{top:14px;right:14px;}
+.photo-compare-modal .pc-grid{margin-top:34px;}
+#photoDetailModal .photo-modal{padding:10px;max-width:380px;}
+#photoDetailModal .photo-modal img{border:2.5px solid var(--lo-ink);border-radius:10px;box-shadow:3px 3px 0 var(--lo-ink);}
+#photoDetailModal .photo-modal-close{top:18px;right:18px;}
+#pdLabel{color:var(--lo-brown) !important;font-family:var(--grotesk) !important;font-size:12px !important;font-weight:700;}
+
+/* ── 4. TV-gids ── */
+.epg-wrap{background:var(--lo-sage) !important;}
+.epg-header{position:relative;margin:12px 14px 0;border:2.5px solid var(--lo-ink);border-radius:14px;box-shadow:3px 3px 0 var(--lo-ink);overflow:hidden;
+  background:radial-gradient(120% 90% at 20% 10%,rgba(255,244,214,.6),rgba(255,244,214,0) 60%),radial-gradient(90% 80% at 100% 100%,rgba(236,170,92,.4),rgba(236,170,92,0) 70%),var(--lo-or) !important;}
+.epg-header::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.13;pointer-events:none;}
+.epg-nav-row{border-bottom:0 !important;padding:14px 16px 2px !important;}
+.epg-nav-date{font-family:"Anton",var(--cond) !important;font-size:30px !important;letter-spacing:.6px !important;color:var(--lo-ink) !important;line-height:1.05;font-weight:400 !important;text-align:left !important;}
+.epg-header>div:nth-child(2){color:var(--lo-brown) !important;font-size:11px !important;letter-spacing:1.6px !important;text-align:left !important;padding:0 16px 14px !important;font-weight:700;}
+.epg-wrap>div:nth-child(2){font-family:var(--grotesk) !important;font-size:12.5px !important;color:var(--lo-brown) !important;line-height:1.5 !important;text-align:left !important;padding:12px 18px 6px !important;}
+.tv-shared-scroll{border:2.5px solid var(--lo-ink) !important;border-radius:14px !important;box-shadow:3px 3px 0 var(--lo-ink);background:var(--lo-paper);}
+.tv-shared-header{background:var(--lo-or) !important;border-bottom:2.5px solid var(--lo-ink) !important;}
+.tv-srow-chan-spacer{background:var(--lo-or) !important;width:64px !important;border-right:2.5px solid var(--lo-ink);}
+.tv-hourmark{font-family:"Anton",var(--cond) !important;font-size:11px !important;letter-spacing:.5px;color:var(--lo-ink) !important;border-left:1.5px dashed rgba(10,10,10,.45) !important;padding:4px 0 0 5px !important;font-weight:400 !important;}
+.tv-hourmarks{height:26px !important;}
+.tv-srow{border-top:2px solid var(--lo-ink) !important;}
+.tv-srow-chan{width:64px !important;border-right:2.5px solid var(--lo-ink);padding:7px 3px !important;position:sticky;overflow:hidden;}
+.tv-srow-chan::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.14;pointer-events:none;}
+.tv-srow-chan span:first-child{font-size:17px !important;}
+.tv-row-name{font-family:var(--grotesk) !important;font-size:10px !important;font-weight:800 !important;letter-spacing:.2px;text-shadow:0 1px 0 rgba(10,10,10,.45);}
+.tv-srow-track{min-height:52px !important;background:var(--lo-paper);}
+.tv-sblock{border-right:2px solid var(--lo-ink) !important;padding:6px 8px !important;background:var(--lo-cream);}
+.tv-block-time{font-family:var(--grotesk) !important;font-size:10px !important;font-weight:800 !important;color:var(--lo-brown) !important;}
+.tv-block-title{font-family:var(--grotesk) !important;font-size:11.5px !important;font-weight:700;color:var(--lo-ink) !important;margin-top:2px !important;}
+.tv-block-now{background:var(--lo-yel) !important;}
+.tv-nowline-shared{width:3px !important;background:#d9602b !important;box-shadow:0 0 0 1px var(--lo-ink);}
+.tv-srow-fallback{font-family:var(--grotesk) !important;font-size:12px !important;color:var(--lo-brown) !important;background:var(--lo-paper);}
+#tvTimelineRows{padding:14px 14px 22px !important;}
+
+/* ── 5+6. wedstrijden & promo's: merkkleur blijft, maar als tegel ── */
+.lo-eyebrow{font-family:var(--cond);font-weight:700;font-size:10.5px;letter-spacing:2px;text-transform:uppercase;color:var(--lo-brown);margin:0 2px 14px;}
+.lo-brand{position:relative;display:flex;align-items:center;gap:14px;padding:14px 14px;margin-bottom:16px;border:2.5px solid var(--lo-ink);border-radius:14px;box-shadow:3px 3px 0 var(--lo-ink);cursor:pointer;overflow:hidden;color:var(--tc,#fff);
+  background:radial-gradient(120% 110% at 15% 0,rgba(255,255,255,.28),rgba(255,255,255,0) 58%),var(--bc);transition:transform .12s,box-shadow .12s;-webkit-tap-highlight-color:transparent;}
+.lo-brand::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.14;pointer-events:none;}
+.lo-brand:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--lo-ink);}
+.lo-brand-logo{position:relative;z-index:1;width:52px;height:52px;flex-shrink:0;background:var(--lo-paper);border:2.5px solid var(--lo-ink);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:2px 2px 0 var(--lo-ink);}
+.lo-brand-logo img{width:100%;height:100%;object-fit:contain;padding:6px;box-sizing:border-box;display:block;}
+.lo-brand-logo span{display:none;font-family:"Anton",var(--cond);font-size:24px;color:var(--lo-ink);align-items:center;justify-content:center;width:100%;height:100%;}
+.lo-brand-txt{position:relative;z-index:1;flex:1;min-width:0;}
+.lo-brand-n{font-family:"Anton",var(--cond);font-size:21px;line-height:1.05;letter-spacing:.5px;text-transform:uppercase;overflow-wrap:anywhere;}
+.lo-brand-s{font-family:var(--grotesk);font-size:12px;font-weight:600;margin-top:3px;opacity:.92;}
+.lo-brand-go{position:relative;z-index:1;width:32px;height:32px;flex-shrink:0;border:2.5px solid var(--lo-ink);border-radius:50%;background:var(--lo-paper);color:var(--lo-ink);display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;line-height:1;box-shadow:2px 2px 0 var(--lo-ink);}
+
+/* ── 7. Axxes ── */
+#axxesContent .axxes-header{position:relative;border:2.5px solid var(--lo-ink) !important;border-radius:14px !important;box-shadow:3px 3px 0 var(--lo-ink) !important;overflow:hidden;padding:20px 18px !important;
+  background:radial-gradient(120% 100% at 15% 0,rgba(255,255,255,.12),rgba(255,255,255,0) 60%),#1b2740 !important;}
+#axxesContent .axxes-header::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.2;pointer-events:none;mix-blend-mode:screen;}
+#axxesContent .axxes-header img{height:26px !important;}
+#axxesContent .axxes-header .axxes-sub{font-family:var(--cond) !important;font-size:11px !important;font-weight:700;letter-spacing:2px !important;color:var(--lo-or) !important;margin-top:10px !important;}
+#axxesContent .axxes-notebook-btn{background:var(--lo-yel) !important;color:var(--lo-ink) !important;border:2.5px solid var(--lo-ink) !important;border-radius:12px !important;box-shadow:3px 3px 0 var(--lo-ink) !important;font-size:12.5px !important;font-weight:800 !important;letter-spacing:.8px !important;padding:14px !important;}
+#axxesContent .axxes-notebook-btn:active{transform:translate(2px,2px) !important;box-shadow:1px 1px 0 var(--lo-ink) !important;}
+#axxesContent .axxes-upload-box{position:relative;background:var(--lo-cream) !important;border:2.5px dashed var(--lo-ink) !important;border-radius:14px !important;box-shadow:3px 3px 0 var(--lo-ink) !important;padding:20px 16px !important;overflow:hidden;}
+#axxesContent .axxes-upload-box::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.12;pointer-events:none;}
+#axxesContent .axxes-upload-box .aui{font-size:0 !important;width:50px;height:50px;margin:0 auto;border:2.5px solid var(--lo-ink);border-radius:50%;background:var(--lo-yel) url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 17V5M6.5 10.5L12 5l5.5 5.5M5 20h14'/%3E%3C/svg%3E") center/26px no-repeat;box-shadow:2px 2px 0 var(--lo-ink);}
+#axxesContent .axxes-upload-box .aut{font-family:"Anton",var(--cond) !important;font-size:19px !important;font-weight:400 !important;letter-spacing:.5px;text-transform:uppercase;color:var(--lo-ink) !important;margin-top:12px !important;}
+#axxesContent .axxes-upload-box .aus{font-size:11.5px !important;color:var(--lo-brown) !important;margin-top:5px !important;line-height:1.45;font-weight:500;text-transform:none;letter-spacing:0;}
+#axxesContent .axxes-list-lbl{font-family:var(--cond) !important;font-size:11px !important;letter-spacing:2px !important;color:var(--lo-brown) !important;margin:6px 16px 10px !important;}
+#axxesContent .axxes-rec{position:relative;background:var(--lo-paper) !important;border:2.5px solid var(--lo-ink) !important;border-radius:12px !important;box-shadow:3px 3px 0 var(--lo-ink) !important;padding:12px 14px !important;margin:0 14px 12px !important;overflow:hidden;}
+#axxesContent .axxes-rec::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.1;pointer-events:none;}
+#axxesContent .axxes-rec-ico{background:var(--lo-or) !important;border:2px solid var(--lo-ink) !important;font-size:0 !important;width:38px !important;height:38px !important;border-radius:50% !important;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230a0a0a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='9' y='3' width='6' height='11' rx='3'/%3E%3Cpath d='M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7'/%3E%3C/svg%3E") !important;background-position:center !important;background-size:20px !important;background-repeat:no-repeat !important;}
+#axxesContent .axxes-rec-t{font-size:14px !important;font-weight:700 !important;color:var(--lo-ink) !important;}
+#axxesContent .axxes-rec-s{font-size:11.5px !important;color:var(--lo-brown) !important;}
+#axxesContent .axxes-rec-del{color:var(--lo-ink) !important;font-size:16px !important;font-weight:800;}
+#axxesContent .axxes-empty{font-size:12.5px !important;color:var(--lo-brown) !important;margin:0 14px;border:2.5px dashed var(--lo-ink);border-radius:14px;background:var(--lo-cream);line-height:1.5;font-weight:500;}
+
+.epg-header .lo-live::before{content:"";display:inline-block;width:9px;height:9px;border-radius:50%;background:#d9602b;border:1.5px solid var(--lo-ink);margin-right:8px;vertical-align:-1px;}
+
+/* ═══ Postzegel-look alleen in het menu onderaan: weer-onderdelen als gewone tegels (rand, afgeronde hoeken, harde schaduw, korrel) ═══ */
+.wxs{filter:none !important;transition:transform .12s ease;}
+.wxs:active{transform:translate(2px,2px) !important;filter:none !important;}
+.wxp{-webkit-mask-image:none !important;mask-image:none !important;border:2.5px solid #0a0a0a;border-radius:12px;box-shadow:3px 3px 0 #0a0a0a;box-sizing:border-box;overflow:hidden;transition:box-shadow .12s ease;}
+.wxs:active .wxp{box-shadow:1px 1px 0 #0a0a0a;}
+.wx-x .wxp,.wxB-nav .arr .wxp,.lo-loc .hd .wxp,.wxR-blok .wxp{border-radius:10px;}
+.wx-loc .wxp{border-radius:10px;}
+.wxp.g{background:var(--lo-yel) !important;}
+.wxB-seg .th{background:var(--lo-yel) !important;}
+
+
+/* ═══ Afspraken: keuzepagina, "Nog te plannen", datumvelden in het afspraakformulier ═══ */
+#calUndView{padding:12px 12px 28px;}
+#calUndView .nt-wrap{display:flex;flex-direction:column;gap:12px;}
+.nt-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;border:2.5px solid #0a0a0a;border-radius:12px;box-shadow:3px 3px 0 #0a0a0a;padding:10px 12px;font-family:var(--grotesk);}
+.nt-bar b{font-size:15px;font-weight:700;}
+.nt-x{width:34px;height:34px;border:2.5px solid #0a0a0a;border-radius:10px;background:#ffdfa7;box-shadow:2px 2px 0 #0a0a0a;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;cursor:pointer;padding:0;color:#0a0a0a;position:relative;overflow:hidden;}
+.nt-x:active{transform:translate(2px,2px);box-shadow:0 0 0 #0a0a0a;}
+.nt-tile,.nt-card,.nt-cta,.nt-seg,.nt-swrap .nt-seg{position:relative;}
+.nt-tile::after,.nt-card::after,.nt-cta::after,.nt-seg::after,.nt-x::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.12;pointer-events:none;border-radius:inherit;}
+.nt-tile{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#ffdfa7;border:2.5px solid #0a0a0a;border-radius:12px;box-shadow:3px 3px 0 #0a0a0a;padding:12px 14px;overflow:hidden;cursor:pointer;font-family:var(--grotesk);color:#0a0a0a;-webkit-tap-highlight-color:transparent;}
+.nt-tile:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #0a0a0a;}
+.nt-tile>*{position:relative;z-index:1;}
+.nt-tile .ic{width:52px;height:52px;flex:none;border:2.5px solid #0a0a0a;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;}
+.nt-tile h3{margin:0;font-family:"Anton",var(--cond);font-weight:400;font-size:20px;letter-spacing:.4px;text-transform:uppercase;line-height:1.1;}
+.nt-tile p{margin:3px 0 0;font-size:10.5px;font-weight:600;letter-spacing:.5px;color:#6a4a2a;text-transform:uppercase;}
+.nt-tile i{margin-left:auto;font-style:normal;font-size:22px;font-weight:700;}
+.nt-cnt{display:inline-block;background:#0a0a0a;color:#fff;font-family:var(--grotesk);font-size:10px;font-weight:700;border-radius:10px;padding:2px 8px;margin-left:6px;vertical-align:2px;line-height:1.2;font-style:normal;letter-spacing:0;}
+.nt-note-p{font-family:var(--body);font-size:11px;color:#6a4a2a;padding:0 4px;line-height:1.45;}
+/* wisselknop Lijstvorm / Nog te plannen */
+.nt-seg{display:grid;grid-template-columns:1fr 1fr;border:2.5px solid #0a0a0a;border-radius:12px;background:#ffdfa7;box-shadow:3px 3px 0 #0a0a0a;overflow:hidden;}
+.nt-seg>span{position:relative;z-index:1;text-align:center;padding:11px 4px;font-family:var(--grotesk);font-weight:700;font-size:12px;letter-spacing:1.3px;text-transform:uppercase;cursor:pointer;color:#0a0a0a;}
+.nt-seg>span+span{border-left:2.5px solid #0a0a0a;}
+.nt-seg>span.on{background:#ffd94a;}
+.nt-swrap{margin:0 12px;background:#fff;border:1.5px solid #0a0a0a;border-top:none;border-bottom:none;padding:10px 10px 4px;}
+#agSwitch + .bud-head{border-top:none !important;}
+.nt-cta{background:#ffd94a;border:2.5px solid #0a0a0a;border-radius:12px;box-shadow:3px 3px 0 #0a0a0a;font-family:var(--grotesk);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:11px 14px;text-align:center;cursor:pointer;width:100%;color:#0a0a0a;overflow:hidden;}
+.nt-cta:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #0a0a0a;}
+.nt-card{background:#fffaf0;border:2.5px solid #0a0a0a;border-radius:12px;box-shadow:3px 3px 0 #0a0a0a;padding:14px 14px 12px;overflow:hidden;}
+.nt-card>*{position:relative;z-index:1;}
+.nt-card h4{margin:0;font-family:var(--grotesk);font-size:15px;font-weight:700;padding-right:96px;}
+.nt-card .sub{font-family:var(--body);font-size:11.5px;color:#6a4a2a;margin-top:3px;line-height:1.4;white-space:pre-wrap;}
+.nt-tag{position:absolute !important;right:0;top:0;background:#0a0a0a;color:#fff;font-family:var(--grotesk);font-size:8px;font-weight:700;letter-spacing:1.4px;padding:4px 9px;border-radius:0 9px 0 9px;z-index:2;}
+.nt-chip{display:inline-block;border:2px solid #0a0a0a;border-radius:9px;font-family:var(--grotesk);font-size:10px;font-weight:700;padding:2px 8px;background:#fff;margin:8px 5px 0 0;}
+.nt-row{display:flex;gap:8px;margin-top:10px;}
+.nt-sm{flex:1;text-align:center;border:2px solid #0a0a0a;border-radius:9px;background:#fff;box-shadow:2px 2px 0 #0a0a0a;font-family:var(--grotesk);font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:8px 4px;cursor:pointer;color:#0a0a0a;}
+.nt-sm.y{background:#ffd94a;}
+.nt-sm:active{transform:translate(1px,1px);box-shadow:0 0 0 #0a0a0a;}
+.nt-empty{text-align:center;background:#fffaf0;border:2.5px dashed #0a0a0a;border-radius:12px;padding:22px 14px;font-family:var(--grotesk);font-size:12px;font-weight:600;color:#6a4a2a;line-height:1.5;}
+/* afspraakformulier */
+#evDateBlock .nt-tgrow{display:flex;align-items:center;gap:10px;margin:0 0 9px;font-family:var(--grotesk);font-size:11px;font-weight:700;letter-spacing:.8px;}
+.nt-sw{width:46px;height:26px;border:2.5px solid #0a0a0a;border-radius:14px;background:#fff;position:relative;cursor:pointer;flex:none;transition:background .15s;}
+.nt-sw i{position:absolute;top:2px;left:3px;width:16px;height:16px;border-radius:50%;background:#0a0a0a;transition:left .15s;}
+.nt-sw.on{background:#ffd94a;}.nt-sw.on i{left:21px;}
+#evDateBlock .nt-f2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+#evDateBlock .nt-f2 .ev-input{min-width:0;width:100%;}
+#evDateBlock .nt-endrow{display:flex;gap:6px;align-items:stretch;}
+#evDateBlock .nt-endrow .ev-input{flex:1;}
+#evDateBlock .nt-clr{border:2px solid #0a0a0a;border-radius:10px;background:#fff;width:34px;font-size:13px;cursor:pointer;padding:0;color:#0a0a0a;}
+#evDurRow{margin-top:8px;font-family:var(--body);font-size:11px;color:#6a4a2a;display:flex;align-items:center;gap:8px;min-height:22px;}
+.nt-dur{display:inline-block;background:#ffd94a;border:2px solid #0a0a0a;border-radius:9px;font-family:var(--grotesk);font-size:10.5px;font-weight:700;padding:3px 9px;letter-spacing:.8px;}
+#evUndNote{border:2px dashed #0a0a0a;border-radius:10px;background:#fff7cf;padding:9px 11px;font-family:var(--grotesk);font-size:11px;font-weight:600;line-height:1.4;}
+
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -4557,7 +4913,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · zegels</div>
+    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 3</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -4754,8 +5110,8 @@ function qtSkateLoaderHtml(text){
       <button onclick="qtAgList.open()" class="cal-other-btn" id="calListBtn">
         <div class="cal-other-btn-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#0a0a0a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2"/><circle cx="4.5" cy="12" r="1.2"/><circle cx="4.5" cy="18" r="1.2"/></svg></div>
         <div class="cal-other-btn-txt">
-          <div class="cal-other-btn-title">Afspraken in lijstvorm</div>
-          <div class="cal-other-btn-sub">Alle afspraken per maand en per dag</div>
+          <div class="cal-other-btn-title">Afspraken</div>
+          <div class="cal-other-btn-sub">Lijstvorm · Nog te plannen</div>
         </div>
         <div class="cal-other-btn-arrow">›</div>
       </button>
@@ -4776,11 +5132,6 @@ function qtSkateLoaderHtml(text){
 
     <!-- VARIA GRID — icoon tiles, alles in één scherm -->
     <div id="variaGrid" class="varia-grid">
-      <div class="varia-tile" id="vt-noco" onclick="variaOpen('noco')">
-        <div class="varia-tile-ic"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#0a0a0a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 4v-4H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"/></svg></div>
-        <div class="varia-tile-lbl">Notities</div>
-        <div class="varia-tile-sub" id="vtSub-noco">Notities</div>
-      </div>
       <div class="varia-tile" id="vt-shop" onclick="variaOpen('shop')">
         <div class="varia-tile-ic"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#0a0a0a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3h2l2.4 12.2a2 2 0 0 0 2 1.6h8.4a2 2 0 0 0 2-1.6L21 7H6"/></svg></div>
         <div class="varia-tile-lbl">Boodschappen</div>
@@ -7888,7 +8239,7 @@ function parseGcalEventsToCache(items) {
 async function fetchGcalEventsFromApi() {
   const now = new Date();
   const timeMin = new Date(now.getFullYear(), now.getMonth()-2, 1).toISOString();
-  const timeMax = new Date(now.getFullYear(), now.getMonth()+6, 1).toISOString();
+  const timeMax = new Date(now.getFullYear(), now.getMonth()+12, 1).toISOString();
   const params = new URLSearchParams({
     timeMin, timeMax, singleEvents: 'true', orderBy: 'startTime', maxResults: '2500'
   });
@@ -7908,7 +8259,7 @@ async function refreshGcalReadCache(silent=true) {
     // losse ICS-feed) blijven altijd gewoon staan, die worden hier niet geraakt.
     const now = new Date();
     const rangeStart = new Date(now.getFullYear(), now.getMonth()-2, 1);
-    const rangeEnd = new Date(now.getFullYear(), now.getMonth()+6, 1);
+    const rangeEnd = new Date(now.getFullYear(), now.getMonth()+12, 1);
     Object.keys(icsCache).forEach(function(key){
       const d = new Date(key + 'T12:00:00');
       if(d < rangeStart || d > rangeEnd) return;
@@ -9804,7 +10155,7 @@ function exportQualityTimeData() {
                'wf_notes','wf_done','wf_liked','wf_rejected','wf_settings',
                'wf_gcal_tokens','wf_events','wf_kids_events','wf_kal_afwijking',
                'wf_ics_cache','wf_diff','wf_shop','wf_profielen','qtZangSessionLog',
-               'wf_qtr_recipes','wf_qtr_tags','wf_qtr_plan','wf_hz_places','wf_hz_plan','wf_hz_labels'];
+               'wf_qtr_recipes','wf_qtr_tags','wf_qtr_plan','wf_hz_places','wf_hz_plan','wf_hz_labels','wf_undated_events'];
   var data = {};
   keys.forEach(function(k){
     var v = localStorage.getItem(k);
@@ -24323,9 +24674,11 @@ function hzSite(id) {
       var grid = hzE('actCatGrid'); if(!grid) return r;
       var n = hzPlaces.length;
       var old = hzE('hzTile'); if(old) old.parentNode.removeChild(old);
-      var t = document.createElement('div'); t.id = 'hzTile'; t.className = 'hz-tile';
+      var t = document.createElement('div'); t.id = 'hzTile';
       t.setAttribute('onclick', 'hzOpen()');
-      t.innerHTML = '<div class="hz-tile-ic">🍽️</div><div style="flex:1;min-width:0"><div class="hz-tile-t">Horeca</div><div class="hz-tile-s">' + (n ? n + (n === 1 ? ' zaak' : ' zaken') + ' · restaurants, cafés, terrassen' : 'Restaurants, cafés en terrassen') + '</div></div><div class="hz-tile-go">›</div>';
+      // zelfde opmaak als de andere categorietegels
+      t.setAttribute('style', 'background:#fff;border-radius:16px;padding:16px 8px 14px;text-align:center;cursor:pointer;border:1.5px solid #ece0d0;box-shadow:0 2px 8px rgba(61,26,10,.07);transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:5px;');
+      t.innerHTML = '<div style="font-size:28px;line-height:1">🍽️</div><div style="font-family:var(--grotesk);font-size:11px;font-weight:700;color:#2c1208;line-height:1.2">Horeca</div>';
       grid.appendChild(t);
     } catch(e) {}
     return r;
@@ -24930,7 +25283,8 @@ function mk(bar){
     var live=document.createElement('div');live.className='nv-live';
     live.appendChild(img(GR[i],'nv-g'));
     var sh=document.createElement('div');sh.className='nv-sheen';live.appendChild(sh);
-    clip.appendChild(live);t.appendChild(clip);wrap.appendChild(t);
+    clip.appendChild(live);t.appendChild(clip);
+    var gr=document.createElement('div');gr.className='nv-grain';gr.style.webkitMaskImage=gr.style.maskImage='url('+CR[i]+')';t.appendChild(gr);wrap.appendChild(t);
     tiles.push({el:t,live:live,sh:sh});
   }
   tabs.forEach(function(t){wrap.appendChild(t);});
@@ -25026,6 +25380,439 @@ window.qtNav={
   rest:function(i){var st=bars[0];if(!st)return;if(st.raf){cancelAnimationFrame(st.raf);st.raf=0;}paint(st,cellL(i),cellR(i),0,0);}
 };
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+
+</script>
+<script>
+/* ═══ LAY OUT — weer (uur/regen/locatie), Promo's, Wedstrijden, spraaknotitie-icoon ═══ */
+(function(){
+function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function st(cls,inner,extra,attrs){return '<div class="wxs '+(extra||'')+'"'+(attrs||'')+'><div class="wxp '+cls+'">'+inner+'</div></div>';}
+var WMO=[0,1,2,3,45,48,51,53,55,61,63,65,71,73,75,80,81,82,95,96,99];
+var ICNS=['☀️','🌤️','⛅','🌥️','🌫️','🌫️','🌦️','🌦️','🌧️','🌧️','🌧️','🌧️','🌨️','🌨️','🌨️','🌦️','🌧️','⛈️','⛈️','⛈️','⛈️'];
+function wmoIcon(c){var i=WMO.indexOf(parseInt(c));return i>=0?ICNS[i]:'🌤️';}
+function pad(n){return String(n).padStart(2,'0');}
+function msg(icon,txt){return '<div class="wx"><div class="wx-msg"><div class="big">'+icon+'</div>'+txt+'</div></div>';}
+
+/* ── regengrafiek (SVG) in de stijl van de zegels ── */
+function chart(slots,isToday,nowH,mode){
+  var n=slots.length,W=320,H=150,pl=30,pr=10,pt=22,pb=26,gw=W-pl-pr,gh=H-pt-pb;
+  var mx=Math.max.apply(null,slots.map(function(s){return s.prec;}));
+  var dry=mx<.05;
+  var ym=dry?1:mx<=1?1:mx<=2?2:mx<=4?4:mx<=6?6:Math.ceil(mx/2)*2;
+  var ticks=ym<=1?[0,1]:ym<=2?[0,1,2]:ym<=4?[0,2,4]:ym<=6?[0,2,4,6]:[0,ym/2,ym];
+  var g='',yl='';
+  ticks.forEach(function(v){var y=pt+gh-(v/ym)*gh;
+    g+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y+'" y2="'+y+'" stroke="#0a0a0a" stroke-opacity="'+(v===0?'.9':'.2')+'" stroke-width="'+(v===0?'2':'1')+'" '+(v===0?'':'stroke-dasharray="3 3"')+'/>';
+    yl+='<text x="'+(pl-6)+'" y="'+(y+3.5)+'" text-anchor="end" font-family="Anton,sans-serif" font-size="10" fill="#5a3c1e">'+v+'</text>';});
+  function X(i){return pl+(n>1?i/(n-1):.5)*gw;}
+  var pts=slots.map(function(s,i){return [X(i),pt+gh-Math.min(1,s.prec/ym)*gh];});
+  function cm(p0,p1,p2,p3){return [p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6,p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];}
+  var d='M'+pts[0][0]+' '+pts[0][1];
+  for(var i=0;i<pts.length-1;i++){
+    var c=cm(pts[Math.max(0,i-1)],pts[i],pts[i+1],pts[Math.min(pts.length-1,i+2)]);
+    var y1=Math.min(pt+gh,Math.max(pt,c[1])),y2=Math.min(pt+gh,Math.max(pt,c[3]));
+    d+=' C'+c[0].toFixed(1)+' '+y1.toFixed(1)+' '+c[2].toFixed(1)+' '+y2.toFixed(1)+' '+pts[i+1][0].toFixed(1)+' '+pts[i+1][1].toFixed(1);
+  }
+  var area=d+' L'+pts[pts.length-1][0]+' '+(pt+gh)+' L'+pts[0][0]+' '+(pt+gh)+' Z';
+  var xl='';
+  slots.forEach(function(s,i){
+    var show=n>12?([0,4,8,12,16,20,23].indexOf(s.hour)>-1):true;
+    if(show)xl+='<text x="'+X(i).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" font-family="Anton,sans-serif" font-size="10" fill="#5a3c1e">'+(n>12?pad(s.hour):pad(s.hour)+':00')+'</text>';
+  });
+  var now='';
+  if(isToday&&n>1){
+    var ni=-1;for(var k=0;k<n;k++){if(slots[k].hour>=nowH){ni=k;break;}}
+    if(ni>=0){var nx=X(ni);
+      now='<line x1="'+nx+'" x2="'+nx+'" y1="'+(pt-6)+'" y2="'+(pt+gh)+'" stroke="#d9602b" stroke-width="2" stroke-dasharray="4 3"/><rect x="'+(nx-12)+'" y="'+(pt-18)+'" width="24" height="13" rx="3" fill="#ffdfa7" stroke="#0a0a0a" stroke-width="1.6"/><text x="'+nx+'" y="'+(pt-8)+'" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="9.5" letter-spacing="1" fill="#0a0a0a">NU</text>';}
+  }
+  var peak='';
+  if(!dry){
+    var pk=slots.reduce(function(a,s){return s.prec>a.prec?s:a;},slots[0]),pi=slots.indexOf(pk);
+    var px=pts[pi][0],py=pts[pi][1],right=px>W-70;
+    peak='<circle cx="'+px+'" cy="'+py+'" r="4.5" fill="#fff" stroke="#0a0a0a" stroke-width="2"/><text x="'+(right?px-9:px+9)+'" y="'+(py-6)+'" text-anchor="'+(right?'end':'start')+'" font-family="Anton,sans-serif" font-size="12" fill="#0a0a0a">'+pk.prec.toFixed(1)+' mm</text>';
+  }
+  var dryMsg=dry?'<text x="'+(pl+gw/2)+'" y="'+(pt+gh/2)+'" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="12" letter-spacing="1.5" fill="#5a3c1e">GEEN NEERSLAG VERWACHT</text>':'';
+  return '<svg viewBox="0 0 '+W+' '+H+'"><defs><pattern id="wxh" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="5" fill="#8cc9f2"/><line x1="0" y1="0" x2="0" y2="5" stroke="#4d9fd8" stroke-width="2"/></pattern></defs>'
+    +g+yl+xl+(dry?'':'<path d="'+area+'" fill="url(#wxh)" opacity=".95"/>')+'<path d="'+d+'" fill="none" stroke="#0a0a0a" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>'
+    +now+peak+dryMsg+'<text x="9" y="'+(pt+gh/2)+'" transform="rotate(-90 9 '+(pt+gh/2)+')" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="9.5" letter-spacing="1.4" fill="#5a3c1e">REGEN (MM)</text></svg>';
+}
+
+function regenBody(dateStr,isToday,nowH){
+  var raw=window._weatherRawHourly;
+  if(!raw||!raw.time)return msg('🌫️','Regendata nog niet geladen');
+  var day=[];
+  raw.time.forEach(function(t,i){if(t.startsWith(dateStr))day.push({hour:parseInt(t.slice(11,13)),prec:(raw.precipitation&&raw.precipitation[i]!=null)?raw.precipitation[i]:0});});
+  if(!day.length)return msg('📭','Geen data voor deze dag');
+  var show;
+  if(regenGrafiekModus==='4u'){
+    var sh=(window._regenBlokStart!=null)?window._regenBlokStart:(isToday?Math.floor(nowH/4)*4:0);
+    regenBlokStart=sh;
+    show=day.filter(function(s){return s.hour>=sh&&s.hour<=sh+4;});
+  }else show=day;
+  if(!show.length)show=day;
+  var tot=show.reduce(function(a,s){return a+s.prec;},0);
+  var pk=show.reduce(function(a,s){return s.prec>a.prec?s:a;},show[0]);
+  var isDry=tot<.05,is4=regenGrafiekModus==='4u';
+  var h='';
+  h+='<div class="wxR-tog">'+st(is4?'o':'g','24 uur','',' onclick="regenGrafiekModus=\'24u\';window._regenBlokStart=null;_renderWeerDetail()"')+st(is4?'g':'o','Per 4 uur','',' onclick="regenGrafiekModus=\'4u\';_renderWeerDetail()"')+'</div>';
+  if(is4){
+    var bs=regenBlokStart;
+    h+='<div class="wxR-blok">'+st('o','‹','',' onclick="changeRegenBlok(-1)" aria-label="Vorig blok"')+'<div class="lbl">'+pad(bs)+'–'+pad(Math.min(23,bs+4))+'U</div>'+st('o','›','',' onclick="changeRegenBlok(1)" aria-label="Volgend blok"')+'</div>';
+  }
+  h+='<div class="wxR-stats">'
+    +st('o','<div class="k">'+(is4?'Blok totaal':'Dag totaal')+'</div><div class="v'+(isDry?' dry':'')+'" style="'+(isDry?'':'color:#1f6aa5')+'">'+tot.toFixed(1)+' mm</div>')
+    +(isDry?st('o','<div class="k">Status</div><div class="v s dry">Droog</div>'):st('o','<div class="k">Piek</div><div class="v s">'+pad(pk.hour)+':00 · '+pk.prec.toFixed(1)+' mm</div>'))
+    +'</div>';
+  h+='<div class="wxR-chart">'+st('',chart(show,isToday,nowH,regenGrafiekModus))+'</div>';
+  h+='<div class="wxR-src">Bron: Open-Meteo · vers bij elke opening</div>';
+  return h;
+}
+
+window._renderWeerDetail=function(){
+  var dateStr=weerDetailDate,modal=document.getElementById('weerDetailModal'),content=document.getElementById('weerDetailContent');
+  if(!modal||!content)return;
+  var w=weatherCache[dateStr];
+  if(!w){
+    content.innerHTML='<div class="wx"><div class="wx-msg">'+qtSkateLoaderHtml('LADEN...')+'</div></div>';
+    modal.style.display='block';
+    fetchWeather(dateStr,function(wd){
+      if(wd&&weerDetailDate===dateStr)_renderWeerDetail();
+      else if(!wd)content.innerHTML=msg('🌫️','Geen data voor deze datum');
+    });
+    return;
+  }
+  var dayObj=new Date(dateStr+'T12:00:00');
+  var dagNaam=dayObj.toLocaleDateString('nl-NL',{weekday:'long'});
+  var datStr=dayObj.toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
+  var nowH=new Date().getHours(),todayDk=dk(new Date()),isToday=dateStr===todayDk;
+  var prev=new Date(dayObj);prev.setDate(prev.getDate()-1);
+  var next=new Date(dayObj);next.setDate(next.getDate()+1);
+  var prevS=dk(prev),nextS=dk(next);
+  var maxD=new Date();maxD.setDate(maxD.getDate()+14);
+  var canP=prev>=new Date(todayDk+'T00:00:00'),canN=next<=maxD;
+  var tab=weerDetailTab,regen=(tab==='regen');
+  var prevTab=(window._wxPrevTab==null)?tab:window._wxPrevTab;
+  function arr(sym,ds,can,lbl){
+    return can?'<div class="arr" onclick="weerDetailDate=\''+ds+'\';window._regenBlokStart=null;_renderWeerDetail()" aria-label="'+lbl+'">'+st('o',sym)+'</div>':'<div class="arr" style="visibility:hidden"></div>';
+  }
+  var h='<div class="wx">';
+  h+='<div class="wx-top"><div><div class="wx-loc" onclick="openWeerLocatieModal()" title="Tik om locatie te wijzigen">'+st('o','<span class="wxcond" id="weerLocatieLabel">📍 '+esc(weerLocatieHuidigeNaam)+'</span>')+'</div><div class="wx-title">'+dagNaam+' '+datStr+'</div></div><div class="wx-x" onclick="closeWeerDetail()" aria-label="Sluiten">'+st('o','✕')+'</div></div>';
+  h+='<div class="wx-hero">'+st('o','<div class="ic">'+(w.icon||'🌤️')+'</div><div><div class="tt">'+w.max+'° / '+w.min+'°</div><div class="lb">Max · Min temperatuur</div></div>')+'</div>';
+  h+='<div class="wxB-seg"><div class="th'+(prevTab==='regen'?' r':'')+'"></div>'
+    +'<span onclick="weerDetailTab=\'uurlijks\';_renderWeerDetail()">🕐 Per uur</span>'
+    +'<span onclick="weerDetailTab=\'regen\';weatherCacheTimestamp=null;fetchWeather(weerDetailDate,function(){_renderWeerDetail();})">🌧️ Regen 24u</span></div>';
+  h+='<div class="wxB-nav">'+arr('‹',prevS,canP,'Vorige dag')
+    +'<div class="mid">'+(isToday?'<span class="dot">●</span> Vandaag<small>'+dayObj.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'})+'</small>':dayObj.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'}).toUpperCase())+'</div>'
+    +arr('›',nextS,canN,'Volgende dag')+'</div>';
+  if(regen){
+    h+=regenBody(dateStr,isToday,nowH);
+  }else{
+    h+='<div class="wxB-grid">';
+    var hrs=w.hourly||[];
+    for(var t=0;t<=22;t+=2){
+      var s=hrs.find(function(u){return u.t===t;});
+      var isNu=isToday&&t<=nowH&&nowH<t+2;
+      var rain=s?(s.rain||0):0;
+      h+=st(isNu?'g':'o','<span class="tm">'+pad(t)+':00'+(isNu?'<span class="wxnu">NU</span>':'')+'</span><span class="ic">'+(s?wmoIcon(s.code):'🌤️')+'</span><span class="tp">'+(s?Math.round(s.temp)+'°':'—')+'</span><span class="rn"><b>'+rain+'%</b><span class="wxbar"><u style="width:'+Math.min(100,rain)+'%"></u></span></span>');
+    }
+    h+='</div>';
+  }
+  h+='</div>';
+  content.innerHTML=h;
+  modal.style.display='block';
+  window._wxPrevTab=tab;
+  if(prevTab!==tab){
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      var th=content.querySelector('.wxB-seg .th');if(th)th.classList.toggle('r',regen);});});
+  }
+  if(!regen&&isToday){
+    setTimeout(function(){var el=content.querySelector('.wxB-grid .wxp.g');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});},140);
+  }else content.scrollTop=0;
+};
+window.renderRegenGrafiek=function(ds){var n=new Date();return regenBody(ds,ds===dk(n),n.getHours());};
+var _cwd=window.closeWeerDetail;
+window.closeWeerDetail=function(){window._wxPrevTab=null;_cwd();};
+
+/* ── locatie wijzigen ── */
+function buildLocModal(){
+  document.querySelectorAll('#weerLocatieModal').forEach(function(m){
+    var wrap=m.firstElementChild;if(!wrap)return;
+    wrap.innerHTML='<div class="lo-loc">'
+      +'<div class="hd"><div><div class="eb">Weer</div><div class="ti">Locatie wijzigen</div></div>'+st('o','✕','',' onclick="closeWeerLocatieModal()" aria-label="Sluiten"')+'</div>'
+      +'<div class="sr"><input id="weerLocatieSearchInput" type="text" placeholder="Zoek een plaats…" oninput="searchWeerLocatie(this.value)" autocomplete="off"></div>'
+      +'<div id="weerLocatieResults"></div>'
+      +'<div class="ft"><button type="button" class="lo-cta" onclick="useGpsWeerLocatie()">Gebruik mijn GPS-locatie</button></div>'
+      +'</div>';
+  });
+}
+window.openWeerLocatieModal=function(){
+  var m=document.getElementById('weerLocatieModal');if(m)m.style.display='block';
+  var input=document.getElementById('weerLocatieSearchInput'),res=document.getElementById('weerLocatieResults');
+  if(res)res.innerHTML='<div class="lo-hint">Typ een plaatsnaam om te zoeken…</div>';
+  if(input){input.value='';setTimeout(function(){input.focus();},50);}
+};
+window.searchWeerLocatie=function(q){
+  clearTimeout(weerLocatieSearchTimer);
+  var res=document.getElementById('weerLocatieResults');
+  if(!q||q.trim().length<2){if(res)res.innerHTML='<div class="lo-hint">Typ minstens 2 letters…</div>';return;}
+  weerLocatieSearchTimer=setTimeout(function(){
+    fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q.trim())+'&count=6&language=nl')
+      .then(function(r){return r.json();})
+      .then(function(data){
+        if(!res)return;
+        var rs=data.results||[];
+        if(!rs.length){res.innerHTML='<div class="lo-hint">Geen resultaten gevonden.</div>';return;}
+        res.innerHTML=rs.map(function(r,i){
+          var sub=[r.admin1,r.country].filter(Boolean).join(', ');
+          return '<div class="lo-res" data-i="'+i+'"><b>'+esc(r.name)+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>';
+        }).join('');
+        res.querySelectorAll('.lo-res').forEach(function(el){
+          el.onclick=function(){var r=rs[+el.dataset.i];selectWeerLocatie(r.latitude,r.longitude,r.name||'');};
+        });
+      })
+      .catch(function(){if(res)res.innerHTML='<div class="lo-hint">Zoeken mislukt, probeer opnieuw.</div>';});
+  },350);
+};
+
+/* ── Promo's & Wedstrijden als merkkleur-tegels ── */
+function lum(hex){var m=/^#?([0-9a-f]{6})$/i.exec(hex||'');if(!m)return 0;var n=parseInt(m[1],16);return (0.299*(n>>16&255)+0.587*(n>>8&255)+0.114*(n&255))/255;}
+function brand(w,click,sub){
+  var tc=lum(w.kleur)>.62?'#0a0a0a':'#fff';
+  return '<div class="lo-brand" style="--bc:'+w.kleur+';--tc:'+tc+'" onclick="'+click+'" role="link" tabindex="0">'
+    +'<div class="lo-brand-logo"><img src="'+w.logo+'" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><span>'+esc((w.naam||'?').charAt(0))+'</span></div>'
+    +'<div class="lo-brand-txt"><div class="lo-brand-n">'+esc(w.naam)+'</div><div class="lo-brand-s">'+esc(sub)+'</div></div>'
+    +'<div class="lo-brand-go">›</div></div>';
+}
+window.renderPromos=function(targetId){
+  var el=document.getElementById(targetId||'promosContent');if(!el)return;
+  var h='<div style="padding:16px 16px 30px"><div class="lo-eyebrow">Promotiefolders &amp; aanbiedingen</div>';
+  PROMO_WINKELS.forEach(function(w){h+=brand(w,"openWinkelLink(PROMO_WINKELS.find(function(x){return x.id==='"+w.id+"'}))",'Website');});
+  el.innerHTML=h+'</div>';
+};
+window.renderWedstrijden=function(){
+  var el=document.getElementById('wedstrijdenContent');if(!el)return;
+  var h='<div style="padding:16px 16px 30px"><div class="lo-eyebrow">Wedstrijden &amp; win-acties</div>';
+  WEDSTRIJDEN_LINKS.forEach(function(w,i){h+=brand(w,"window.open(WEDSTRIJDEN_LINKS["+i+"].url,'_blank')",w.sub||'Website');});
+  el.innerHTML=h+'</div>';
+};
+/* toetsenbord: Enter/spatie op een merktegel */
+document.addEventListener('keydown',function(e){
+  if((e.key==='Enter'||e.key===' ')&&e.target&&e.target.classList&&e.target.classList.contains('lo-brand')){e.preventDefault();e.target.click();}
+});
+
+/* ── TV-gids: emoji in de kop vervangen door tekst ── */
+(function(){
+  var _r=window.renderTvGuide;if(typeof _r!=='function')return;
+  function fix(){
+    var el=document.getElementById('tvGuideContent');if(!el)return;
+    var t=el.querySelector('.epg-nav-date');if(t&&/📺/.test(t.textContent))t.textContent='TV-gids';
+    var s=el.querySelector('.epg-header>div:nth-child(2)');
+    if(s&&/🔴/.test(s.textContent)){s.textContent=s.textContent.replace('🔴','').trim();s.classList.add('lo-live');}
+  }
+  window.renderTvGuide=function(){var pr=_r.apply(this,arguments);fix();return Promise.resolve(pr).then(fix);};
+})();
+
+/* ── spraaknotitie: opname-stand op het microfoon-icoon ── */
+function watchMic(){
+  var mic=document.getElementById('vnMicIcon');if(!mic||mic._lo)return;mic._lo=1;
+  var upd=function(){mic.setAttribute('data-rec',/🔴/.test(mic.textContent)?'1':'0');};
+  new MutationObserver(upd).observe(mic,{childList:true,characterData:true,subtree:true});upd();
+}
+
+function init(){buildLocModal();watchMic();
+  try{if(document.getElementById('promosVariaContent')&&promoMode==='promos')renderPromos('promosVariaContent');}catch(e){}
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+
+</script>
+<script>
+/* ═══ Afspraken: "Nog te plannen" (zonder datum) + start-/einddatum in het formulier ═══ */
+(function(){
+var A=window.qtAgList; if(!A||typeof openEventModal!=='function')return;
+var KEY='wf_undated_events', und=[];
+try{und=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(und))und=[];}catch(e){und=[];}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(und));}catch(e){}}
+function $(i){return document.getElementById(i);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function pad(n){return (n<10?'0':'')+n;}
+function todayKey(){var t=new Date();return t.getFullYear()+'-'+pad(t.getMonth()+1)+'-'+pad(t.getDate());}
+function findU(id){for(var i=0;i<und.length;i++)if(und[i].id===id)return und[i];return null;}
+var WIE={toon:'👤 Toon',janne:'👧 Janne',cyriel:'👦 Cyriel',leslie:'👤 Leslie'};
+var cur=null; // 'choice' | 'undated' | 'list' | null
+function view(){var v=$('calUndView');if(v)return v;var lv=$('calListView');v=document.createElement('div');v.id='calUndView';v.style.display='none';lv.parentNode.insertBefore(v,lv.nextSibling);return v;}
+function hideAll(){['calMain','calListView','calUndView'].forEach(function(id){var e=$(id);if(e)e.style.display='none';});}
+function top(){var s=$('page-calendar');if(s)s.scrollTop=0;}
+
+/* ── keuzepagina ── */
+function renderChoice(){
+  view().innerHTML='<div class="nt-wrap"><div class="nt-bar"><b>🗓 Afspraken</b><button class="nt-x" onclick="qtAgList.close()" aria-label="Terug naar kalender">✕</button></div>'
+   +'<button class="nt-tile" onclick="qtAgList.showList()"><span class="ic">📋</span><span><h3>Lijstvorm</h3><p>Alle afspraken per maand en per dag</p></span><i>›</i></button>'
+   +'<button class="nt-tile" onclick="qtAgList.showUndated()"><span class="ic">🕓</span><span><h3>Nog te plannen<span class="nt-cnt">'+und.length+'</span></h3><p>Afspraken zonder datum</p></span><i>›</i></button>'
+   +'<div class="nt-note-p">Kies de gewone lijst met alle afspraken, of de afspraken waar je later nog een datum voor kiest.</div></div>';
+}
+/* ── nog te plannen ── */
+function seg(on){return '<div class="nt-seg"><span class="'+(on==='list'?'on':'')+'" onclick="qtAgList.showList()">Lijstvorm</span><span class="'+(on==='undated'?'on':'')+'" onclick="qtAgList.showUndated()">Nog te plannen<b class="nt-cnt" style="margin-left:5px">'+und.length+'</b></span></div>';}
+function renderUndated(){
+  var h='<div class="nt-wrap"><div class="nt-bar"><b>🗓 Afspraken</b><button class="nt-x" onclick="qtAgList.close()" aria-label="Terug naar kalender">✕</button></div>'+seg('undated')
+   +'<button class="nt-cta" onclick="qtAgList.newU()">+ Nieuwe afspraak zonder datum</button>';
+  if(!und.length)h+='<div class="nt-empty">Niets in te plannen.<br>Voeg een afspraak toe zonder datum; de datum kies je later.</div>';
+  und.forEach(function(u){
+    var wie=(u.voorWie||[]).map(function(w){return '<span class="nt-chip">'+(WIE[w]||esc(w))+'</span>';}).join('');
+    h+='<div class="nt-card"><span class="nt-tag">NOG TE PLANNEN</span><h4>'+esc(u.title)+'</h4>'
+     +(u.location?'<div class="sub">📍 '+esc(u.location)+'</div>':'')
+     +(u.notes?'<div class="sub">'+esc(u.notes.length>140?u.notes.slice(0,140)+'…':u.notes)+'</div>':'')
+     +(wie?'<div>'+wie+'</div>':'')
+     +'<div class="nt-row"><div class="nt-sm y" onclick="qtAgList.plan(\''+u.id+'\')">📅 Datum kiezen</div><div class="nt-sm" onclick="qtAgList.editU(\''+u.id+'\')">✎ Wijzigen</div></div></div>';
+  });
+  view().innerHTML=h+'</div>';
+}
+function refresh(){
+  if(cur==='choice'&&view().style.display==='block')renderChoice();
+  else if(cur==='undated'&&view().style.display==='block')renderUndated();
+  else if(cur==='list')decorate();
+}
+/* ── wisselknop bovenaan de lijstvorm ── */
+function decorate(){
+  var lv=$('calListView');if(!lv||lv.style.display!=='block'||$('agSwitch'))return;
+  var bh=lv.querySelector('.bud-head');if(!bh)return;
+  var d=document.createElement('div');d.id='agSwitch';d.className='nt-swrap';d.innerHTML=seg('list');
+  bh.parentNode.insertBefore(d,bh);
+}
+var _open=A.open,_mode=A.mode,_close=A.close,_isOpen=A.isOpen;
+A.open=function(){hideAll();cur='choice';renderChoice();view().style.display='block';top();};
+A.showList=function(){hideAll();cur='list';_open.apply(A,arguments);decorate();};
+A.showUndated=function(){hideAll();cur='undated';renderUndated();view().style.display='block';top();};
+A.mode=function(){var r=_mode.apply(A,arguments);decorate();return r;};
+A.close=function(){var v=$('calUndView');if(v)v.style.display='none';cur=null;return _close.apply(A,arguments);};
+A.isOpen=function(){var v=$('calUndView');return _isOpen.apply(A,arguments)||!!(v&&v.style.display==='block');};
+(function(){var lv=$('calListView');if(!lv||!window.MutationObserver)return;
+  new MutationObserver(function(){if(lv.style.display==='block'&&!$('agSwitch'))decorate();}).observe(lv,{childList:true});})();
+A.newU=function(){window._qtPlan={mode:'new'};openEventModal(todayKey());};
+A.plan=function(id){if(!findU(id))return;window._qtPlan={mode:'plan',id:id};openEventModal(todayKey());};
+A.editU=function(id){if(!findU(id))return;window._qtPlan={mode:'edit',id:id};openEventModal(todayKey());};
+
+/* ── formulier: datumblok ── */
+function ensureBlock(){
+  if($('evDateBlock'))return;
+  var tg=$('evAlldayToggle');var row=tg&&tg.parentElement;if(!row)return;
+  var b=document.createElement('div');b.id='evDateBlock';b.style.cssText='margin-bottom:11px';
+  b.innerHTML='<div class="ev-label">Datum</div>'
+   +'<div class="nt-tgrow"><div class="nt-sw" id="evUndSw" onclick="qtAgNt.toggleUnd()"><i></i></div><span>NOG GEEN DATUM</span></div>'
+   +'<div id="evDateFields"><div class="nt-f2">'
+   +'<div><div class="ev-label" style="margin-bottom:4px">Startdatum</div><input class="ev-input" id="evStartDate" type="date" onchange="qtAgNt.startChanged()"></div>'
+   +'<div><div class="ev-label" style="margin-bottom:4px">Einddatum</div><div class="nt-endrow"><input class="ev-input" id="evEndDate" type="date" onchange="qtAgNt.updDur()"><button type="button" class="nt-clr" onclick="qtAgNt.clearEnd()" title="Einddatum wissen">✕</button></div></div>'
+   +'</div><div id="evDurRow"></div></div>'
+   +'<div id="evUndNote" style="display:none">🕓 Deze afspraak komt onder <b>Afspraken → Nog te plannen</b>. Kies later een datum; dan komt ze in je kalender (en in Google Kalender als die gekoppeld is).</div>';
+  row.parentNode.insertBefore(b,row);
+}
+function isUnd(){var s=$('evUndSw');return !!(s&&s.classList.contains('on'));}
+function setUnd(on){
+  var s=$('evUndSw');if(s)s.classList.toggle('on',!!on);
+  var f=$('evDateFields');if(f)f.style.display=on?'none':'block';
+  var n=$('evUndNote');if(n)n.style.display=on?'block':'none';
+  var tg=$('evAlldayToggle'),ar=tg&&tg.parentElement,tr=$('evTimeRow');
+  if(ar)ar.style.display=on?'none':'flex';
+  if(tr)tr.style.display=on?'none':(typeof evAlldayOn!=='undefined'&&evAlldayOn?'none':'flex');
+  var g=$('evGcalBtn');if(g&&on)g.style.display='none';else if(g&&typeof isGcalConnected==='function')g.style.display=isGcalConnected()?'block':'none';
+  if(on){var t=$('eventModalDateTitle');if(t)t.textContent='NOG TE PLANNEN';}else startChanged();
+}
+function dayDiff(a,b){return Math.round((new Date(b+'T12:00:00')-new Date(a+'T12:00:00'))/86400000);}
+function updDur(){
+  var sd=$('evStartDate'),ed=$('evEndDate'),r=$('evDurRow');if(!sd||!ed||!r)return;
+  if(sd.value)ed.min=qtDayAdd(sd.value,1);
+  if(sd.value&&ed.value&&ed.value>sd.value)r.innerHTML='<span class="nt-dur">'+(dayDiff(sd.value,ed.value)+1)+' DAGEN</span><span>van '+fmt(sd.value)+' t/m '+fmt(ed.value)+'</span>';
+  else r.innerHTML='<span>'+(sd.value?'Eén dag. Vul een einddatum in voor meerdere dagen.':'Kies een startdatum.')+'</span>';
+}
+function fmt(k){return new Date(k+'T12:00:00').toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});}
+function startChanged(){
+  var sd=$('evStartDate'),ed=$('evEndDate');
+  if(sd&&ed&&ed.value&&sd.value&&ed.value<=sd.value)ed.value='';
+  var t=$('eventModalDateTitle');
+  if(t&&sd&&sd.value&&!isUnd())t.textContent=new Date(sd.value+'T12:00:00').toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'}).toUpperCase()+(window._eventModalIsKids?' · 👨‍👩‍👧 KINDEREN':'');
+  updDur();
+}
+window.qtAgNt={toggleUnd:function(){setUnd(!isUnd());},startChanged:startChanged,updDur:updDur,clearEnd:function(){var e=$('evEndDate');if(e)e.value='';updDur();}};
+
+/* ── formulier openen ── */
+var _o=window.openEventModal;
+window.openEventModal=function(dateStr,x){
+  var plan=window._qtPlan||null;window._qtPlan=null;
+  ensureBlock();
+  var r=_o.apply(this,arguments);
+  window._qtMode=plan;
+  var sd=$('evStartDate'),ed=$('evEndDate');
+  if(sd)sd.value=(typeof eventModalDate!=='undefined'&&eventModalDate)||dateStr||'';
+  var u=plan&&plan.id?findU(plan.id):null;
+  if(u){
+    $('evTitle').value=u.title||'';$('evLocation').value=u.location||'';$('evNotes').value=u.notes||'';
+    var w=u.voorWie&&u.voorWie.length?u.voorWie:['toon'];
+    document.querySelectorAll('#evVoorWieRow .ev-voor-wie-btn').forEach(function(b){b.classList.toggle('ev-voor-wie-active',w.indexOf(b.dataset.wie)>=0);});
+    window._eventModalIsKids=w.indexOf('janne')>=0||w.indexOf('cyriel')>=0;
+    var db=$('evDeleteBtn');if(db)db.style.display='block';
+  }
+  if(plan&&plan.mode==='plan'){
+    sd.value='';if(ed)ed.value='';setUnd(false);
+    $('eventModalMode').textContent='Datum kiezen';
+    $('eventModalDateTitle').textContent='KIES EEN DATUM';
+    setTimeout(function(){try{sd.focus();}catch(e){}},350);
+  }else if(plan){
+    setUnd(true);$('eventModalMode').textContent=plan.mode==='edit'?'Afspraak bewerken':'Nieuwe afspraak';
+  }else{setUnd(false);}
+  updDur();
+  return r;
+};
+
+/* ── opslaan ── */
+function findEv(k,id){return (localEvents[k]||[]).find(function(e){return e.id===id;})||(kidsEvents[k]||[]).find(function(e){return e.id===id;});}
+function removeOld(dateStr,id){
+  var ev=findEv(dateStr,id);if(!ev)return;
+  var list=[];
+  if(ev.spanId){[localEvents,kidsEvents].forEach(function(st){Object.keys(st).forEach(function(k){(st[k]||[]).forEach(function(e){if(e.spanId===ev.spanId)list.push({k:k,e:e});});});});}
+  else list.push({k:dateStr,e:ev});
+  var g=null;list.forEach(function(c){if(c.e.gcalId&&!g)g=c.e.gcalId;try{deleteEventReminder(c.k,c.e.id);}catch(x){}});
+  var ids={};list.forEach(function(c){ids[c.e.id]=1;});
+  [localEvents,kidsEvents].forEach(function(st){Object.keys(st).forEach(function(k){var n=(st[k]||[]).filter(function(e){return !ids[e.id];});if(n.length)st[k]=n;else delete st[k];});});
+  saveLocalEvents();try{localStorage.setItem('wf_kids_events',JSON.stringify(kidsEvents));}catch(e){}
+  if(g&&typeof isGcalConnected==='function'&&isGcalConnected()){try{gcalFetch('/calendars/'+GCAL_CALENDAR_ID+'/events/'+encodeURIComponent(g),'DELETE').catch(function(){});}catch(e){}}
+}
+var _s=window.saveEvent;
+window.saveEvent=function(){
+  var title=$('evTitle').value.trim();
+  if(!title){$('evTitle').focus();return;}
+  var m=window._qtMode||null,sd=$('evStartDate')?$('evStartDate').value:'';
+  if(isUnd()){
+    var vw=[];document.querySelectorAll('#evVoorWieRow .ev-voor-wie-btn.ev-voor-wie-active').forEach(function(b){vw.push(b.dataset.wie);});
+    vw=vw.filter(function(x,i){return vw.indexOf(x)===i;});
+    if(!vw.length)vw=['toon'];
+    var old=m&&m.id?findU(m.id):null;
+    var rec={id:old?old.id:'ud_'+Date.now()+'_'+Math.floor(Math.random()*1000),title:title,location:$('evLocation').value.trim(),notes:$('evNotes').value.trim(),voorWie:vw,created:old?old.created:new Date().toISOString()};
+    if(eventModalEditId&&!old)removeOld(eventModalDate,eventModalEditId);   // bestaande afspraak met datum → naar "nog te plannen"
+    if(old)und[und.indexOf(old)]=rec;else und.push(rec);
+    persist();closeEventModal();
+    if(typeof renderCalendar==='function')renderCalendar();
+    if(typeof showToast==='function')showToast('Opgeslagen onder Nog te plannen');
+    refresh();return;
+  }
+  if(!sd){if(typeof showToast==='function')showToast('Kies een startdatum, of zet "Nog geen datum" aan');try{$('evStartDate').focus();}catch(e){}return;}
+  if(eventModalEditId&&sd!==eventModalDate){removeOld(eventModalDate,eventModalEditId);eventModalEditId=null;}
+  eventModalDate=sd;
+  var res=_s.apply(this,arguments);
+  if(m&&m.id&&(m.mode==='plan'||m.mode==='edit')){und=und.filter(function(u){return u.id!==m.id;});persist();}
+  refresh();
+  return res;
+};
+var _d=window.deleteEvent;
+window.deleteEvent=function(){
+  var m=window._qtMode;
+  if(m&&m.id){
+    if(!confirm('Afspraak verwijderen?'))return;
+    und=und.filter(function(u){return u.id!==m.id;});persist();closeEventModal();refresh();return;
+  }
+  return _d.apply(this,arguments);
+};
+window.qtUndated={list:function(){return und.slice();}};
 })();
 
 </script>
