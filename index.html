@@ -5157,33 +5157,132 @@ body #ohCardZangles .qz-go{margin-top:8px;}
 
 </style>
 <script>
-/* ═══ Opslagbewaking: een volle localStorage mag nooit meer stilletjes gegevens kosten ═══
-   Bij "quota exceeded" worden eerst alleen herlaadbare caches gewist (TV-gids, podcasts, scraper-resultaten,
-   vastgoed-scrape, ICS-cache) en wordt de schrijfactie opnieuw geprobeerd. Lukt dat niet, dan gooit hij nog steeds
-   de fout, maar de budgetmodule heeft een eigen back-up in IndexedDB. */
+/* ═══ Opslagbewaking: onbeperkte opslag ═══
+   localStorage is maar ± 5 MB. Wat daar niet meer in past, gaat automatisch naar IndexedDB (de grote opslag van het toestel,
+   alleen begrensd door de vrije ruimte op het toestel zelf). Voor de app verandert er niets: localStorage.getItem/setItem/removeItem
+   werken gewoon verder. Kleine, bij het opstarten nodige gegevens blijven in localStorage (synchroon leesbaar); de grootste posten
+   verhuizen naar IndexedDB. Pas als ook IndexedDB niet kan bewaren, komt er nog een foutmelding (event 'qt-storage-full'). */
 (function(){
   if(!window.Storage||window.qtStoreGuard)return;
-  var SP=Storage.prototype,orig=SP.setItem;
+  var SP=Storage.prototype,oSet=SP.setItem,oGet=SP.getItem,oRem=SP.removeItem;
+  var LS=null;try{LS=window.localStorage;}catch(e){}
   var EVICT=['wf_tv_epg','wf_podcast_cache','wf_act_debug','wf_scraper_results','wf_scraper_lastrun','wf_re_scraped_listings','wf_re_scraped_status','wf_re_scraped_at','wf_ics_cache'];
-  var G=window.qtStoreGuard={evicted:[],failed:0,lastFailKey:'',EVICT:EVICT,log:[]};
+  var IDX='qt_ovf_idx',SMALL=100*1024,CRIT={qtBudget_v1:1,qtBudget_ui:1,qt_ovf_idx:1,__qtb:1};
+  var G=window.qtStoreGuard={evicted:[],failed:0,lastFailKey:'',EVICT:EVICT,log:[],O:{},hydrated:false,idbOk:undefined,moved:[]};
+  var O=G.O,idx={},dirty={},compacting=false;
+  function has(o,k){return Object.prototype.hasOwnProperty.call(o,k);}
   function isQuota(e){return !!e&&(e.name==='QuotaExceededError'||e.code===22||e.code===1014||/quota/i.test(String(e.name)+String(e.message)));}
+  function bytes(k,v){return (String(k).length+String(v).length)*2;}
+  function fail(k,v,reason,err){
+    G.failed++;G.lastFailKey=k;var d={key:k,reason:reason,bytes:bytes(k,v)};G.log.push(d);if(G.log.length>20)G.log.shift();
+    try{window.dispatchEvent(new CustomEvent('qt-storage-full',{detail:{key:k,reason:reason,bytes:d.bytes,err:String(err&&err.name)}}));}catch(_){}
+  }
+  /* ── IndexedDB ── */
+  function idbOpen(cb){try{var r=indexedDB.open('qt_budget_db',1);r.onupgradeneeded=function(){try{r.result.createObjectStore('kv');}catch(e){}};r.onsuccess=function(){cb(r.result);};r.onerror=function(){cb(null);};r.onblocked=function(){cb(null);};}catch(e){cb(null);}}
+  function idbPut(key,val,done){idbOpen(function(db){if(!db){if(done)done(false);return;}try{var tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(val,key);tx.oncomplete=function(){try{db.close();}catch(e){}if(done)done(true);};tx.onerror=tx.onabort=function(){try{db.close();}catch(e){}if(done)done(false);};}catch(e){try{db.close();}catch(_){}if(done)done(false);}});}
+  function idbDel(key,done){idbOpen(function(db){if(!db){if(done)done(false);return;}try{var tx=db.transaction('kv','readwrite');tx.objectStore('kv').delete(key);tx.oncomplete=function(){try{db.close();}catch(e){}if(done)done(true);};tx.onerror=tx.onabort=function(){try{db.close();}catch(e){}if(done)done(false);};}catch(e){try{db.close();}catch(_){}if(done)done(false);}});}
+  /* ── index van sleutels die in IndexedDB staan (klein, in localStorage zodat we dat meteen bij het opstarten weten) ── */
+  try{var j=oGet.call(LS,IDX);if(j){JSON.parse(j).forEach(function(k){idx[k]=1;});}}catch(e){}
+  function saveIdx(){
+    var ks=Object.keys(idx),v=JSON.stringify(ks);
+    try{if(!ks.length)oRem.call(LS,IDX);else oSet.call(LS,IDX,v);}catch(e){try{if(!ks.length){}else{
+      for(var i=0;i<EVICT.length;i++){try{if(oGet.call(LS,EVICT[i])!==null){oRem.call(LS,EVICT[i]);oSet.call(LS,IDX,v);return;}}catch(_){}}
+      idbPut('ovfidx',v);}}catch(_){}}
+  }
+  function inOvf(k){return has(O,k)||!!idx[k];}
+  function dropOvf(k){delete O[k];delete dirty[k];if(idx[k]){delete idx[k];saveIdx();}idbDel('ovf:'+k);}
+  function toOvf(k,v){
+    O[k]=v;if(!idx[k]){idx[k]=1;saveIdx();}
+    if(G.moved.indexOf(k)<0)G.moved.push(k);
+    idbPut('ovf:'+k,v,function(ok){
+      if(ok){if(O[k]===v){try{oRem.call(LS,k);}catch(e){}}}
+      else{G.idbOk=false;if(O[k]===v){delete O[k];delete idx[k];saveIdx();}fail(k,v,'quota',{name:'IndexedDB'});}
+    });
+  }
+  function tryNative(k,v){try{oSet.call(LS,k,v);return true;}catch(e){return false;}}
+  /* ── kleine sleutels die tijdelijk in IndexedDB belandden terug naar localStorage zodra er plaats is ── */
+  function retryBack(){
+    Object.keys(O).forEach(function(k){
+      var v=O[k];if(v==null||bytes(k,v)>=SMALL)return;
+      if(tryNative(k,v)){delete O[k];delete dirty[k];delete idx[k];saveIdx();idbDel('ovf:'+k);}
+    });
+  }
+  function smallInOvf(){return Object.keys(O).some(function(k){return bytes(k,O[k]||'')<SMALL;});}
+  /* ── de grootste native sleutel verhuist naar IndexedDB zodat kleine, snel benodigde sleutels in localStorage passen ── */
+  function compact(){
+    if(compacting||!G.hydrated)return;compacting=true;
+    (function step(){
+      retryBack();
+      if(!smallInOvf()||G.idbOk===false){compacting=false;return;}
+      var rows=[];
+      try{for(var i=0;i<LS.length;i++){var k=LS.key(i);if(CRIT[k]||has(O,k))continue;var v=oGet.call(LS,k)||'';var b=bytes(k,v);if(b>=SMALL)rows.push({k:k,v:v,b:b});}}catch(e){}
+      if(!rows.length){compacting=false;return;}
+      rows.sort(function(a,b){return b.b-a.b;});
+      var r=rows[0];O[r.k]=r.v;idx[r.k]=1;saveIdx();if(G.moved.indexOf(r.k)<0)G.moved.push(r.k);
+      idbPut('ovf:'+r.k,r.v,function(ok){
+        if(ok){if(O[r.k]===r.v){try{oRem.call(LS,r.k);}catch(e){}}step();}
+        else{G.idbOk=false;if(O[r.k]===r.v){delete O[r.k];delete idx[r.k];saveIdx();}compacting=false;}
+      });
+    })();
+  }
+  /* ── patches ── */
+  SP.getItem=function(k){if(this===LS){var s=String(k);if(has(O,s))return O[s];}return oGet.call(this,k);};
+  SP.removeItem=function(k){if(this===LS){var s=String(k);if(inOvf(s))dropOvf(s);}return oRem.call(this,k);};
   SP.setItem=function(k,v){
-    try{return orig.call(this,k,v);}
+    if(this!==LS)return oSet.call(this,k,v);
+    var s=String(k),val=String(v);
+    if(inOvf(s)){
+      if(!G.hydrated){O[s]=val;dirty[s]=1;return;}
+      if(bytes(s,val)<SMALL&&tryNative(s,val)){dropOvf(s);return;}
+      toOvf(s,val);return;
+    }
+    try{return oSet.call(this,k,v);}
     catch(e){
-      if(this!==window.localStorage)throw e;
-      if(!isQuota(e)){G.failed++;G.lastFailKey=k;G.log.push({key:k,reason:'blocked',bytes:(String(k).length+String(v).length)*2});if(G.log.length>20)G.log.shift();try{window.dispatchEvent(new CustomEvent('qt-storage-full',{detail:{key:k,reason:'blocked',bytes:(String(k).length+String(v).length)*2,err:String(e&&e.name)}}));}catch(_){}throw e;}
+      if(!isQuota(e)){fail(s,val,'blocked',e);throw e;}
       for(var i=0;i<EVICT.length;i++){
-        var ek=EVICT[i];if(ek===k)continue;
-        var has=null;try{has=window.localStorage.getItem(ek);}catch(_){}
-        if(has===null)continue;
-        try{window.localStorage.removeItem(ek);G.evicted.push(ek+'@'+Date.now());}catch(_){continue;}
-        try{return orig.call(this,k,v);}catch(e2){if(!isQuota(e2))throw e2;}
+        var ek=EVICT[i];if(ek===s)continue;
+        var cur=null;try{cur=oGet.call(LS,ek);}catch(_){}
+        if(cur===null)continue;
+        try{oRem.call(LS,ek);G.evicted.push(ek+'@'+Date.now());}catch(_){continue;}
+        try{return oSet.call(this,k,v);}catch(e2){if(!isQuota(e2))throw e2;}
       }
-      G.failed++;G.lastFailKey=k;
-      G.log.push({key:k,reason:'quota',bytes:(String(k).length+String(v).length)*2});if(G.log.length>20)G.log.shift();try{window.dispatchEvent(new CustomEvent('qt-storage-full',{detail:{key:k,reason:'quota',bytes:(String(k).length+String(v).length)*2,err:String(e&&e.name)}}));}catch(_){}
-      throw e;
+      if(G.idbOk===false||!window.indexedDB){fail(s,val,'quota',e);throw e;}
+      toOvf(s,val);
+      if(bytes(s,val)<SMALL)setTimeout(compact,0);
     }
   };
+  /* ── opstarten: overflow uit IndexedDB inladen ── */
+  function hydrate(){
+    idbOpen(function(db){
+      if(!db){G.idbOk=false;G.hydrated=true;return;}
+      var got={},tx;
+      try{tx=db.transaction('kv','readonly');}catch(e){try{db.close();}catch(_){}G.idbOk=false;G.hydrated=true;return;}
+      try{
+        var rq=tx.objectStore('kv').openCursor(IDBKeyRange.bound('ovf:','ovf;'));
+        rq.onsuccess=function(){var c=rq.result;if(c){got[String(c.key).slice(4)]=c.value;c.continue();}};
+        var ri=tx.objectStore('kv').get('ovfidx');ri.onsuccess=function(){try{if(ri.result)JSON.parse(ri.result).forEach(function(k){if(!(k in got)&&!idx[k])idx[k]=1;});}catch(e){}};
+      }catch(e){}
+      var fin=function(ok){
+        try{db.close();}catch(_){}
+        G.idbOk=ok!==false;
+        Object.keys(got).forEach(function(k){
+          idx[k]=1;
+          if(dirty[k]){idbPut('ovfbak:'+k,got[k]);idbPut('ovf:'+k,O[k]);}   /* tijdens het opstarten overschreven: de oorspronkelijke waarde blijft als back-up bewaard */
+          else O[k]=got[k];
+        });
+        Object.keys(dirty).forEach(function(k){if(!(k in got))idbPut('ovf:'+k,O[k]);});
+        dirty={};
+        saveIdx();G.hydrated=true;
+        try{window.dispatchEvent(new CustomEvent('qt-overflow-ready',{detail:{keys:Object.keys(O)}}));}catch(_){}
+        setTimeout(compact,50);
+      };
+      tx.oncomplete=function(){fin(true);};tx.onerror=tx.onabort=function(){fin(false);};
+    });
+  }
+  hydrate();
+  /* duurzame opslag aanvragen, zodat iOS de gegevens niet zelf opruimt */
+  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();}catch(e){}
+  G.overflowInfo=function(){return Object.keys(O).map(function(k){return {k:k,b:bytes(k,O[k]||'')};});};
 })();
 
 </script>
@@ -5284,7 +5383,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v05/11/26 · lay out 23</div>
+    <div class="oh-version-tag" id="ohVersionTag">v05/11/26 · lay out 24</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -27770,8 +27869,10 @@ var CACHE=function(){return (window.qtStoreGuard&&window.qtStoreGuard.EVICT)||[]
 function scan(){
   var rows=[],tot=0;
   try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i),v=localStorage.getItem(k)||'';var b=(k.length+v.length)*2;tot+=b;rows.push({k:k,b:b});}}catch(e){}
+  var ov=0,ovRows=[];try{((window.qtStoreGuard&&qtStoreGuard.overflowInfo)?qtStoreGuard.overflowInfo():[]).forEach(function(o){ov+=o.b;ovRows.push({k:o.k,b:o.b,ovf:1});});}catch(e){}
+  var all=rows.concat(ovRows);all.sort(function(a,b){return b.b-a.b;});
   rows.sort(function(a,b){return b.b-a.b;});
-  return {rows:rows,tot:tot};
+  return {rows:all,native:rows,tot:tot,ov:ov};
 }
 function render(){
   var box=$('qtStoreBody');if(!box)return;
@@ -27779,9 +27880,12 @@ function render(){
   var bud=(window.qtBud&&qtBud.storeInfo)?qtBud.storeInfo():null;
   var G=window.qtStoreGuard||{evicted:[],failed:0};
   var cache=CACHE(),cacheTot=0;s.rows.forEach(function(r){if(cache.indexOf(r.k)>-1)cacheTot+=r.b;});
-  var h='<div class="settings-row"><div class="settings-label">Gebruikt (geschat)</div><div class="settings-value-badge">'+kb(s.tot)+' van ± 5 MB</div></div>'
-   +'<div style="height:10px;border:1.5px solid #0a0a0a;border-radius:99px;overflow:hidden;background:#fff;margin:2px 0 10px"><i style="display:block;height:100%;width:'+pct.toFixed(1)+'%;background:'+(pct>85?'#c0392b':pct>65?'#d4a030':'#1F7A6C')+'"></i></div>';
-  if(pct>85||G.failed)h+='<div style="background:#ffe9d6;border:1.5px solid #0a0a0a;border-radius:10px;padding:8px 10px;font:700 11px var(--cond);margin-bottom:10px">⚠️ De opslag van dit toestel zit (bijna) vol. Wis de caches hieronder; je gegevens blijven behouden.</div>';
+  var h='<div class="settings-row"><div class="settings-label">Opslag voor de app</div><div class="settings-value-badge">onbeperkt ✓</div></div>'
+   +'<div class="settings-row"><div class="settings-label">Snelle opslag</div><div class="settings-value-badge">'+kb(s.tot)+'</div></div>'
+   +'<div class="settings-row"><div class="settings-label">Extra opslag (groot)</div><div class="settings-value-badge">'+kb(s.ov)+'</div></div>'
+   +'<div class="settings-row"><div class="settings-label">Totaal in gebruik</div><div class="settings-value-badge" id="qtStoreEst">'+kb(s.tot+s.ov)+'</div></div>'
+   +'<div style="font:500 10px var(--body);color:var(--stone2);margin:4px 2px 10px">Er is geen limiet meer van 5 MB: wat niet in de snelle opslag past, gaat vanzelf naar de grote opslag van je toestel. Alleen als je toestel zelf geen ruimte meer heeft, kan bewaren nog mislukken.</div>';
+  if(G.failed)h+='<div style="background:#ffe9d6;border:1.5px solid #0a0a0a;border-radius:10px;padding:8px 10px;font:700 11px var(--cond);margin-bottom:10px">⚠️ Het toestel kon de laatste keer niets meer bewaren. Maak ruimte vrij op je iPhone (Instellingen › Algemeen › iPhone-opslag).</div>';
   if(bud){
     h+='<div class="settings-row"><div class="settings-label">Budget in toestel</div><div class="settings-value-badge" style="'+(bud.failed?'background:#ffe9d6':'')+'">'+(bud.failed?'⚠️ niet bewaard':'✓ bewaard')+'</div></div>'
      +'<div class="settings-row"><div class="settings-label">Budget back-up</div><div class="settings-value-badge">'+(bud.idbAt?'✓ '+new Date(bud.idbAt).toLocaleTimeString('nl-BE',{hour:'2-digit',minute:'2-digit'}):'wordt gemaakt')+'</div></div>'
@@ -27789,8 +27893,9 @@ function render(){
   }
   h+='<div style="font:700 9px var(--grotesk);letter-spacing:.14em;text-transform:uppercase;color:var(--stone2);margin:12px 0 4px">Grootste posten</div>';
   s.rows.slice(0,7).forEach(function(r){
-    h+='<div class="settings-row"><div class="settings-label" style="min-width:0">'+(NAMES[r.k]||r.k)+(cache.indexOf(r.k)>-1?' <span style="font-size:9px;color:var(--stone2)">· cache</span>':'')+'</div><div class="settings-value-badge">'+kb(r.b)+'</div></div>';
+    h+='<div class="settings-row"><div class="settings-label" style="min-width:0">'+(NAMES[r.k]||r.k)+(cache.indexOf(r.k)>-1?' <span style="font-size:9px;color:var(--stone2)">· cache</span>':'')+(r.ovf?' <span style="font-size:9px;color:var(--stone2)">· extra opslag</span>':'')+'</div><div class="settings-value-badge">'+kb(r.b)+'</div></div>';
   });
+  try{if(navigator.storage&&navigator.storage.estimate)navigator.storage.estimate().then(function(e){var el=$('qtStoreEst');if(el&&e&&e.usage)el.textContent=kb(e.usage)+(e.quota?' van '+(e.quota>=1073741824?(e.quota/1073741824).toFixed(1).replace('.',',')+' GB':kb(e.quota)):'');});}catch(e){}
   h+='<button class="btn" style="width:100%;margin-top:10px;padding:11px;border:1.5px solid #0a0a0a;border-radius:11px;background:#fff;font:800 11px var(--grotesk);letter-spacing:.06em;text-transform:uppercase;box-shadow:2px 2px 0 #0a0a0a" onclick="qtStore.clearCaches()">Caches wissen ('+kb(cacheTot)+')</button>'
    +'<div style="font:500 10px var(--body);color:var(--stone2);margin:6px 2px 12px">Caches (TV-gids, podcasts, scraper, ICS) worden vanzelf opnieuw opgehaald. Budget, notities, recepten en zangnummers blijven onaangeroerd.</div>'
    +'<div style="font:700 9px var(--grotesk);letter-spacing:.14em;text-transform:uppercase;color:var(--stone2);margin:4px 0 6px">Back-up</div>'
@@ -27807,6 +27912,7 @@ var api=window.qtStore={
   exportAll:function(){
     var o={app:'QualityTime',v:1,at:new Date().toISOString(),ls:{}};
     try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(CACHE().indexOf(k)>-1||k==='__qtb')continue;o.ls[k]=localStorage.getItem(k);}}catch(e){}
+    try{var G0=window.qtStoreGuard;if(G0&&G0.O)Object.keys(G0.O).forEach(function(k){if(CACHE().indexOf(k)<0&&k!=='qt_ovf_idx')o.ls[k]=G0.O[k];});delete o.ls.qt_ovf_idx;}catch(e){}
     var name='qualitytime-backup-'+new Date().toISOString().slice(0,10)+'.json',blob=new Blob([JSON.stringify(o)],{type:'application/json'});
     try{var f=new File([blob],name,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:'QualityTime back-up'}).then(function(){msg('Back-up gedeeld ✓');}).catch(function(){});return;}}catch(e){}
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){a.remove();URL.revokeObjectURL(a.href);},1500);msg('Back-up gemaakt ✓');
@@ -27828,21 +27934,21 @@ if(typeof _sp==='function')window.settingsShowPanel=function(n){_sp.apply(this,a
 var pend={},dismissedAt=0,nearShown=false,IGN=/^(qtBudget_ui|qz_last_song|qz_ticks_v1|qtProgressSubView|qtZangMetingEnabled|wf_lastswk|__qtb)$/;
 function friendly(k){return NAMES[k]||String(k).replace(/^(wf_|qt_?)/,'').replace(/_/g,' ');}
 function fullHtml(){
-  var s=scan(),pct=Math.min(100,s.tot/(5*1048576)*100),keys=Object.keys(pend),blocked=keys.some(function(k){return pend[k].reason==='blocked';});
+  var s=scan(),pct=0,keys=Object.keys(pend),blocked=keys.some(function(k){return pend[k].reason==='blocked';});
   var near=keys.length===1&&keys[0]==='__bijna';
   var bud=(window.qtBud&&qtBud.storeInfo)?qtBud.storeInfo():null;
   var cache=CACHE(),cacheTot=0;s.rows.forEach(function(r){if(cache.indexOf(r.k)>-1)cacheTot+=r.b;});
   var full99=near&&pct>=99;
   var title=blocked?'Opslag niet beschikbaar':full99?'Opslag van dit toestel is vol':near?'Opslag bijna vol ('+Math.round(pct)+'%)':'Opslag van dit toestel is vol';
   var why=blocked?'Je browser laat de app geen gegevens bewaren op dit toestel (bijvoorbeeld door privémodus of een geblokkeerde opslag).'
-    :full99?'De app mag ongeveer 5 MB bewaren op dit toestel en dat is op. Nieuwe gegevens kunnen nu niet meer bewaard worden en verdwijnen zodra je de app sluit. Maak eerst ruimte vrij.'
-    :near?'De app mag ongeveer 5 MB bewaren op dit toestel en daar is bijna alles van gebruikt. Wis tijdig caches, anders kunnen nieuwe gegevens straks niet meer bewaard worden.'
-    :'De app mag ongeveer 5 MB bewaren op dit toestel en dat is op. Daardoor kon er iets niet bewaard worden. Wat niet bewaard raakt, verdwijnt zodra je de app sluit.';
+    :full99?'Het toestel heeft geen opslagruimte meer vrij voor de app. Nieuwe gegevens kunnen nu niet meer bewaard worden en verdwijnen zodra je de app sluit. Maak eerst ruimte vrij op je iPhone.'
+    :near?'De opslag is bijna vol.'
+    :'Het toestel kon dit niet bewaren: er is geen opslagruimte meer vrij voor de app (de app zelf heeft geen limiet). Wat niet bewaard raakt, verdwijnt zodra je de app sluit. Maak ruimte vrij op je iPhone (Instellingen › Algemeen › iPhone-opslag).';
   var h='<div class="qtf-t">⚠️ '+title+'</div><div class="qtf-p">'+why+'</div>';
   var list=keys.filter(function(k){return k!=='__bijna';});
   if(list.length){h+='<div class="qtf-l"><b>Niet bewaard:</b>'+list.map(function(k){return '<div>• '+friendly(k)+' <span>'+kb(pend[k].bytes||0)+' · reden: '+(pend[k].reason==='blocked'?'opslag geblokkeerd':'te weinig ruimte')+'</span></div>';}).join('')+'</div>';}
   if(bud&&list.indexOf('qtBudget_v1')>-1)h+='<div class="qtf-ok">'+(bud.idbAt?'✓ Je budget staat wel veilig in de back-up van de app.':'Je budget wordt zo meteen in de back-up bewaard.')+'</div>';
-  h+='<div class="qtf-u">Gebruikt: <b>'+kb(s.tot)+'</b> van ± 5 MB'+(s.rows[0]?' · grootste: '+friendly(s.rows[0].k)+' ('+kb(s.rows[0].b)+')':'')+'</div>';
+  h+='<div class="qtf-u">In gebruik door de app: <b>'+kb(s.tot+s.ov)+'</b>'+(s.rows[0]?' · grootste: '+friendly(s.rows[0].k)+' ('+kb(s.rows[0].b)+')':'')+'</div>';
   h+='<div class="qtf-b"><button class="qtf-main" onclick="qtStore.freeUp()">Ruimte vrijmaken'+(cacheTot?' ('+kb(cacheTot)+')':'')+'</button><button onclick="qtStore.exportAll()">Back-up maken</button><button onclick="qtStore.toStorage()">Opslagoverzicht</button><button class="qtf-x" onclick="qtStore.closeFull()">Sluiten</button></div><div id="qtfMsg" class="qtf-m"></div>';
   return h;
 }
@@ -27874,7 +27980,7 @@ window.addEventListener('qt-storage-full',function(e){var d=e.detail||{};if(IGN.
 function checkUsage(){try{var s=scan();if(s.tot/(5*1048576)>=0.9&&!nearShown&&!Object.keys(pend).length){nearShown=true;pend['__bijna']={reason:'near'};showFull();}}catch(e){}}
 /* mislukte schrijfacties van vóór het laden van dit script (bv. bij het opstarten) alsnog tonen */
 setTimeout(function(){try{var lg=(window.qtStoreGuard&&qtStoreGuard.log)||[];lg.forEach(function(d){if(IGN.test(d.key||''))return;pend[d.key]={reason:d.reason,bytes:d.bytes};});if(Object.keys(pend).length)showFull();}catch(e){}},900);
-setTimeout(checkUsage,3500);setInterval(checkUsage,10*60*1000);
+
 })();
 
 </script>
