@@ -5033,6 +5033,61 @@ body #ohCardMMD.oh-card .oh-card-body{position:absolute;left:12px;bottom:10px;ri
 .qn-warn b{display:block;font:800 13px 'Space Grotesk',sans-serif;color:#a31f14;}
 .qn-btn.off{background:#d8ccb3 !important;color:#8f8070 !important;box-shadow:none !important;pointer-events:none;}
 
+/* ═══ Bijlagen + opname bij afspraak (werkt in elk venster) ═══ */
+.qn-bj{margin:12px 0 0;}
+.qn-bj .qn-bjs{margin:0 0 10px;}
+.qn-bj .lb{font:700 9px 'Space Grotesk',sans-serif;letter-spacing:.16em;text-transform:uppercase;color:#c8a46b;margin:0 2px 6px;}
+.qn-bj .qn-au{position:relative;overflow:hidden;display:flex;gap:11px;align-items:center;background:#ffe9d6;border:1.5px solid #0a0a0a;border-radius:13px;box-shadow:2.5px 2.5px 0 #0a0a0a;padding:10px 12px;margin:0 0 9px;}
+.qn-bj .qn-au::after,.qn-bj .qn-fl::after,.qn-bj .qn-drow::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'160'%20height%3D'160'%3E%3Cfilter%20id%3D'n'%20color-interpolation-filters%3D'sRGB'%3E%3CfeTurbulence%20type%3D'fractalNoise'%20baseFrequency%3D'1.05'%20numOctaves%3D'2'%20seed%3D'9'%20stitchTiles%3D'stitch'%2F%3E%3CfeColorMatrix%20values%3D'0%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35'%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D'160'%20height%3D'160'%20filter%3D'url(%23n)'%2F%3E%3C%2Fsvg%3E") 0 0/160px 160px;opacity:.12;pointer-events:none;}
+.qn-bj .qn-au .pl{width:40px;height:40px;border-radius:50%;background:#ffd9c2;border:1.5px solid #0a0a0a;display:grid;place-items:center;box-shadow:1.5px 1.5px 0 #0a0a0a;flex:none;cursor:pointer;}
+.qn-bj .qn-au .pl svg{width:15px;height:15px;fill:#0a0a0a;}
+.qn-bj .qn-au .pl.on{background:#e5471e;}.qn-bj .qn-au .pl.on svg{fill:#fff;}
+.qn-bj .qn-au .m{flex:1;min-width:0;}
+.qn-bj .qn-au .m b{display:block;font:800 12px 'Space Grotesk',sans-serif;color:#2c1208;}
+.qn-bj .qn-au .bar{height:5px;border-radius:9px;background:#e8cdb4;margin:6px 0 3px;position:relative;}
+.qn-bj .qn-au .bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:9px;background:#e5471e;}
+.qn-bj .qn-au .m small{font:600 10px 'Outfit',sans-serif;color:#7a5a3a;}
+.qn-bj .qn-au .tx{font:800 10px 'Space Grotesk',sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#a06a30;white-space:nowrap;cursor:pointer;padding:6px 2px;}
+.qn-bj .qn-bjtxt{background:#fffdf6;border:1.5px solid #0a0a0a;border-radius:12px;padding:10px 12px;margin:0 0 8px;font:500 13px/1.45 'Outfit',sans-serif;color:#2c1208;white-space:pre-wrap;word-break:break-word;user-select:text;-webkit-user-select:text;}
+.qn-bj .qn-bjopen{font:800 10px 'Space Grotesk',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#a06a30;margin:0 2px 4px;cursor:pointer;padding:4px 0;}
+.qn-bj .qn-fl{position:relative;overflow:hidden;display:flex;gap:10px;align-items:center;background:#fff;border:1.5px solid #0a0a0a;border-radius:13px;box-shadow:2px 2px 0 #0a0a0a;padding:8px 10px;margin:0 0 8px;}
+.qn-bj .qn-fl .ic{width:34px;height:34px;border-radius:9px;border:1.5px solid #0a0a0a;display:grid;place-items:center;font-size:17px;flex:none;cursor:pointer;}
+.qn-bj .qn-fl .m{flex:1;min-width:0;cursor:pointer;}
+.qn-bj .qn-fl .m b{display:block;font:700 13px 'Outfit',sans-serif;color:#2c1208;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.qn-bj .qn-fl .m small{font:600 10px 'Outfit',sans-serif;color:#7a5a3a;}
+.qn-bj .qn-fl .a{display:flex;gap:6px;flex:none;position:relative;z-index:1;}
+.qn-bj .qn-fl .a span{min-width:32px;height:32px;box-sizing:border-box;border-radius:99px;border:1.5px solid #0a0a0a;display:grid;place-items:center;font-size:13px;background:#fff7e3;cursor:pointer;padding:0 6px;}
+.qn-bj .qn-fl .a span.d{background:#fde4e1;}
+.qn-bj .qn-fl .a span.d.arm{background:#e5471e;color:#fff;font:800 10px 'Space Grotesk',sans-serif;letter-spacing:.04em;}
+.qn-bj .qn-fl.ed{align-items:flex-start;}
+.qn-bj .qn-fin{display:block;width:100%;box-sizing:border-box;border:1.5px solid #0a0a0a !important;border-radius:9px !important;background:#fffdf6 !important;padding:7px 9px !important;margin:0 !important;font:600 13px 'Outfit',sans-serif;color:#2c1208;outline:none !important;box-shadow:none !important;}
+.qn-bj .qn-fl .eb{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;}
+.qn-bj .qn-fl .eb span{font:800 10px 'Space Grotesk',sans-serif;letter-spacing:.04em;text-transform:uppercase;border:1.5px solid #0a0a0a;border-radius:99px;padding:5px 10px;background:#fff7e3;cursor:pointer;}
+.qn-bj .qn-fl .eb span.ok{background:#d5ecd0;}
+.qn-bj .qn-bjadd{border:1.5px dashed #0a0a0a;border-radius:12px;text-align:center;padding:11px;font:800 11px 'Space Grotesk',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#2c1208;margin:0 0 6px;cursor:pointer;}
+.qn-bj .qn-hlp{font:500 11px/1.4 'Outfit',sans-serif;color:#7a5a3a;margin:4px 2px 0;}
+/* lijst met afspraken onder de dagtegels */
+.qn-dlist{margin:14px 0 0;}
+.qn-dlist .hd{display:flex;align-items:baseline;justify-content:space-between;margin:0 4px 8px;font:800 11px 'Space Grotesk',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#7a5a3a;}
+.qn-dlist .hd b{font:700 10px 'Space Grotesk',sans-serif;letter-spacing:.06em;color:#a06a30;}
+.qn-drow{position:relative;overflow:hidden;display:flex;gap:10px;align-items:center;background:#fff7e3;border:1.5px solid #0a0a0a;border-radius:13px;box-shadow:2.5px 2.5px 0 #0a0a0a;padding:9px 12px 9px 17px;margin:0 0 9px;cursor:pointer;}
+.qn-drow::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c);}
+.qn-drow .t{font:800 12px 'Space Grotesk',sans-serif;color:#2c1208;min-width:42px;}
+.qn-drow .m{flex:1;min-width:0;}
+.qn-drow .n{font:700 14px/1.2 'Outfit',sans-serif;color:#2c1208;word-break:break-word;}
+.qn-drow .s{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;align-items:center;}
+.qn-dchip{font:700 9px 'Space Grotesk',sans-serif;letter-spacing:.04em;background:#ffd9c2;border:1.2px solid #0a0a0a;border-radius:99px;padding:1px 7px;color:#2c1208;}
+.qn-dchip.f{background:#d9ecf2;}
+.qn-dwho{font:700 10px 'Outfit',sans-serif;color:#7a5a3a;}
+.qn-drow .chev{font:800 15px 'Space Grotesk',sans-serif;color:#2c1208;}
+.qn-dadd{border:1.5px dashed #0a0a0a;border-radius:12px;text-align:center;padding:10px;font:800 11px 'Space Grotesk',sans-serif;letter-spacing:.08em;text-transform:uppercase;color:#2c1208;margin:0 0 8px;cursor:pointer;}
+.qn-dadd.kid{border-color:#e87540;color:#e87540;}
+.qn-dl-empty{font:italic 500 12.5px 'Outfit',sans-serif;color:#7a5a3a;margin:0 4px 10px;}
+
+.qn-bj .nm{display:block;font:700 13px/1.25 'Outfit',sans-serif !important;color:#2c1208;text-transform:none !important;letter-spacing:0 !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.qn-bj .sm{display:block;font:600 10px/1.3 'Outfit',sans-serif !important;color:#7a5a3a;text-transform:none !important;letter-spacing:0 !important;}
+.qn-bj .qn-bjtxt,.qn-bj .qn-hlp{text-transform:none !important;letter-spacing:0 !important;}
+
 </style>
 <script>
 // Herbruikbare "haventekening"-laadindicator — gebruikt op elke plek in de
@@ -5131,7 +5186,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 18</div>
+    <div class="oh-version-tag" id="ohVersionTag">v04/11/26 · lay out 19</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -14600,7 +14655,7 @@ function renderCalendar() {
     el.innerHTML = pips+'<div class="cal-num">'+d+'</div><div class="cal-badges">'+wasteIcons+'</div>'+adhocAlert;
     const openAgenda = nApp > 0 && !isKidsOnlyView;
 
-    el.onclick=()=>{selDay=date;renderCalendar();renderDayPanel(date);if(openAgenda&&document.getElementById('dp2Panel_agenda'))dp2ShowDetail('agenda');};
+    el.onclick=()=>{selDay=date;renderCalendar();renderDayPanel(date);};
     grid.appendChild(el);
   }
   renderMS(); renderPB(); renderPQ();
@@ -23381,6 +23436,7 @@ A.detail=function(i){var it=cache[i];if(!it)return;var ev=it.ev,d=pd(it.k);A._cu
       (ev.notes||ev.description?'<div class="ag-det-row"><span>📝</span><div style="white-space:pre-wrap">'+esc(ev.notes||ev.description)+'</div></div>':'')+
       (wie?'<div class="ag-det-row"><span>👥</span><div class="chips">'+wie+'</div></div>':'')+
       (window.qtNotes&&qtNotes.byAppt(ev.id)?'<div class="ag-det-row"><span>🎙</span><div><button class="btn" onclick="qtAgList.closeSheet();qtNotes.openId(\''+qtNotes.byAppt(ev.id)+'\')">Notitie openen</button></div></div>':'')+
+      (ev.id?'<div class="qn-bj" data-o="a:'+ev.id+'"></div>':'')+
     '</div>'+
     (editable?'<div class="sheet-actions" style="margin-top:14px"><button class="btn" onclick="qtAgList.del()">Verwijderen</button><button class="btn dark" onclick="qtAgList.edit()">✎ Wijzigen</button></div>'
              :'<div class="notice warn" style="margin-top:14px">🔗<div>Deze afspraak komt uit je <b>gekoppelde agenda</b>. Wijzig ze daar; de wijziging verschijnt hier bij de volgende synchronisatie.</div></div>'));
@@ -25842,7 +25898,7 @@ A.detailU=function(id){var u=findU(id);if(!u)return;
    +'<div class="ag-det"><div class="ag-det-row"><span>📅</span><div><b>Nog geen datum</b></div></div>'
    +(u.location?'<div class="ag-det-row"><span>📍</span><div>'+esc(u.location)+'</div></div>':'')
    +(u.notes?'<div class="ag-det-row"><span>📝</span><div style="white-space:pre-wrap">'+esc(u.notes)+'</div></div>':'')
-   +(wie?'<div class="ag-det-row"><span>👥</span><div class="chips">'+wie+'</div></div>':'')+(window.qtNotes&&qtNotes.byAppt(u.id)?'<div class="ag-det-row"><span>🎙</span><div><button class="btn" onclick="qtAgList.closeSheet();qtNotes.openId(\''+qtNotes.byAppt(u.id)+'\')">Notitie openen</button></div></div>':'')+'</div>'
+   +(wie?'<div class="ag-det-row"><span>👥</span><div class="chips">'+wie+'</div></div>':'')+(window.qtNotes&&qtNotes.byAppt(u.id)?'<div class="ag-det-row"><span>🎙</span><div><button class="btn" onclick="qtAgList.closeSheet();qtNotes.openId(\''+qtNotes.byAppt(u.id)+'\')">Notitie openen</button></div></div>':'')+'<div class="qn-bj" data-o="a:'+u.id+'"></div></div>'
    +'<div class="sheet-actions" style="margin-top:14px"><button class="btn yellow" onclick="qtAgList.planS(\''+u.id+'\')">📅 Datum kiezen</button></div>'
    +'<div class="sheet-actions" style="margin-top:8px"><button class="btn" onclick="qtAgList.delU(\''+u.id+'\')">Verwijderen</button><button class="btn dark" onclick="qtAgList.editS(\''+u.id+'\')">✎ Wijzigen</button></div>');
 };
@@ -26266,7 +26322,7 @@ function afterChange(){
   try{if(typeof renderToday==='function')renderToday();}catch(e){}
   try{if(typeof renderTodayPage==='function')renderTodayPage();}catch(e){}
   try{renderCalendar();}catch(e){}
-  try{renderDayPanel(selDay);if(document.getElementById('dp2Panel_agenda'))dp2ShowDetail('agenda');}catch(e){}
+  try{renderDayPanel(selDay);}catch(e){}
 }
 async function doDelete(){
   var c=cur;if(!c)return;var ev=c.ev;
@@ -26548,7 +26604,7 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();
 
 /* ── toast ── */
 var toastT=null;
-function toast(m){var t=$('qtnToast');if(!t){if(typeof showToast==='function')showToast(m);return;}t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2600);}
+function toast(m){var t=$('qtnToast'),pg=$('qtnPage');if(!t||!pg||!pg.classList.contains('open')){if(typeof showToast==='function'){showToast(m);return;}if(!t)return;}t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('on');},2600);}
 
 /* ── afspraak-koppeling ── */
 function evAll(){var out=[];[localEvents,kidsEvents].forEach(function(st){if(!st)return;Object.keys(st).forEach(function(k){(st[k]||[]).forEach(function(e){out.push({k:k,ev:e});});});});return out;}
@@ -26734,6 +26790,7 @@ function renderDetail(){
      +'<div class="qn-spd" style="display:flex;justify-content:center;gap:6px;margin-top:6px">'+[1,1.25,1.5,2].map(function(r){return '<span class="qn-chip dark'+(pb.rate===r?' on':'')+'" data-r="'+r+'" onclick="qtNotes.speed('+r+')">'+String(r).replace('.',',')+'×</span>';}).join('')+'</div></div>';
   }
   h+='<div class="qn-big"><div class="qn-kick" style="margin-bottom:2px">📄 Tekst</div><textarea class="qn-txt" id="qtnTxt" placeholder="Nog geen tekst. Typ hier of gebruik de dicteerknop van je toetsenbord." oninput="qtNotes.setText(this.value)">'+esc(n.text||'')+'</textarea></div>'
+   +'<div class="qn-bj" data-o="n:'+n.id+'" style="margin:16px 18px 0"></div>'
    +'<div class="qn-dl"><div class="qn-btn" onclick="qtNotes.dlTxt()">⬇ Tekst</div>'+(n.audio?'<div class="qn-btn" onclick="qtNotes.dlAud()">⬇ Audio</div>':'')+'<div class="qn-btn del" id="qtnDel" onclick="qtNotes.del()">🗑</div></div>';
   var keep=$('qtnBody').scrollTop;
   $('qtnBody').innerHTML=h;$('qtnBody').scrollTop=keep;grow($('qtnTitle'));updPlayer();
@@ -26754,7 +26811,7 @@ function del(){
   if(!b.classList.contains('warn')){b.classList.add('warn');b.textContent='Zeker?';b.style.flex='0 0 86px';clearTimeout(delT);delT=setTimeout(function(){if($('qtnDel')){b.classList.remove('warn');b.textContent='🗑';b.style.flex='';}},3000);return;}
   var n=nById(curId);if(!n)return;
   if(pb.id===n.id){au.pause();pb.id=null;revoke();}
-  idbDel(n.id);notes=notes.filter(function(x){return x.id!==n.id;});persist();amap=null;view='list';curId=null;render();toast('Notitie verwijderd');
+  idbDel(n.id);bjPurge('n:'+n.id);notes=notes.filter(function(x){return x.id!==n.id;});persist();amap=null;view='list';curId=null;render();toast('Notitie verwijderd');
 }
 
 /* ── labels ── */
@@ -26878,7 +26935,12 @@ function apSave(){
       var lbl=DGN[new Date(goDate+'T12:00:00').getDay()]+' '+fmtD(goDate);
       goCal(goDate);
       if(typeof showToast==='function')showToast('Afspraak op '+lbl+' gezet · je ziet nu je kalender');
-    }else{renderDetail();toast('Afspraak zonder datum gemaakt');}
+    }else{
+      close();
+      try{var t2=document.querySelectorAll('#app>.tabs .tab')[1];switchTab('calendar',t2);}catch(e){}
+      try{if(window.qtAgList&&qtAgList.showUndated)qtAgList.showUndated();}catch(e){}
+      if(typeof showToast==='function')showToast('Afspraak zonder datum gemaakt · je ziet nu de lijst Zonder datum');
+    }
   }finally{apBusy=false;}
 }
 
@@ -26967,7 +27029,197 @@ function cancelRec(fromX){
   var p=$('qtnPage');if(p)p.classList.remove('open');
 }
 
-window.qtNotes={open:open,close:close,back:back,openId:openId,byAppt:byAppt,updTile:updTile,
+
+/* ═══ Bijlagen (eigen bestanden op dit toestel) + opname bij afspraak + lijst onder de dagtegels ═══ */
+var AK='qt_att_v1';
+var att=load(AK,{});if(!att||typeof att!=='object'||Array.isArray(att))att={};
+function attSave(){save(AK,att);}
+function attList(fo){return att[fo]||(att[fo]=[]);}
+function bjOwner(o){
+  var k=String(o).charAt(0),id=String(o).slice(2);
+  if(k==='n')return {fo:o,note:nById(id),full:false};
+  var nid=byAppt(id),n=nid?nById(nid):null;
+  return {fo:n?('n:'+n.id):o,note:n,full:true};
+}
+function bjCount(apptId){var r=bjOwner('a:'+apptId);return (att[r.fo]||[]).length;}
+function fsize(b){return b<1024?b+' B':b<1048576?Math.max(1,Math.round(b/1024))+' KB':(b/1048576).toFixed(1).replace('.',',')+' MB';}
+function ficon(f){var t=(f.type||'')+' '+(f.name||'').toLowerCase();
+  if(/sheet|excel|\.xls|\.csv/.test(t))return ['📊','#d5ecd0'];if(/pdf/.test(t))return ['📄','#fde4e1'];if(/word|\.doc/.test(t))return ['📝','#d9ecf2'];
+  if(/image|\.png|\.jpe?g|\.heic|\.gif|\.webp/.test(t))return ['🖼️','#e6d6f5'];if(/audio|\.m4a|\.mp3|\.wav/.test(t))return ['🎧','#ffd9c2'];if(/video|\.mp4|\.mov/.test(t))return ['🎞️','#fbe6a2'];
+  if(/zip|rar/.test(t))return ['🗜️','#e8dcc0'];return ['📎','#e8e4da'];}
+var bjEd=null,bjArm=null,bjArmT=null,bjTarget=null,bjTxtOpen={};
+function bjRender(el){
+  var o=el.getAttribute('data-o');if(!o)return;
+  var r=bjOwner(o),h='';
+  if(r.full&&r.note){
+    var n=r.note;
+    h+='<div class="qn-bjs"><div class="lb">Opname &amp; tekst</div>';
+    if(n.audio){
+      h+='<div class="qn-au" data-n="'+n.id+'"><div class="pl" onclick="qtNotes.play(\''+n.id+'\')">'+IC.play+'</div><div class="m"><b>Opname · '+mmss(n.dur)+'</b><div class="bar"><i></i></div><span class="sm">Gesproken notitie van '+fmtDT(n.created)+'</span></div>'+(n.text?'<div class="tx" onclick="qtNotes.bjTxt(\''+n.id+'\')">Tekst '+(bjTxtOpen[n.id]?'▴':'▾')+'</div>':'')+'</div>';
+    }
+    if(n.text)h+='<div class="qn-bjtxt" style="display:'+((n.audio&&!bjTxtOpen[n.id])?'none':'block')+'">'+esc(n.text)+'</div>';
+    else if(!n.audio)h+='<div class="qn-bjtxt">Geen tekst bij deze notitie.</div>';
+    h+='<div class="qn-bjopen" onclick="qtNotes.bjNote(\''+n.id+'\')">Notitie openen ›</div></div>';
+  }
+  var L=attList(r.fo);
+  h+='<div class="qn-bjs"><div class="lb">Bestanden op dit toestel'+(L.length?' · '+L.length:'')+'</div>';
+  L.forEach(function(f){
+    var ic=ficon(f);
+    if(bjEd===f.id){
+      h+='<div class="qn-fl ed"><div class="ic" style="background:'+ic[1]+'">'+ic[0]+'</div><div class="m"><input class="qn-fin" id="qtnFn" value="'+esc(f.name)+'" maxlength="120" onkeydown="if(event.key===\'Enter\'){qtNotes.bjSaveName(\''+r.fo+'\',\''+f.id+'\');}"><div class="eb"><span onclick="qtNotes.bjRepl(\''+r.fo+'\',\''+f.id+'\')">Bestand vervangen</span><span class="ok" onclick="qtNotes.bjSaveName(\''+r.fo+'\',\''+f.id+'\')">✓ Opslaan</span><span onclick="qtNotes.bjEdit(null)">Annuleren</span></div></div></div>';
+    }else{
+      h+='<div class="qn-fl"><div class="ic" style="background:'+ic[1]+'" onclick="qtNotes.bjOpen(\''+f.id+'\')">'+ic[0]+'</div><div class="m" onclick="qtNotes.bjOpen(\''+f.id+'\')"><span class="nm">'+esc(f.name)+'</span><span class="sm">'+fsize(f.size)+' · toegevoegd '+fmtD(dayKey(new Date(f.t)))+'</span></div><div class="a"><span onclick="qtNotes.bjEdit(\''+f.id+'\')" aria-label="Wijzigen">✎</span><span class="d'+(bjArm===f.id?' arm':'')+'" onclick="qtNotes.bjDel(\''+r.fo+'\',\''+f.id+'\')" aria-label="Verwijderen">'+(bjArm===f.id?'Zeker?':'🗑')+'</span></div></div>';
+    }
+  });
+  h+='<div class="qn-bjadd" onclick="qtNotes.bjAdd(\''+r.fo+'\')">+ Bestand koppelen</div>';
+  h+='<div class="qn-hlp">Bestanden blijven lokaal op dit toestel. Tik op een bestand om het te openen, ✎ om de naam te wijzigen of het te vervangen.</div></div>';
+  el.innerHTML=h;el.setAttribute('data-ok','1');
+  bjSync();
+}
+function bjRefresh(){document.querySelectorAll('.qn-bj[data-o]').forEach(bjRender);try{if(document.getElementById('qtDayList')&&selDay)dayListMount(selDay);}catch(e){}}
+var bjScanT=0;
+function bjScan(){bjScanT=0;document.querySelectorAll('.qn-bj[data-o]:not([data-ok])').forEach(bjRender);}
+try{new MutationObserver(function(){if(!bjScanT)bjScanT=requestAnimationFrame(bjScan);}).observe(document.body,{childList:true,subtree:true});}catch(e){}
+/* mini-player in de component */
+function bjSync(){
+  document.querySelectorAll('.qn-au[data-n]').forEach(function(box){
+    var id=box.getAttribute('data-n'),n=nById(id),cur=pb.id===id,dur=(cur&&isFinite(au.duration)&&au.duration>0)?au.duration:((n&&n.dur)||0),t=cur?au.currentTime:0;
+    var pl=box.querySelector('.pl');if(pl){pl.innerHTML=(cur&&pb.playing)?IC.pause:IC.play;pl.classList.toggle('on',!!(cur&&pb.playing));}
+    var bi=box.querySelector('.bar i');if(bi)bi.style.width=(dur?Math.min(100,t/dur*100):0)+'%';
+    var bt=box.querySelector('.m b');if(bt)bt.textContent='Opname · '+(cur&&t>0?mmss(t)+' / ':'')+mmss(dur);
+  });
+}
+au.addEventListener('timeupdate',bjSync);au.addEventListener('play',bjSync);au.addEventListener('pause',bjSync);au.addEventListener('ended',bjSync);
+function bjTxt(id){bjTxtOpen[id]=!bjTxtOpen[id];bjRefresh();}
+function bjNote(id){
+  var b=document.getElementById('detailSheetBackdrop');if(b)b.classList.remove('open');
+  var s=document.getElementById('budSheetBg');if(s)s.classList.remove('open');
+  try{if(window.qtAgList&&qtAgList.closeSheet)qtAgList.closeSheet();}catch(e){}
+  openId(id);
+}
+function bjAdd(fo){
+  bjTarget={fo:fo,mode:'add'};var i=bjInput();i.value='';i.multiple=true;i.click();
+}
+function bjRepl(fo,fid){bjTarget={fo:fo,mode:'repl',fid:fid};var i=bjInput();i.value='';i.multiple=false;i.click();}
+function bjInput(){
+  var i=document.getElementById('qtnFile');
+  if(!i){i=document.createElement('input');i.type='file';i.id='qtnFile';i.style.cssText='position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';i.addEventListener('change',bjPicked);document.body.appendChild(i);}
+  return i;
+}
+async function bjPicked(e){
+  var files=Array.prototype.slice.call(e.target.files||[]),t=bjTarget;bjTarget=null;
+  if(!t||!files.length)return;
+  var okN=0,big=0;
+  for(var k=0;k<files.length;k++){
+    var f=files[k];
+    if(f.size>250*1048576){big++;continue;}
+    try{
+      if(t.mode==='repl'){
+        var L=attList(t.fo),m=null;L.forEach(function(x){if(x.id===t.fid)m=x;});
+        if(!m)continue;
+        await idbPut('att_'+m.id,f);m.size=f.size;m.type=f.type||m.type;m.t=Date.now();bjEd=null;
+      }else{
+        var id='f_'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+        await idbPut('att_'+id,f);
+        attList(t.fo).push({id:id,name:(f.name||'bestand').slice(0,120),size:f.size,type:f.type||'',t:Date.now()});
+      }
+      okN++;
+    }catch(err){toast('Bestand kon niet lokaal bewaard worden');}
+  }
+  attSave();bjRefresh();
+  if(big)toast('Bestand te groot (max. 250 MB)');
+  else if(okN)toast(t.mode==='repl'?'Bestand vervangen':(okN+' bestand'+(okN===1?'':'en')+' gekoppeld'));
+}
+function bjEdit(fid){bjEd=fid;bjArm=null;bjRefresh();if(fid){setTimeout(function(){var i=document.getElementById('qtnFn');if(i){i.focus();try{i.select();}catch(e){}}},60);}}
+function bjSaveName(fo,fid){
+  var i=document.getElementById('qtnFn'),v=i?i.value.trim():'';
+  attList(fo).forEach(function(f){if(f.id===fid&&v)f.name=v.slice(0,120);});
+  attSave();bjEd=null;bjRefresh();toast('Naam gewijzigd');
+}
+function bjDel(fo,fid){
+  if(bjArm!==fid){bjArm=fid;clearTimeout(bjArmT);bjArmT=setTimeout(function(){bjArm=null;bjRefresh();},3000);bjRefresh();return;}
+  clearTimeout(bjArmT);bjArm=null;
+  att[fo]=attList(fo).filter(function(f){return f.id!==fid;});if(!att[fo].length)delete att[fo];
+  idbDel('att_'+fid);attSave();bjRefresh();toast('Bestand verwijderd');
+}
+function bjPurge(fo){(att[fo]||[]).forEach(function(f){idbDel('att_'+f.id);});delete att[fo];attSave();}
+async function bjOpen(fid){
+  var f=null;Object.keys(att).forEach(function(k){att[k].forEach(function(x){if(x.id===fid)f=x;});});if(!f)return;
+  var rec=null;try{rec=await idbGet('att_'+fid);}catch(e){}
+  if(!rec||!rec.blob){toast('Bestand niet gevonden op dit toestel');return;}
+  var url=URL.createObjectURL(rec.blob),a=document.createElement('a');a.href=url;a.rel='noopener';
+  var viewable=/^(image|text|audio|video)\//.test(f.type||'')||/pdf/.test(f.type||'');
+  if(viewable)a.target='_blank';else a.download=f.name;
+  document.body.appendChild(a);a.click();setTimeout(function(){a.remove();try{URL.revokeObjectURL(url);}catch(e){}},60000);
+}
+
+/* detail van een afspraak (bestaand venster) + lijsten: component toevoegen */
+(function(){
+  var oed=window.openEventDetail;
+  if(typeof oed==='function'){
+    window.openEventDetail=function(ev){
+      var r=oed.apply(this,arguments);
+      try{
+        var body=document.getElementById('dsBody');
+        if(body&&ev&&ev.id&&!body.querySelector('.qn-bj')){
+          var d=document.createElement('div');d.className='qn-bj';d.setAttribute('data-o','a:'+ev.id);
+          var act=body.querySelector('.qt-evact');if(act)body.insertBefore(d,act);else body.appendChild(d);
+        }
+      }catch(e){}
+      return r;
+    };
+  }
+})();
+
+/* ── lijst met afspraken onder de tegels van de aangeklikte dag ── */
+function dayEvs(key){
+  var localEvs=getLocalEventsForDate(key,true),icsEvs=getAgendaForDate(key);
+  var kidsEvs=(kidsEvents[key]||[]).map(function(ev){return Object.assign({},ev,{isKidsEvent:true});});
+  var own=localEvs.concat(icsEvs.filter(function(e){return !localEvs.find(function(l){return qtSameAppt(l,e);});}));
+  var all;
+  if(calFilter==='mine')all=own;
+  else if(calFilters.indexOf('kids')>=0&&calFilters.length===1)all=kidsEvs;
+  else all=own.concat(kidsEvs.filter(function(k){return !own.find(function(o){return o.title===k.title&&o.start===k.start;});}));
+  all.sort(function(a,b){return (a.start||'').localeCompare(b.start||'');});
+  return all;
+}
+function evCol(ev){
+  var w=ev.voorWie;if(!w||!w.length)w=ev.isKidsEvent?['janne','cyriel']:['toon'];
+  var j=w.indexOf('janne')>=0,c=w.indexOf('cyriel')>=0;
+  if(j&&c)return '#111111';if(j)return '#ff6fae';if(c)return '#0b7285';return '#2d1a10';
+}
+function dayListMount(date){
+  var panel=document.getElementById('dayPanel');if(!panel||!date)return;
+  var old=document.getElementById('qtDayList');if(old)old.remove();
+  var key=dk(date),evs=[];try{evs=dayEvs(key);}catch(e){return;}
+  var holder=document.getElementById('dp2TileGrid');holder=holder&&holder.parentNode;if(!holder)return;
+  var d=new Date(key+'T12:00:00');
+  var h='<div class="hd"><span>Afspraken · '+DGN[d.getDay()]+' '+d.getDate()+' '+MND[d.getMonth()]+'</span><b>'+evs.length+'</b></div>';
+  if(!evs.length)h+='<div class="qn-dl-empty">Geen afspraken op deze dag</div>';
+  evs.forEach(function(ev){
+    var raw=JSON.stringify(ev).replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+    var chips='',nt=null;
+    if(ev.id){
+      var nid=byAppt(ev.id);nt=nid?nById(nid):null;
+      if(nt)chips+='<span class="qn-dchip">🎙 '+(nt.audio?'Opname '+mmss(nt.dur):'Notitie')+'</span>';
+      var c=bjCount(ev.id);if(c)chips+='<span class="qn-dchip f">📎 '+c+'</span>';
+    }
+    if(ev.isKidsEvent)chips+='<span class="qn-dwho">Kinderen</span>';
+    h+='<div class="qn-drow" style="--c:'+evCol(ev)+'" data-ev="'+raw+'" onclick="dp2OpenEvent(this)"><div class="t">'+(ev.allDay?'Hele dag':esc(ev.start||''))+'</div><div class="m"><div class="n">'+esc(ev.title||'(zonder titel)')+'</div>'+(chips?'<div class="s">'+chips+'</div>':'')+'</div><div class="chev">›</div></div>';
+  });
+  var kidsBtn=(calFilters.indexOf('kids')>=0||calFilters.indexOf('all')>=0||calFilters.indexOf('janne')>=0||calFilters.indexOf('cyriel')>=0);
+  h+='<div class="qn-dadd" data-k="'+key+'" onclick="dp2AddEvent(this)">+ Afspraak</div>'+(kidsBtn?'<div class="qn-dadd kid" data-k="'+key+'" onclick="dp2AddKidsEvent(this)">+ Kinderafspraak</div>':'');
+  var l=document.createElement('div');l.id='qtDayList';l.className='qn-dlist';l.innerHTML=h;
+  holder.parentNode.insertBefore(l,holder.nextSibling);
+}
+(function(){
+  var rdp=window.renderDayPanel;
+  if(typeof rdp!=='function')return;
+  window.renderDayPanel=function(date){var r=rdp.apply(this,arguments);try{dayListMount(date);}catch(e){}return r;};
+  try{if(typeof selDay!=='undefined'&&selDay&&document.getElementById('dayPanel'))dayListMount(selDay);}catch(e){}
+})();
+
+window.qtNotes={bjTxt:bjTxt,bjNote:bjNote,bjAdd:bjAdd,bjRepl:bjRepl,bjEdit:bjEdit,bjSaveName:bjSaveName,bjDel:bjDel,bjOpen:bjOpen,bjCount:bjCount,open:open,close:close,back:back,openId:openId,byAppt:byAppt,updTile:updTile,
  toggleSearch:toggleSearch,toggleFilter:toggleFilter,setQ:setQ,fLabel:fLabel,fFlag:fFlag,tick:tick,play:function(id){play(id,null);},playAll:playAll,
  skip:skip,seek:seek,speed:speed,setTitle:setTitle,grow:grow,setText:setText,urgent:urgent,dlTxt:dlTxt,dlAud:dlAud,del:del,
  closeSheet:closeSheet,labSheet:labSheet,labManT:labManT,labTog:labTog,labNew:labNew,labRen:labRen,labDel:labDel,
