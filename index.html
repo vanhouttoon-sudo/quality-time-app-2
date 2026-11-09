@@ -5427,6 +5427,23 @@ body #ohCardZangles.oh-card{background-size:auto 90% !important;background-posit
 #trStats .ks-t td b{display:block;font-size:12px;}
 #trStats .ks-t td small{display:block;font-size:8.5px;color:#a08060;font-weight:600;line-height:1.2;word-break:break-all;}
 
+
+/* ═══ lay out 37: banner over de volle breedte, golfrand en label (optie B) ═══ */
+html body #ohHero{margin:0 !important;border:0 !important;border-radius:0 !important;box-shadow:none !important;height:210px !important;min-height:210px !important;max-height:210px !important;position:relative !important;overflow:hidden !important;}
+html body #ohHero::after{display:none !important;}
+#qbWave{position:absolute;left:0;right:0;bottom:-1px;height:30px;z-index:4;pointer-events:none;}
+#qbWave svg{display:block;}
+html body #ohHero #qbStk{display:none !important;}
+html body #ohHero #ohNavDate{display:none !important;}
+html body #ohHero .oh-nav{position:static !important;}
+html body #ohHero .oh-nav-btn{position:absolute !important;top:50% !important;margin-top:-22px !important;z-index:5;}
+html body #ohHero .oh-nav-btn:first-child{left:14px !important;}
+html body #ohHero .oh-nav-btn:last-child{right:14px !important;}
+html body #ohHero .oh-nav-back{position:absolute !important;left:50% !important;transform:translateX(-50%) !important;bottom:38px !important;margin:0 !important;z-index:5;}
+#qbLab{display:flex;align-items:center;gap:10px;margin:0 18px;padding:9px 0 6px;color:#3d1a0a;}
+#qbLab i{flex:1;border-top:1.5px dashed #3d1a0a;display:block;}
+#qbLab b{font-family:var(--grotesk,"Space Grotesk",sans-serif);font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;white-space:nowrap;}
+
 </style>
 <script>
 /* ═══ Opslagbewaking: onbeperkte opslag ═══
@@ -5655,7 +5672,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v09/11/26 · lay out 36</div>
+    <div class="oh-version-tag" id="ohVersionTag">v09/11/26 · lay out 37</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -29351,10 +29368,12 @@ f();
   function seasonOf(m){return m>=3&&m<=5?'lente':m>=6&&m<=8?'zomer':m>=9&&m<=11?'herfst':'winter';}
   function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
 
-  var hero=null,stk=null,last='';
+  var hero=null,stk=null,last='',lab=null,lastLab='';
   function ensure(){
     hero=hero||document.getElementById('ohHero');
     if(!hero)return false;
+    if(!document.getElementById('qbWave')){var w=document.createElement('div');w.id='qbWave';
+      w.innerHTML='<svg viewBox="0 0 390 30" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true"><path d="M0 30V14Q49 0 98 12T195 14T293 12T390 14V30Z" fill="#e9f1e4"/><path d="M0 14Q49 0 98 12T195 14T293 12T390 14" fill="none" stroke="#0a0a0a" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>';hero.appendChild(w);}
     if(!stk||!stk.parentNode){
       stk=document.getElementById('qbStk');
       if(!stk){stk=document.createElement('div');stk.id='qbStk';hero.appendChild(stk);}
@@ -29374,6 +29393,13 @@ f();
       }else if(num){
         cls='qb-title';html='<b>'+esc(num)+'</b>';
       }else{html='';}
+      try{
+        if(!lab||!lab.parentNode){lab=document.getElementById('qbLab');if(!lab){lab=document.createElement('div');lab.id='qbLab';lab.innerHTML='<i></i><b></b><i></i>';if(hero.parentNode)hero.parentNode.insertBefore(lab,hero.nextSibling);}}
+        var nd=document.getElementById('ohNavDate'),ndt=nd?nd.textContent.trim():'',lt;
+        if(/^\d{1,2}$/.test(num)){var pp=nm.split('·'),dw=(pp[0]||'').trim().toLowerCase();lt=(ndt==='Vandaag'||!ndt)?'Vandaag · '+dw+' '+num+' '+ABBR[month-1]:ndt;}
+        else lt=num||ndt;
+        if(lt!==lastLab){lastLab=lt;lab.getElementsByTagName('b')[0].textContent=lt;lab.style.display=lt?'':'none';}
+      }catch(e2){}
       var mo=momentOf(now),se=seasonOf(month),key=se+'-'+mo;
       if(hero.getAttribute('data-bn')!==key){hero.setAttribute('data-bn',key);hero.setAttribute('data-bt',mo);}
       var sig=cls+'|'+html;
@@ -29384,7 +29410,7 @@ f();
     if(!ensure())return;
     update();
     var mo=new MutationObserver(update);
-    ['ohNum','ohName'].forEach(function(id){
+    ['ohNum','ohName','ohNavDate'].forEach(function(id){
       var e=document.getElementById(id);
       if(e)mo.observe(e,{childList:true,characterData:true,subtree:true,attributes:true,attributeFilter:['style']});
     });
