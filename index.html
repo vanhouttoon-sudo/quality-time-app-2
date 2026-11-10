@@ -5456,6 +5456,49 @@ html body #ohHero .oh-nav-btn{top:calc(50% + var(--sat) / 2 + 9px) !important;}
 #qbGlass{position:fixed;top:0;left:0;right:0;height:var(--sat);z-index:2147483000;pointer-events:none;background:rgba(10,10,10,.38);-webkit-backdrop-filter:blur(9px) saturate(1.2);backdrop-filter:blur(9px) saturate(1.2);}
 html body .tabs.nv{padding-bottom:calc(6px + max(0px, var(--sab) - 22px)) !important;}
 
+
+/* ═══ lay out 45: laag postzegelmenu (variant E): horizontale zegels, uitvergrote actieve zegel, minimale onderrand ═══ */
+html body #app{bottom:calc(-1 * var(--qb-gap,0px)) !important;}
+html body .tabs.nv{padding:3px 0 max(4px, calc(var(--sab) - 16px)) !important;}
+html body .tabs.nv .nv-bar{width:100% !important;aspect-ratio:auto !important;height:37px !important;}
+html body .tabs.nv .nv-t{display:none !important;}
+html body .tabs.nv .tab{top:-6px !important;bottom:-8px !important;width:25% !important;}
+html body .tabs.nv .tab:nth-child(5){left:0 !important;}
+html body .tabs.nv .tab:nth-child(6){left:25% !important;}
+html body .tabs.nv .tab:nth-child(7){left:50% !important;}
+html body .tabs.nv .tab:nth-child(8){left:75% !important;}
+.q6{position:absolute;left:0;top:0;right:0;bottom:0;display:flex;align-items:flex-end;gap:8px;padding:0 14px;z-index:1;pointer-events:none;filter:drop-shadow(0 2px 0 rgba(16,40,28,.55));}
+.q6s{position:relative;flex:none;will-change:width,height,transform;transition:transform .08s ease-out;}
+.q6s.p{transform:translateY(1.5px) scale(.96);}
+.q6g{position:absolute;left:0;top:0;overflow:visible;display:block;}
+.q6c{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:4px;color:#10281c;white-space:nowrap;}
+.q6c svg{flex:none;}
+.q6c span{font:800 10.5px/1 Outfit,"Arial Narrow",Arial,sans-serif;letter-spacing:.02em;text-transform:uppercase;}
+
+
+/* ═══ lay out 45: compactere bovenkant (±15% minder hoogte tot de eerste tegel) ═══ */
+html body #ohHero{height:calc(180px + var(--sat)) !important;min-height:calc(180px + var(--sat)) !important;max-height:calc(180px + var(--sat)) !important;}
+html body #qbWave{height:20px !important;}
+html body #qbWave svg{width:100% !important;height:100% !important;}
+html body #ohHero .oh-nav-back{bottom:26px !important;}
+html body #qbLab{padding:6px 0 3px !important;}
+html body #ohBody{padding-top:6px !important;}
+
+
+/* ═══ lay out 47: geen kleurband; wazige rand stopt exact onder de statusbalk (titel scherp); seizoenslabel op het artwork ═══ */
+html body #qbBand{display:none !important;}
+html body #ohHero{background-position:0 var(--sat) !important;}
+/* #qbTop = alleen nog een knipvenster van exact de hoogte van de statusbalk; de blur zit in ::before en kan dus nergens overheen lekken */
+html body #qbTop{height:var(--sat) !important;filter:none !important;transform:none !important;-webkit-mask-image:none !important;mask-image:none !important;overflow:hidden !important;}
+html body #qbTop::before{content:"";position:absolute;left:-20px;right:-20px;top:-20px;bottom:-20px;background:inherit;filter:blur(7px) saturate(1.1);transform:scale(1.25);transform-origin:center top;}
+html body #ohHero .oh-version-tag{top:calc(var(--sat) + 8px) !important;}
+html body #ohHero .oh-nav-btn{top:calc(var(--sat) + 90px) !important;}
+#qbChip{position:absolute;left:14px;top:calc(var(--sat) + 131px);z-index:6;display:flex;align-items:center;gap:6px;background:#fffaf0;border:1.5px solid #0a0a0a;border-radius:99px;box-shadow:1.5px 1.5px 0 #0a0a0a;padding:3px 10px 3px 4px;color:#3d1a0a;white-space:nowrap;pointer-events:none;}
+#qbChip::after{content:"";position:absolute;left:0;top:0;right:0;bottom:0;border-radius:inherit;background:url("data:image/svg+xml;utf8,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27160%27%20height=%27160%27%3E%3Cfilter%20id=%27n%27%20color-interpolation-filters=%27sRGB%27%3E%3CfeTurbulence%20type=%27fractalNoise%27%20baseFrequency=%271.05%27%20numOctaves=%272%27%20seed=%279%27%20stitchTiles=%27stitch%27/%3E%3CfeColorMatrix%20values=%270%200%200%200%20.22%20%200%200%200%200%20.13%20%200%200%200%200%20.05%20%208%200%200%200%20-4.35%27/%3E%3C/filter%3E%3Crect%20width=%27160%27%20height=%27160%27%20filter=%27url%28%23n%29%27/%3E%3C/svg%3E") 0 0/160px 160px;opacity:.12;pointer-events:none;}
+#qbChip u{display:block;flex:none;width:17px;height:17px;border-radius:50%;border:1.5px solid #0a0a0a;background:#c05818;text-decoration:none;}
+#qbChip span{font-family:var(--grotesk,"Space Grotesk",sans-serif);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;line-height:1.2;}
+html body #ohHero .oh-nav-back{left:auto !important;right:14px !important;transform:none !important;}
+
 </style>
 <script>
 /* ═══ Opslagbewaking: onbeperkte opslag ═══
@@ -5684,7 +5727,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v09/11/26 · lay out 43</div>
+    <div class="oh-version-tag" id="ohVersionTag">v09/11/26 · lay out 47</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -29590,6 +29633,117 @@ f();
 
 </script>
 <div id="qbGlass" aria-hidden="true"></div>
+<script>
+/* lay out 45: postzegelmenu variant E (zelf getekende zegels, actieve zegel groter) + schermhoogte-correctie */
+(function(){
+var INK='#10281c';
+var ICO=['<path d="M14 5a1.8 1.8 0 1 0 0-.01M9 21l2.2-6.2L8 12.2l2.4-4.1 3.1 1.6 2.6 3 3 .6M12.3 15.2l3.2 2.3V21"/>','<rect x="4" y="5.5" width="16" height="14.5" rx="2.2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4M8 14h.01M12 14h.01M16 14h.01M8 17.4h.01M12 17.4h.01"/>','<path d="M13.5 3 6 13.5h5L10 21l8-11h-5.2z"/>','<circle cx="12" cy="12" r="3.2"/><path d="M12 3.5v2.6M12 17.9v2.6M3.5 12h2.6M17.9 12h2.6M6 6l1.9 1.9M16.1 16.1 18 18M6 18l1.9-1.9M16.1 7.9 18 6"/>'];
+var LAB=['Vandaag','Agenda','Varia','Instellingen'],SHORT=['Vandaag','Agenda','Varia','Instell.'];
+var HI=32,HA=37,GAP=8,SIDE=14,AR=1.2;
+function icon(i){return '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+INK+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'+ICO[i]+'</svg>';}
+function path(w,h){
+  var r=2.3,gap=7,p='M0 0';
+  function edge(len,fx){var k=Math.max(2,Math.round(len/gap)),st=len/k,s='';for(var i=0;i<k;i++){var a=i*st+st/2-r,b=i*st+st/2+r;s+=fx(a,b,(i+1)*st);}return s;}
+  p+=edge(w,function(a,b,e){return 'L'+a+' 0A'+r+' '+r+' 0 0 0 '+b+' 0L'+e+' 0';});
+  p+=edge(h,function(a,b,e){return 'L'+w+' '+a+'A'+r+' '+r+' 0 0 0 '+w+' '+b+'L'+w+' '+e;});
+  p+=edge(w,function(a,b,e){return 'L'+(w-a)+' '+h+'A'+r+' '+r+' 0 0 0 '+(w-b)+' '+h+'L'+(w-e)+' '+h;});
+  p+=edge(h,function(a,b,e){return 'L0 '+(h-a)+'A'+r+' '+r+' 0 0 0 0 '+(h-b)+'L0 '+(h-e);});
+  return p+'Z';
+}
+function rays(w,h){var cx=w/2,cy=h/2,R=Math.hypot(w,h),s='';for(var i=0;i<14;i++){var a1=i*Math.PI*2/14,a2=a1+Math.PI/14;s+='M'+cx.toFixed(1)+' '+cy.toFixed(1)+'L'+(cx+R*Math.cos(a1)).toFixed(1)+' '+(cy+R*Math.sin(a1)).toFixed(1)+'L'+(cx+R*Math.cos(a2)).toFixed(1)+' '+(cy+R*Math.sin(a2)).toFixed(1)+'Z';}return s;}
+function ease(t){t=1-t;return 1-t*t*t;}
+var reduce=false;try{reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
+function mk(bar){
+  if(bar.__q6)return;bar.__q6=1;
+  var tabs=[].slice.call(bar.querySelectorAll('.tab'));
+  var wrap=document.createElement('div');wrap.className='q6';
+  var avail=function(){return Math.max(260,nb.clientWidth)-2*SIDE-3*GAP;};
+  var st=[];
+  for(var i=0;i<4;i++){
+    var d=document.createElement('div');d.className='q6s';
+    var g=document.createElementNS('http://www.w3.org/2000/svg','svg');g.setAttribute('class','q6g');d.appendChild(g);
+    var c=document.createElement('div');c.className='q6c';d.appendChild(c);
+    wrap.appendChild(d);st.push({el:d,svg:g,c:c,i:i,w:0,h:HI,a:0,lab:''});
+  }
+  var nb=bar.querySelector('.nv-bar');nb.appendChild(wrap);
+  function widths(idx){var u=avail()/(3+AR);return st.map(function(s,k){return k===idx?u*AR:u;});}
+  function draw(s){
+    var w=s.w,h=s.h,id='q6c'+s.i,p=path(w,h);
+    s.svg.setAttribute('width',w);s.svg.setAttribute('height',h);s.svg.setAttribute('viewBox','0 0 '+w+' '+h);
+    s.svg.innerHTML='<defs><clipPath id="'+id+'"><path d="'+p+'"/></clipPath><filter id="'+id+'f"><feTurbulence type="fractalNoise" baseFrequency="1.1" numOctaves="2" seed="9"/><feColorMatrix values="0 0 0 0 .22 0 0 0 0 .13 0 0 0 0 .05 0 0 0 8 -4.35"/></filter></defs>'+
+      '<path d="'+p+'" fill="#f6c68a"/><g clip-path="url(#'+id+')"><g opacity="'+s.a.toFixed(3)+'"><rect width="'+w+'" height="'+h+'" fill="#9fd58a"/><path d="'+rays(w,h)+'" fill="#d7efc6"/></g><rect width="'+w+'" height="'+h+'" filter="url(#'+id+'f)" opacity=".16"/></g><path d="'+p+'" fill="none" stroke="'+INK+'" stroke-width="1.6"/>';
+    s.el.style.width=w+'px';s.el.style.height=h+'px';
+  }
+  function label(s,act){var t=act?LAB[s.i]:SHORT[s.i];if(s.lab!==t){s.lab=t;s.c.innerHTML=icon(s.i)+'<span>'+t+'</span>';}}
+  var cur=-2,raf=0;
+  function go(idx,instant){
+    if(idx===cur&&!instant)return;cur=idx;
+    var tw=widths(idx),th=st.map(function(s,k){return k===idx?HA:HI;}),ta=st.map(function(s,k){return k===idx?1:0;});
+    st.forEach(function(s,k){label(s,k===idx);});
+    if(raf)cancelAnimationFrame(raf);
+    var f={w:st.map(function(s){return s.w||tw[s.i];}),h:st.map(function(s){return s.h;}),a:st.map(function(s){return s.a;})},t0=null;
+    if(instant||reduce){st.forEach(function(s,k){s.w=tw[k];s.h=th[k];s.a=ta[k];draw(s);});return;}
+    function step(ts){
+      if(t0===null)t0=ts;var t=Math.min(1,(ts-t0)/300),e=ease(t);
+      st.forEach(function(s,k){s.w=f.w[k]+(tw[k]-f.w[k])*e;s.h=f.h[k]+(th[k]-f.h[k])*e;s.a=f.a[k]+(ta[k]-f.a[k])*e;draw(s);});
+      if(t<1)raf=requestAnimationFrame(step);else raf=0;
+    }
+    raf=requestAnimationFrame(step);
+  }
+  function active(){var a=-1;tabs.forEach(function(t,k){if(t.classList.contains('active'))a=k;});return a;}
+  tabs.forEach(function(t,k){
+    t.addEventListener('pointerdown',function(){st[k].el.classList.add('p');go(k);},{passive:true});
+    ['pointerup','pointercancel','pointerleave'].forEach(function(ev){t.addEventListener(ev,function(){st[k].el.classList.remove('p');setTimeout(function(){go(active());},140);},{passive:true});});
+    new MutationObserver(function(){go(active());}).observe(t,{attributes:true,attributeFilter:['class']});
+  });
+  addEventListener('resize',function(){var c=cur;cur=-2;go(c,true);});
+  go(active(),true);
+}
+function init(){
+  var n=0,iv=setInterval(function(){
+    var b=document.querySelector('.tabs.nv .nv-bar');
+    if(b){clearInterval(iv);mk(b.parentNode);}
+    else if(++n>60)clearInterval(iv);
+  },100);
+}
+/* schermhoogte: op sommige iPhones is de weergave ±47 pt korter dan het scherm */
+function probe(){var d=document.createElement('div');d.style.cssText='position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding-bottom:env(safe-area-inset-bottom,0px)';document.body.appendChild(d);var v=parseFloat(getComputedStyle(d).paddingBottom)||0;d.remove();return v;}
+function run(){
+  var ih=window.innerHeight,iw=window.innerWidth,sh=Math.max(screen.height,screen.width),gap=0;
+  var sa=!!window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+  if(sa&&ih>iw){var g=sh-ih;if(g>=20&&g<=60)gap=g;}
+  document.documentElement.style.setProperty('--qb-gap',gap+'px');
+  var t=document.getElementById('ohVersionTag');
+  if(t){var base=t.getAttribute('data-base')||t.textContent;t.setAttribute('data-base',base);t.textContent=base+' · '+ih+'/'+sh+'/'+Math.round(probe())+(gap?'+'+gap:'');}
+}
+function start(){init();run();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+['resize','orientationchange','pageshow','visibilitychange'].forEach(function(e){addEventListener(e,function(){setTimeout(run,60);});});
+setTimeout(run,600);setTimeout(run,2000);
+})();
+
+</script>
+<script>
+/* lay out 47: seizoenslabel op het artwork (seizoen en moment volgen data-bn van de hero) */
+(function(){
+var PAL={'lente-ochtend':'#bfe3a0','lente-overdag':'#6cc04a','lente-avond':'#e8a0b4','lente-nacht':'#3f7a6a','zomer-ochtend':'#ffd27a','zomer-overdag':'#ffd93b','zomer-avond':'#ff8a5c','zomer-nacht':'#2a4a7a','herfst-ochtend':'#e8b27a','herfst-overdag':'#c05818','herfst-avond':'#a2402a','herfst-nacht':'#5b3a5e','winter-ochtend':'#cfe6f5','winter-overdag':'#8cc4e8','winter-avond':'#9aa8d8','winter-nacht':'#243a6a'};
+var SN={lente:'Lente',zomer:'Zomer',herfst:'Herfst',winter:'Winter'},hero=null,seen='';
+function upd(){
+  hero=hero||document.getElementById('ohHero');if(!hero)return;
+  var key=hero.getAttribute('data-bn');if(!key||key===seen)return;seen=key;
+  var c=document.getElementById('qbChip');
+  if(!c){c=document.createElement('div');c.id='qbChip';c.setAttribute('aria-hidden','true');c.innerHTML='<u></u><span></span>';hero.appendChild(c);}
+  var p=key.split('-');c.querySelector('u').style.background=PAL[key]||'#c05818';c.querySelector('span').textContent=(SN[p[0]]||p[0])+' · '+p[1];
+}
+function start(){
+  upd();
+  var n=0,iv=setInterval(function(){hero=document.getElementById('ohHero');if(hero){clearInterval(iv);upd();new MutationObserver(upd).observe(hero,{attributes:true,attributeFilter:['data-bn']});}else if(++n>60)clearInterval(iv);},100);
+  setInterval(upd,60000);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+
+</script>
 <script>
 /* ═══════════════════════════════════════════════════════════════
    TRAINING — zelf invullen wat je deed (geen voorgeschreven schema meer)
