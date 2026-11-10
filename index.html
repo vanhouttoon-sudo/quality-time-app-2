@@ -5459,7 +5459,11 @@ html body .tabs.nv{padding-bottom:calc(6px + max(0px, var(--sab) - 22px)) !impor
 
 /* ═══ lay out 45: laag postzegelmenu (variant E): horizontale zegels, uitvergrote actieve zegel, minimale onderrand ═══ */
 /* iPhone-weergave korter dan het scherm (nav6.js zet data-qbgap): menu staat dan op de echte onderrand van de weergave, dicht bij de zegels */
-html[data-qbgap] body .tabs.nv{padding-bottom:6px !important;}
+html[data-qbgap] body .tabs.nv{padding-bottom:3px !important;}
+/* proefmodus (3× tikken op het versielabel): app tot onder de korte weergave laten doorlopen */
+html[data-qbgap][data-qbexp],html[data-qbgap][data-qbexp] body{height:calc(100% + var(--qb-gap)) !important;overflow:visible !important;overscroll-behavior:none;}
+html[data-qbgap][data-qbexp] body #app{bottom:calc(-1 * var(--qb-gap)) !important;}
+html[data-qbgap][data-qbexp] body .tabs.nv{padding-bottom:max(4px, calc(var(--sab) - 16px)) !important;}
 html body .tabs.nv{padding:3px 0 max(4px, calc(var(--sab) - 16px)) !important;}
 html body .tabs.nv .nv-bar{width:100% !important;aspect-ratio:auto !important;height:37px !important;}
 html body .tabs.nv .nv-t{display:none !important;}
@@ -5728,7 +5732,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v09/11/26 · lay out 48</div>
+    <div class="oh-version-tag" id="ohVersionTag">v09/11/26 · lay out 49</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -29715,9 +29719,17 @@ function run(){
   if(sa&&ih>iw){var g=sh-ih;if(g>=20&&g<=60)gap=g;}
   document.documentElement.style.setProperty('--qb-gap',gap+'px');if(gap)document.documentElement.setAttribute('data-qbgap',gap);else document.documentElement.removeAttribute('data-qbgap');
   var t=document.getElementById('ohVersionTag');
-  if(t){var base=t.getAttribute('data-base')||t.textContent;t.setAttribute('data-base',base);t.textContent=base+' · '+ih+'/'+sh+'/'+Math.round(probe())+(gap?'+'+gap:'');}
+  if(t){var base=t.getAttribute('data-base')||t.textContent;t.setAttribute('data-base',base);t.textContent=base+' · '+ih+'/'+sh+'/'+Math.round(probe())+(gap?'+'+gap:'')+(exp()?' x':'');}
 }
-function start(){init();run();}
+function exp(){var on=false;try{on=localStorage.getItem('qbExp')==='1';}catch(e){}return on;}
+function applyExp(){var d=document.documentElement;if(exp())d.setAttribute('data-qbexp','1');else d.removeAttribute('data-qbexp');}
+var taps=[];
+document.addEventListener('click',function(e){
+  if(e.clientX>220||e.clientY<47||e.clientY>90)return;
+  var n=Date.now();taps.push(n);taps=taps.filter(function(t){return n-t<1600;});
+  if(taps.length>=3){taps=[];try{localStorage.setItem('qbExp',exp()?'0':'1');}catch(x){}applyExp();run();}
+},true);
+function start(){applyExp();init();run();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 ['resize','orientationchange','pageshow','visibilitychange'].forEach(function(e){addEventListener(e,function(){setTimeout(run,60);});});
 setTimeout(run,600);setTimeout(run,2000);
