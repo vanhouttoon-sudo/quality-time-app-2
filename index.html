@@ -5458,7 +5458,8 @@ html body .tabs.nv{padding-bottom:calc(6px + max(0px, var(--sab) - 22px)) !impor
 
 
 /* ═══ lay out 45: laag postzegelmenu (variant E): horizontale zegels, uitvergrote actieve zegel, minimale onderrand ═══ */
-html body #app{bottom:calc(-1 * var(--qb-gap,0px)) !important;}
+/* iPhone-weergave korter dan het scherm (nav6.js zet data-qbgap): menu staat dan op de echte onderrand van de weergave, dicht bij de zegels */
+html[data-qbgap] body .tabs.nv{padding-bottom:6px !important;}
 html body .tabs.nv{padding:3px 0 max(4px, calc(var(--sab) - 16px)) !important;}
 html body .tabs.nv .nv-bar{width:100% !important;aspect-ratio:auto !important;height:37px !important;}
 html body .tabs.nv .nv-t{display:none !important;}
@@ -5727,7 +5728,7 @@ function qtSkateLoaderHtml(text){
 
   <!-- ══ GLOBALE HEADER — zichtbaar op alle pagina's ══ -->
   <div class="oh-hero" id="ohHero">
-    <div class="oh-version-tag" id="ohVersionTag">v09/11/26 · lay out 47</div>
+    <div class="oh-version-tag" id="ohVersionTag">v09/11/26 · lay out 48</div>
     <div class="oh-hero-line"></div>
     <svg class="oh-hero-curve" viewBox="0 0 430 28" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -29712,7 +29713,7 @@ function run(){
   var ih=window.innerHeight,iw=window.innerWidth,sh=Math.max(screen.height,screen.width),gap=0;
   var sa=!!window.navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
   if(sa&&ih>iw){var g=sh-ih;if(g>=20&&g<=60)gap=g;}
-  document.documentElement.style.setProperty('--qb-gap',gap+'px');
+  document.documentElement.style.setProperty('--qb-gap',gap+'px');if(gap)document.documentElement.setAttribute('data-qbgap',gap);else document.documentElement.removeAttribute('data-qbgap');
   var t=document.getElementById('ohVersionTag');
   if(t){var base=t.getAttribute('data-base')||t.textContent;t.setAttribute('data-base',base);t.textContent=base+' · '+ih+'/'+sh+'/'+Math.round(probe())+(gap?'+'+gap:'');}
 }
